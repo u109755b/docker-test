@@ -1,0 +1,7 @@
+% schema:
+source bt('V':int, 'L':int, 'D':int, 'R':int).
+view a1('V':int, 'L':int, 'D':int, 'R':int).
+
+% rules for update strategy:
+-bt(V,L,D,R) :- bt(V,L,D,R), NOT a1(V,L,D,R).
++bt(V,L,D,R) :- NOT bt(V,L,D,R), a1(V,L,D,R).

@@ -1,0 +1,21 @@
+Peer5 2 18 0 10
+Peer4 2 7 0 10
+Peer9 2 3 0 10
+Peer10 3 17 0 10
+Peer1 3 7 0 10
+Peer13 2 42 0 10
+Peer15 2 13 0 10
+Peer6 2 16 0 10
+Peer17 2 11 0 10
+Peer19 2 69 0 10
+Peer14 3 17 0 10
+Peer2 3 21 0 10
+Peer8 2 20 0 10
+Peer7 3 11 0 10
+Peer11 3 22 0 10
+Peer3 3 21 0 10
+Peer20 3 3 0 10
+Peer18 2 27 0 10
+Peer16 3 5 0 10
+Peer12 3 28 0 10
+50

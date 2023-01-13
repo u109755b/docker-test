@@ -1,0 +1,10 @@
+% schema:
+source bt('V':int, 'L':int, 'D':int, 'R':int, 'd2_3':string, 'LINEAGE':string).
+view d2_3('V':int, 'L':int, 'D':int, 'R':int, 'LINEAGE':string).
+
+% view definition
+d2_3(V,L,D,R,LINEAGE) :- bt(V,L,D,R,S1,LINEAGE), S1='true'.
+
+% rules for update strategy:
+-bt(V,L,D,R,S1,LINEAGE) :- bt(V,L,D,R,S1,LINEAGE), NOT d2_3(V,L,D,R,LINEAGE), S1='true'.
++bt(V,L,D,R,S1,LINEAGE) :- NOT bt(V,L,D,R,S1,LINEAGE), d2_3(V,L,D,R,LINEAGE), S1='true'.
