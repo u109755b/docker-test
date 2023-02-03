@@ -34,7 +34,9 @@ for i in range(N):
         "max_hop": max_hop
     }
     req = data_pb2.Request(json_str=json.dumps(data))
-    with grpc.insecure_channel("localhost:{}".format(8001+i)) as channel:
+    # with grpc.insecure_channel("localhost:{}".format(8001+i)) as channel:
+    peer_address = "Peer{}-proxy:8000".format(i+1)
+    with grpc.insecure_channel(peer_address) as channel:
         stub = data_pb2_grpc.RSABLoadStub(channel)
         response = stub.on_get(req)
         params = json.loads(response.json_str)

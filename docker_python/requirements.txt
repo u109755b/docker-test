@@ -1,0 +1,8 @@
+gunicorn
+falcon
+psycopg2
+requests
+sqlparse
+numpy
+grpcio
+grpcio-tools

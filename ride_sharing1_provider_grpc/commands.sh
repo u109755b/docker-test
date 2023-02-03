@@ -9,7 +9,7 @@ function start(){
 }
 
 function remove(){
-    dockers=$(docker ps -a | grep "Peer" | awk '{print $1}')
+    dockers=$(docker ps -a | grep -e "Peer" -e "python3" | awk '{print $1}')
     if [ "$dockers" == "" ]; then
         echo "no dockers found"
         return
