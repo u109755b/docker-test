@@ -12,6 +12,9 @@ display_time = True
 time_dir = '/var/log/time'
 os.makedirs(time_dir, exist_ok=True)
 
+channels = {}
+stubs = {}
+
 # sleep time
 SLEEP_MS = 0
 

@@ -148,9 +148,14 @@ def base_request(peer_address, service_stub, req, results, lock, timestamps_list
         # headers = {"Content-Type": "application/json"}
         # res = requests.post(url, json.dumps(data), headers=headers)
         # res_dic = res.json()
-        with grpc.insecure_channel(peer_address) as channel:
-            stub = service_stub(channel)
-            res = stub.on_post(req)
+        
+        # with grpc.insecure_channel(peer_address) as channel:
+        #     stub = service_stub(channel)
+        #     res = stub.on_post(req)
+        if peer_address not in config.channels:
+            config.channels[peer_address] = grpc.insecure_channel(peer_address)
+        stub = service_stub(config.channels[peer_address])
+        res = stub.on_post(req)
         res_dic = json.loads(res.json_str)
         with lock:
             if res_dic['result'] == "Ack":
