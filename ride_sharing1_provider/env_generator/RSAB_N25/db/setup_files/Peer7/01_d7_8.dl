@@ -1,0 +1,11 @@
+% schema:
+source bt('V':int, 'L':int, 'D':int, 'R':int, 'd2_7':string, 'd7_8':string, 'd7_10':string, 'd7_15':string, 'LINEAGE':string).
+view d7_8('V':int, 'L':int, 'D':int, 'R':int, 'LINEAGE':string).
+
+% view definition
+d7_8(V,L,D,R,LINEAGE) :- bt(V,L,D,R,_,S2,_,_,LINEAGE), S2='true'.
+
+% rules for update strategy:
+-bt(V,L,D,R,S1,S2,S3,S4,LINEAGE) :- bt(V,L,D,R,S1,S2,S3,S4,LINEAGE), NOT d7_8(V,L,D,R,LINEAGE), S2='true'.
++bt(V,L,D,R,S1,S2,S3,S4,LINEAGE) :- NOT bt(V,L,D,R,_,_,_,_,LINEAGE), d7_8(V,L,D,R,LINEAGE), bt(V,_,_,_,S1,_,S3,S4,_), S2='true'.
++bt(V,L,D,R,S1,S2,S3,S4,LINEAGE) :- NOT bt(V,L,D,R,_,_,_,_,LINEAGE), d7_8(V,L,D,R,LINEAGE), NOT bt(V,_,_,_,_,_,_,_,_), S1='false', S2='true', S3='false', S4='false'.

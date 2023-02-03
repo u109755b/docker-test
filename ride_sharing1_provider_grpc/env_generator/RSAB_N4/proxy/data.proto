@@ -1,0 +1,24 @@
+// https://knowledge.sakura.ad.jp/24059/
+
+syntax = "proto3";
+
+
+message Request{ string json_str = 1; }
+message Response{ string json_str = 2; }
+
+
+service Lock { rpc on_post(Request) returns (Response){} }
+service Unlock { rpc on_post(Request) returns (Response){} }
+
+service FRSPropagation { rpc on_post(Request) returns (Response){}}
+service FRSTermination { rpc on_post(Request) returns (Response){} }
+
+service TPLPropagation { rpc on_post(Request) returns (Response){}}
+service TPLTermination { rpc on_post(Request) returns (Response){} }
+
+service RSABLoad { rpc on_get(Request) returns (Response){} }
+service RSAB { rpc on_get(Request) returns (Response){} }
+
+
+// python3 -m grpc_tools.protoc -I＜プロトコル定義ファイルが格納されているディレクトリ＞ --python_out=＜コード出力先ディレクトリ＞ --grpc_python_out=＜コード出力先ディレクトリ＞ ＜プロトコル定義ファイルのパス名＞
+// python3 -m grpc_tools.protoc -I . --python_out=. --grpc_python_out=. data.proto

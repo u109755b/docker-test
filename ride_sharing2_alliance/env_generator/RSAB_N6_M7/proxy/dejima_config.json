@@ -1,0 +1,136 @@
+{
+  "dejima_table": {
+    "d1_1": [
+      "provider1",
+      "alliance1"
+    ],
+    "d1_2": [
+      "provider2",
+      "alliance1"
+    ],
+    "d2_2": [
+      "provider2",
+      "alliance2"
+    ],
+    "d2_3": [
+      "provider3",
+      "alliance2"
+    ],
+    "d3_3": [
+      "provider3",
+      "alliance3"
+    ],
+    "d3_4": [
+      "provider4",
+      "alliance3"
+    ],
+    "d4_4": [
+      "provider4",
+      "alliance4"
+    ],
+    "d4_5": [
+      "provider5",
+      "alliance4"
+    ],
+    "d5_5": [
+      "provider5",
+      "alliance5"
+    ],
+    "d5_6": [
+      "provider6",
+      "alliance5"
+    ],
+    "d6_6": [
+      "provider6",
+      "alliance6"
+    ],
+    "d6_7": [
+      "provider7",
+      "alliance6"
+    ]
+  },
+  "base_table": {
+    "alliance1": [
+      "mt"
+    ],
+    "alliance2": [
+      "mt"
+    ],
+    "alliance3": [
+      "mt"
+    ],
+    "alliance4": [
+      "mt"
+    ],
+    "alliance5": [
+      "mt"
+    ],
+    "alliance6": [
+      "mt"
+    ],
+    "provider1": [
+      "bt"
+    ],
+    "provider2": [
+      "bt"
+    ],
+    "provider3": [
+      "bt"
+    ],
+    "provider4": [
+      "bt"
+    ],
+    "provider5": [
+      "bt"
+    ],
+    "provider6": [
+      "bt"
+    ],
+    "provider7": [
+      "bt"
+    ]
+  },
+  "alliance_list": {
+    "provider1": [
+      "AL1"
+    ],
+    "provider2": [
+      "AL1",
+      "AL2"
+    ],
+    "provider3": [
+      "AL2",
+      "AL3"
+    ],
+    "provider4": [
+      "AL3",
+      "AL4"
+    ],
+    "provider5": [
+      "AL4",
+      "AL5"
+    ],
+    "provider6": [
+      "AL5",
+      "AL6"
+    ],
+    "provider7": [
+      "AL6"
+    ]
+  },
+  "peer_address": {
+    "alliance1": "alliance1-proxy:8000",
+    "alliance2": "alliance2-proxy:8000",
+    "alliance3": "alliance3-proxy:8000",
+    "alliance4": "alliance4-proxy:8000",
+    "alliance5": "alliance5-proxy:8000",
+    "alliance6": "alliance6-proxy:8000",
+    "provider1": "provider1-proxy:8000",
+    "provider2": "provider2-proxy:8000",
+    "provider3": "provider3-proxy:8000",
+    "provider4": "provider4-proxy:8000",
+    "provider5": "provider5-proxy:8000",
+    "provider6": "provider6-proxy:8000",
+    "provider7": "provider7-proxy:8000"
+  }
+}

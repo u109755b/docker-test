@@ -29,6 +29,17 @@ function update(){
     echo "updated RSAB files"
 }
 
+function bench(){
+    N=$1
+    t=$2
+    bash rsabbench.sh ${N} ${t} 2pl 1 result_file
+    sleep ${t+20}
+    bash rsabbench.sh ${N} ${t} frs 1 result_file
+    sleep ${t+20}
+    bash rsabbench.sh ${N} ${t} hybrid 1 result_file
+    sleep ${t+10}
+}
+
 if [ $command_name == "start" ]; then
     remove
     update
@@ -38,4 +49,6 @@ elif [ $command_name == "remove" ]; then
     update
 elif [ $command_name == "update" ]; then
     update
+elif [ $command_name == "bench" ]; then
+    bench $2 $3
 fi

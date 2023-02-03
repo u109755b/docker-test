@@ -22,6 +22,7 @@ class RSABLoad(object):
         record_num = int(params['record_num'])
         step = int(params['step'])
         max_hop = int(params['max_hop'])
+        config.target_peers = config.create_target_peers(neighbor_hop=max_hop*2)
             
         # load
         print("load start")

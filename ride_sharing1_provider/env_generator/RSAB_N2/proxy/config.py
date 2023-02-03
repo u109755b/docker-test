@@ -25,13 +25,15 @@ bt_list = dejima_config_dict['base_table'][peer_name]
 sorted_dt_list = sorted(dt_list)
 
 # neighbor peers
-neighbor_hop = 20
-target_peers = {peer_name}
-for i in range(neighbor_hop):
-    next_target_peers = set()
-    for peerlist_for_each_dt in dejima_config_dict["dejima_table"].values():
-        peerset_for_each_dt = set(peerlist_for_each_dt)
-        if target_peers & peerset_for_each_dt != set():
-            next_target_peers = next_target_peers | peerset_for_each_dt
-    target_peers = target_peers | next_target_peers
-target_peers.remove(peer_name)
+def create_target_peers(neighbor_hop):
+    target_peers = {peer_name}
+    for i in range(neighbor_hop):
+        next_target_peers = set()
+        for peerlist_for_each_dt in dejima_config_dict["dejima_table"].values():
+            peerset_for_each_dt = set(peerlist_for_each_dt)
+            if target_peers & peerset_for_each_dt != set():
+                next_target_peers = next_target_peers | peerset_for_each_dt
+        target_peers = target_peers | next_target_peers
+    target_peers.remove(peer_name)
+    return target_peers
+target_peers = create_target_peers(neighbor_hop=3)

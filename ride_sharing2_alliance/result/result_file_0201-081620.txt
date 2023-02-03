@@ -1,0 +1,15 @@
+alliance2:  26 19 0,  0 0 0,  10
+provider3:  44 18 0,  0 0 0,  10
+provider1:  64 15 0,  0 0 0,  10
+alliance1:  38 18 0,  0 0 0,  10
+alliance3:  32 11 0,  0 0 0,  10
+provider5:  46 10 0,  0 0 0,  10
+provider2:  45 17 0,  0 0 0,  10
+provider4:  49 22 0,  0 0 0,  10
+alliance6:  46 14 0,  0 0 0,  10
+provider7:  69 27 0,  0 0 0,  10
+provider6:  44 23 0,  0 0 0,  10
+alliance5:  29 24 0,  0 0 0,  10
+alliance4:  32 17 0,  0 0 0,  10
+564
+235

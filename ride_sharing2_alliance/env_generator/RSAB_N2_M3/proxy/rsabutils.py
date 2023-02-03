@@ -36,58 +36,33 @@ def get_stmt_for_load(start_id, record_num, step):
 
 def get_workload_for_provider(updated_data_list):
     stmts = []
-    # # Read
-    # for i in range(read_num):
-    #     target_col = 'col{}'.format(random.randint(1,COL_N))
-    #     stmts.append("SELECT {} FROM bt WHERE id={}".format(target_col, next(zipf_gen)))
-    # # Write
-    # for i in range(write_num):
-    #     target_col = 'col{}'.format(random.randint(1,COL_N))
-    #     stmts.append("UPDATE bt SET {}='{}' WHERE id={}".format(target_col, randomname(10), next(zipf_gen)))
-    t_type = ''
-    if updated_data_list == []:
-        stmt_num = 1
-        # if len(config.candidate_record_id_list) < stmt_num:
-        #     return [], 'transaction'
-        for i in range(stmt_num):
-            L = random.randint(1, 9999)
-            V_idx = random.randint(1, len(config.candidate_record_id_list))-1
-            V = config.candidate_record_id_list[V_idx]
-            print(f"a = {config.candidate_record_id_list}, a[{V_idx}] = {V}")
-            stmts.append("UPDATE bt SET L={}, R=0 WHERE V={}".format(L, V))
-            # config.candidate_record_id_list[V_idx] = config.candidate_record_id_list[-1]
-            # config.candidate_record_id_list.pop()
-        t_type = 'transaction'
+    t_type = 'transaction'
+    
+    if random.randint(1, 100) <= 20:
+        V_list = random.sample(config.candidate_record_id_list, 10)
+        for V in V_list:
+            stmts.append("SELECT * WHERE V={}".format(V))
     else:
-        for updated_data in updated_data_list:
-            print(updated_data[0])
-            stmts.append("UPDATE bt SET U='false' WHERE V={}".format(updated_data[0]))
-            config.candidate_record_id_list.append(updated_data[0])
-        t_type = 'detect_update'
+        V_list = random.sample(config.candidate_record_id_list, 10)
+        for V in V_list:
+            L = random.randint(1, 9999)
+            stmts.append("UPDATE bt SET L={}, R=0 WHERE V={}".format(L, V))
+        
     return stmts, t_type
     
 def get_workload_for_alliance(updated_data_list):
     stmts = []
-    t_type = ''
-    if updated_data_list == []:
-        stmt_num = 1
-        # if len(config.candidate_record_id_list) < stmt_num:
-        #     return [], 'transaction'
-        for i in range(stmt_num):
-            D = random.randint(1, 9999)
-            V_idx = random.randint(1, len(config.candidate_record_id_list))-1
-            V = config.candidate_record_id_list[V_idx]
-            # print(f"a = {config.candidate_record_id_list}, a[{V_idx}] = {V}")
-            stmts.append("UPDATE mt SET D={}, R=1 WHERE V={}".format(D, V))
-            # config.candidate_record_id_list[V_idx] = config.candidate_record_id_list[-1]
-            # config.candidate_record_id_list.pop()
-        t_type = 'transaction'
+    t_type = 'transaction'
+    
+    if random.randint(1, 100) <= 20:
+        V_list = random.sample(config.candidate_record_id_list, 10)
+        for V in V_list:
+            stmts.append("SELECT * WHERE V={}".format(V))
     else:
-        for updated_data in updated_data_list:
-            print(updated_data[0])
-            stmts.append("UPDATE mt SET U='false' WHERE V={}".format(updated_data[0]))
-            config.candidate_record_id_list.append(updated_data[0])
-        t_type = 'detect_update'
+        D = random.randint(1, 9999)
+        V = random.choice(config.candidate_record_id_list)
+        stmts.append("UPDATE mt SET D={}, R=1 WHERE V={}".format(D, V))
+        
     return stmts, t_type
 
 # prepare zipf generator

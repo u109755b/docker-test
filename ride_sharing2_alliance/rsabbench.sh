@@ -39,3 +39,4 @@ sleep 5
 
 # calculate result
 awk '{commit+=$2} END {print commit}' ${output_file} | tee -a ${output_file}
+awk '{commit+=$3} END {print commit}' ${output_file} | tee -a ${output_file}

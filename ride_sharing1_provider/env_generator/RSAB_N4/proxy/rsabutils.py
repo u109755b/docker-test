@@ -38,29 +38,20 @@ def get_stmt_for_load(start_id, record_num, step, max_hop):
 def get_workload_for_rsab():
     stmts = []
     
-    L = random.randint(1, 9999)
-    V_idx = random.randint(1, len(config.candidate_record_id_list))-1
-    V = config.candidate_record_id_list[V_idx]
-    # print(f"a = {config.candidate_record_id_list}, a[{V_idx}] = {V}")
-    
-    # print("created!")
-    # for i in range(10):
-    #     stmts.append("UPDATE bt SET L={}, R=0 WHERE V={}".format(L, V))
-    
     r = random.randint(1, 100)
     if 0 < r and r <= 70:
-        for i in range(5):
+        V_list = random.sample(config.candidate_record_id_list, 5)
+        for V in V_list:
             L = random.randint(1, 9999)
-            V_idx = random.randint(1, len(config.candidate_record_id_list))-1
-            V = config.candidate_record_id_list[V_idx]
             stmts.append("UPDATE bt SET L={}, R=0 WHERE V={}".format(L, V))
     elif 70 < r and r <= 95:
-        stmts.append("SELECT * WHERE V={}".format(L, V))
+        V_list = random.sample(config.candidate_record_id_list, 5)
+        for V in V_list:
+            stmts.append("SELECT * WHERE V={}".format(V))
     else:
-        stmts.append("UPDATE bt SET L={}, R=0 WHERE V={}".format(L, V))
-    
-    # config.candidate_record_id_list[V_idx] = config.candidate_record_id_list[-1]
-    # config.candidate_record_id_list.pop()
+        D = random.randint(1, 9999)
+        V = random.choice(config.candidate_record_id_list)
+        stmts.append("UPDATE bt SET D={}, R=1 WHERE V={}".format(D, V))
     
     return stmts
 
