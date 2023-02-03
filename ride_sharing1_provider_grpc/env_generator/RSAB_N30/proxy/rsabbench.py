@@ -52,7 +52,8 @@ def rsab_peer(peer_address, service_stub, req):
 
 for i in range(N):
     for j in range(threads):
-        peer_address = "localhost:{}".format(8001+i)
+        # peer_address = "localhost:{}".format(8001+i)
+        peer_address = "Peer{}-proxy:8000".format(i+1)
         service_stub = data_pb2_grpc.RSABStub
         req = data_pb2.Request(json_str=json.dumps(data))
         args = [peer_address, service_stub, req]

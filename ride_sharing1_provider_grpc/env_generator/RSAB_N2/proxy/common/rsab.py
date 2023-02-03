@@ -26,6 +26,10 @@ class RSAB(data_pb2_grpc.RSABServicer):
                 return data_pb2.Response(json_str=json.dumps(res_dic))
         bench_time = int(params['bench_time'])
         METHOD = params['method']
+        
+        for channel in config.channels.values():
+            channel.close()
+        config.channels.clear()
             
         # benchmark
         commit_num = 0
