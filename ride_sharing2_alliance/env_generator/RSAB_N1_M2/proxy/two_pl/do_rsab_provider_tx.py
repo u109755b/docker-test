@@ -4,36 +4,6 @@ import config
 import rsabutils
 import json
 import sqlparse
-
-def get_updated_data(global_xid):
-    tx = config.tx_dict[global_xid]
-    uv_result = []
-    try:
-        # miss_flag = True
-        # lock
-        tx.cur.execute("SELECT * FROM uv FOR SHARE NOWAIT")
-        uv_result = tx.cur.fetchall()
-        # print(uv_result)
-        if uv_result == None:
-            return []
-        # execution
-        # tx.cur.execute("SELECT * FROM uv")
-        # uv_result = tx.cur.fetchall()
-    except:
-        # abort during local lock
-        tx.abort()
-        del config.tx_dict[global_xid]
-        return False
-
-    # if miss_flag:
-    #     tx.abort()
-    #     del config.tx_dict[global_xid]
-    #     return "miss"
-        
-    # if config.peer_name == "provider1":
-    #     print(uv_result)
-    #     print(uv_result[1][0])
-    return uv_result
         
 
 def doRSAB_PROVIDER_2pl(is_updated):
@@ -44,12 +14,6 @@ def doRSAB_PROVIDER_2pl(is_updated):
     
     # get updated data
     uv_result = []
-    # uv_result = get_updated_data(global_xid)
-    # if uv_result == False:
-    #     # print("abort1")
-    #     return False, 'detect_update'
-    # # uv_result = []
-    # # print(uv_result)
     
     # workload
     stmts, t_type = rsabutils.get_workload_for_provider(uv_result)
@@ -69,23 +33,15 @@ def doRSAB_PROVIDER_2pl(is_updated):
     try:
         miss_flag = True
         # lock
-        # print("provider lock")
         for stmt in lock_stmts:
             tx.cur.execute(stmt)            
             if tx.cur.fetchone() != None:
                 miss_flag = False 
         # execution
-        # print("provider execution")
         for stmt in stmts:
             tx.cur.execute(stmt)
-            # if stmt.startswith("SELECT") and config.peer_name == "provider1":
-            #     uv_result = tx.cur.fetchall()
-            #     print(type(uv_result))
-            #     print(uv_result)
-            # print("provider stmt: {}".format(stmt))
     except:
         # abort during local lock
-        # print("aobrt2")
         tx.abort()
         del config.tx_dict[global_xid]
         return False, t_type
@@ -96,7 +52,6 @@ def doRSAB_PROVIDER_2pl(is_updated):
         return "miss", t_type
 
     # propagation
-    # print("provider propagatioin")
     try:
         tx.cur.execute("SELECT txid_current()")
         local_xid, *_ = tx.cur.fetchone()
@@ -127,7 +82,6 @@ def doRSAB_PROVIDER_2pl(is_updated):
         del config.tx_dict[global_xid]
         return False, t_type
     
-    # print("provider prop_request {}".format(global_xid))
     if prop_dict != {}:
         result = dejimautils.prop_request(prop_dict, global_xid, "2pl")
     else:
@@ -139,8 +93,6 @@ def doRSAB_PROVIDER_2pl(is_updated):
         commit = True
 
     # termination
-    # print("provider termination")
-    # print("provider result: {}".format(result))
     if commit:
         tx.commit()
         dejimautils.termination_request("commit", global_xid, "2pl")

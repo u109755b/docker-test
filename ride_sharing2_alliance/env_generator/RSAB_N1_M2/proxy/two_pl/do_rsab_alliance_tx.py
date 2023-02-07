@@ -5,22 +5,6 @@ import rsabutils
 import json
 import sqlparse
 
-def get_updated_data(global_xid):
-    tx = config.tx_dict[global_xid]
-    uv_result = []
-    try:
-        # lock
-        tx.cur.execute("SELECT * FROM uv FOR SHARE NOWAIT")
-        uv_result = tx.cur.fetchall()
-        if uv_result == None:
-            return []
-    except:
-        # abort during local lock
-        tx.abort()
-        del config.tx_dict[global_xid]
-        return False
-    return uv_result
-
 
 def doRSAB_ALLIANCE_2pl(is_updated):
     # create new tx
@@ -30,10 +14,6 @@ def doRSAB_ALLIANCE_2pl(is_updated):
     
     # get updated data
     uv_result = []
-    # if is_updated == True:
-    #     uv_result = get_updated_data(global_xid)
-    # if uv_result == False:
-    #     return False, 'detect_update'
 
     # workload
     stmts, t_type = rsabutils.get_workload_for_alliance(uv_result)
@@ -53,16 +33,13 @@ def doRSAB_ALLIANCE_2pl(is_updated):
     try:
         miss_flag = True
         # lock
-        # print("alliance lock")
         for stmt in lock_stmts:
             tx.cur.execute(stmt)            
             if tx.cur.fetchone() != None:
                 miss_flag = False 
         # execution
-        # print("alliance execution")
         for stmt in stmts:
             tx.cur.execute(stmt)
-            # print("alliance stmt: {}".format(stmt))
     except:
         # abort during local lock
         tx.abort()
@@ -75,7 +52,6 @@ def doRSAB_ALLIANCE_2pl(is_updated):
         return "miss", t_type
 
     # propagation
-    # print("alliance propagation")
     try:
         tx.cur.execute("SELECT txid_current()")
         local_xid, *_ = tx.cur.fetchone()
@@ -106,7 +82,6 @@ def doRSAB_ALLIANCE_2pl(is_updated):
         del config.tx_dict[global_xid]
         return False, t_type
     
-    # print("alliance prop_request {}".format(global_xid))
     if prop_dict != {}:
         result = dejimautils.prop_request(prop_dict, global_xid, "2pl")
     else:
@@ -118,8 +93,6 @@ def doRSAB_ALLIANCE_2pl(is_updated):
         commit = True
 
     # termination
-    # print("alliance termination")
-    # print("alliance result: {}".format(result))
     if commit:
         tx.commit()
         dejimautils.termination_request("commit", global_xid, "2pl")

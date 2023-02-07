@@ -5,6 +5,8 @@ CREATE TABLE bt(
     D int,
     R int,
     d1_2 varchar,
+    d2_3 varchar,
+    d2_4 varchar,
     LINEAGE	varchar
 );
 

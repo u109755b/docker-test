@@ -5,43 +5,19 @@ import rsabutils
 import json
 import sqlparse
 
-def get_updated_data(global_xid):
-    tx = config.tx_dict[global_xid]
-    uv_result = []
-    try:
-        # lock
-        tx.cur.execute("SELECT * FROM uv FOR SHARE NOWAIT")
-        uv_result = tx.cur.fetchall()
-        if uv_result == None:
-            return []
-    except:
-        # abort during local lock
-        tx.abort()
-        del config.tx_dict[global_xid]
-        return False
-    return uv_result
 
-
-def doRSAB_ALLIANCE_2pl(is_updated):
+def doRSAB_ALLIANCE_2pl():
     # create new tx
     global_xid = dejimautils.get_unique_id()
     tx = Tx(global_xid)
     config.tx_dict[global_xid] = tx
     
-    # get updated data
-    uv_result = []
-    # if is_updated == True:
-    #     uv_result = get_updated_data(global_xid)
-    # if uv_result == False:
-    #     return False, 'detect_update'
-
     # workload
-    stmts, t_type = rsabutils.get_workload_for_alliance(uv_result)
-    # print(stmts, t_type)
+    stmts = rsabutils.get_workload_for_alliance()
     if stmts == []:
         tx.abort()
         del config.tx_dict[global_xid]
-        return "miss", t_type
+        return "miss"
 
     lock_stmts = []
     for stmt in stmts:
@@ -53,29 +29,25 @@ def doRSAB_ALLIANCE_2pl(is_updated):
     try:
         miss_flag = True
         # lock
-        # print("alliance lock")
         for stmt in lock_stmts:
             tx.cur.execute(stmt)            
             if tx.cur.fetchone() != None:
                 miss_flag = False 
         # execution
-        # print("alliance execution")
         for stmt in stmts:
             tx.cur.execute(stmt)
-            # print("alliance stmt: {}".format(stmt))
     except:
         # abort during local lock
         tx.abort()
         del config.tx_dict[global_xid]
-        return False, t_type
+        return False
 
     if miss_flag:
         tx.abort()
         del config.tx_dict[global_xid]
-        return "miss", t_type
+        return "miss"
 
     # propagation
-    # print("alliance propagation")
     try:
         tx.cur.execute("SELECT txid_current()")
         local_xid, *_ = tx.cur.fetchone()
@@ -104,9 +76,8 @@ def doRSAB_ALLIANCE_2pl(is_updated):
         print('error during BIRDS: ', e)
         tx.abort()
         del config.tx_dict[global_xid]
-        return False, t_type
+        return False
     
-    # print("alliance prop_request {}".format(global_xid))
     if prop_dict != {}:
         result = dejimautils.prop_request(prop_dict, global_xid, "2pl")
     else:
@@ -118,8 +89,6 @@ def doRSAB_ALLIANCE_2pl(is_updated):
         commit = True
 
     # termination
-    # print("alliance termination")
-    # print("alliance result: {}".format(result))
     if commit:
         tx.commit()
         dejimautils.termination_request("commit", global_xid, "2pl")
@@ -128,4 +97,4 @@ def doRSAB_ALLIANCE_2pl(is_updated):
         dejimautils.termination_request("abort", global_xid, "2pl")
     del config.tx_dict[global_xid]
 
-    return commit, t_type
+    return commit

@@ -40,6 +40,7 @@ class RSAB(object):
                 doRSAB = doRSAB_frs
             else:
                 doRSAB = doRSAB_2pl
+            config.timestamp_management = config.TimestampManagement()
 
             current_time = time.time() - start_time
             while (current_time < bench_time):
@@ -60,6 +61,7 @@ class RSAB(object):
                 elif result == "miss":
                     miss_num += 1
                     miss_time += time.time() - start_time - current_time
+            print(config.timestamp_management.get_result())
 
         # hybrid
         elif METHOD == "hybrid":

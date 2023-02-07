@@ -4,8 +4,16 @@ import config
 import rsabutils
 import json
 import sqlparse
+import time
+import numpy as np
 
 def doRSAB_frs():
+    measure_time = True
+    timestamps = []
+    timestamp = []
+    start_time = time.perf_counter()
+    timestamp.append(start_time)
+    
     # create new tx
     global_xid = dejimautils.get_unique_id()
     tx = Tx(global_xid)
@@ -23,6 +31,7 @@ def doRSAB_frs():
         elif stmt.startswith("UPDATE"):
             where_clause = sqlparse.parse(stmt)[0][-1].value
             get_lineage_stmts.append("SELECT lineage FROM bt {} FOR UPDATE NOWAIT".format(where_clause))
+    timestamp.append(time.perf_counter())
     try:
         miss_flag = True
         lineages = []
@@ -64,6 +73,7 @@ def doRSAB_frs():
         return False
 
     # execution
+    timestamp.append(time.perf_counter())
     try:
         for stmt in stmts:
             tx.cur.execute(stmt)
@@ -75,9 +85,12 @@ def doRSAB_frs():
         return False
 
     # propagation
+    timestamp.append(time.perf_counter())
     try:
         tx.cur.execute("SELECT txid_current()")
         local_xid, *_ = tx.cur.fetchone()
+        timestamp.append(time.perf_counter())
+        
         prop_dict = {}
         for dt in config.dt_list:
             target_peers = list(config.dejima_config_dict['dejima_table'][dt])
@@ -106,9 +119,21 @@ def doRSAB_frs():
         del config.tx_dict[global_xid]
         return False
     
+    timestamp.append(time.perf_counter())
     if prop_dict != {}:
-        result = dejimautils.prop_request(prop_dict, global_xid, "frs")
+        result = dejimautils.prop_request(prop_dict, global_xid, "frs", measure_time=measure_time)
     else:
+        result = "Ack"
+    timestamp.append(time.perf_counter())
+    
+    if result == "Ack" and measure_time == True:
+        result = []
+    if isinstance(result, list):
+        timestamps = result
+        timestamps.append(timestamp)
+        timestamps = ((np.array(timestamps)-start_time)*1000).tolist()
+        # print(timestamps)
+        config.timestamp_management.add_timestamps(timestamps)
         result = "Ack"
 
     if result != "Ack":

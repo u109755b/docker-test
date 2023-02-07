@@ -61,6 +61,7 @@ class TPLPropagation(object):
             # get local xid
             tx.cur.execute("SELECT txid_current()")
             local_xid, *_ = tx.cur.fetchone()
+            timestamp.append(time.perf_counter())
 
             # propagation
             updated_dt = params['delta']['view'].split('.')[1]

@@ -58,9 +58,15 @@ class FRSPropagation(object):
                     # else:
                     #     for delete in params['delta']["deletions"]:
                     #         tx.cur.execute("SELECT * FROM bt WHERE id={} FOR UPDATE NOWAIT".format(delete['id']))
+                    timestamp.append(time.perf_counter())
                     for delete in params['delta']["deletions"]:
                         tx.cur.execute("SELECT * FROM bt WHERE v={} FOR UPDATE NOWAIT".format(delete['v']))
+                    timestamp.append(time.perf_counter())
+            else:
+                timestamp.append(time.perf_counter())
+                timestamp.append(time.perf_counter())
             tx.cur.execute(stmt)
+            timestamp.append(time.perf_counter())
             if max_hop != -1:
                 for insert in params['delta']["insertions"]:
                     config.candidate_record_id_list.append(insert['v'])
@@ -76,6 +82,7 @@ class FRSPropagation(object):
             # get local xid
             tx.cur.execute("SELECT txid_current()")
             local_xid, *_ = tx.cur.fetchone()
+            timestamp.append(time.perf_counter())
 
             # propagation
             updated_dt = params['delta']['view'].split('.')[1]

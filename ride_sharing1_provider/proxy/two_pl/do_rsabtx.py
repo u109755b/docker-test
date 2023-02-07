@@ -7,17 +7,6 @@ import sqlparse
 import time
 import numpy as np
 
-def print_timestamps(timestamps):
-    reversed_timestamps = reversed(timestamps)
-    times_list = []
-    for timestamp in reversed_timestamps:
-        times = []
-        for time in timestamp:
-            times.append("{}.{}".format(int(time), int((time-int(time))*100)))
-        times = ", ".join(times)
-        times_list.append("[{}]".format(times))
-    print("[{}]".format(", ".join(times_list)))
-
 def doRSAB_2pl():
     measure_time = True
     timestamps = []
@@ -74,6 +63,8 @@ def doRSAB_2pl():
     try:
         tx.cur.execute("SELECT txid_current()")
         local_xid, *_ = tx.cur.fetchone()
+        timestamp.append(time.perf_counter())
+        
         prop_dict = {}
         for dt in config.dt_list:
             target_peers = list(config.dejima_config_dict['dejima_table'][dt])
@@ -115,7 +106,7 @@ def doRSAB_2pl():
         timestamps.append(timestamp)
         timestamps = ((np.array(timestamps)-start_time)*1000).tolist()
         # print(timestamps)
-        print_timestamps(timestamps)
+        config.timestamp_management.add_timestamps(timestamps)
         result = "Ack"
         
     if result != "Ack":

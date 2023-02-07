@@ -4,7 +4,7 @@ CREATE TABLE bt(
     L int,
     D int,
     R int,
-    d1_4 varchar,
+    d2_4 varchar,
     LINEAGE	varchar
 );
 
