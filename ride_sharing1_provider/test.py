@@ -58,36 +58,36 @@ for key in duration_time:
 
 
 time_ratio_raw = """
-Peer15-proxy    | {'get_xid': 4.02, 'lock': 21.13, 'base_update': 10.88, 'view_udpate': 336.29, 'prop_view': 78.12, 'communication': 14.43}
-Peer15-proxy    | benchmark finished
-Peer3-proxy     | {'get_xid': 4.53, 'lock': 25.39, 'base_update': 22.74, 'view_udpate': 528.42, 'prop_view': 119.63, 'communication': 14.99}
-Peer3-proxy     | benchmark finished
-Peer1-proxy     | {'get_xid': 5.03, 'lock': 36.28, 'base_update': 116.15, 'view_udpate': 698.04, 'prop_view': 148.61, 'communication': 14.29}
-Peer1-proxy     | benchmark finished
-Peer11-proxy    | {'get_xid': 4.11, 'lock': 20.79, 'base_update': 10.84, 'view_udpate': 403.19, 'prop_view': 93.95, 'communication': 14.3}
-Peer11-proxy    | benchmark finished
-Peer12-proxy    | {'get_xid': 4.63, 'lock': 22.76, 'base_update': 516.51, 'view_udpate': 1259.25, 'prop_view': 253.06, 'communication': 12.94}
-Peer12-proxy    | benchmark finished
-Peer14-proxy    | {'get_xid': 4.24, 'lock': 20.49, 'base_update': 10.99, 'view_udpate': 407.22, 'prop_view': 89.56, 'communication': 14.33}
-Peer14-proxy    | benchmark finished
-Peer8-proxy     | {'get_xid': 4.22, 'lock': 23.41, 'base_update': 10.98, 'view_udpate': 566.07, 'prop_view': 116.02, 'communication': 14.46}
-Peer8-proxy     | benchmark finished
-Peer10-proxy    | {'get_xid': 5.78, 'lock': 41.83, 'base_update': 3409.4, 'view_udpate': 345.3, 'prop_view': 567.89, 'communication': 11.64}
-Peer10-proxy    | benchmark finished
-Peer7-proxy     | {'get_xid': 4.78, 'lock': 28.21, 'base_update': 64.97, 'view_udpate': 544.79, 'prop_view': 123.23, 'communication': 14.27}
-Peer7-proxy     | benchmark finished
-Peer13-proxy    | {'get_xid': 4.54, 'lock': 13.93, 'base_update': 9.84, 'view_udpate': 1319.41, 'prop_view': 219.55, 'communication': 10.33}
-Peer13-proxy    | benchmark finished
-Peer4-proxy     | {'get_xid': 4.26, 'lock': 22.99, 'base_update': 20.24, 'view_udpate': 458.97, 'prop_view': 97.36, 'communication': 14.17}
-Peer4-proxy     | benchmark finished
-Peer5-proxy     | {'get_xid': 4.74, 'lock': 33.72, 'base_update': 23.67, 'view_udpate': 1491.03, 'prop_view': 249.7, 'communication': 11.36}
-Peer5-proxy     | benchmark finished
-Peer2-proxy     | {'get_xid': 4.41, 'lock': 30.6, 'base_update': 23.04, 'view_udpate': 870.16, 'prop_view': 155.33, 'communication': 12.84}
-Peer2-proxy     | benchmark finished
-Peer6-proxy     | {'get_xid': 4.11, 'lock': 17.28, 'base_update': 10.79, 'view_udpate': 416.29, 'prop_view': 87.69, 'communication': 12.27}
-Peer6-proxy     | benchmark finished
-Peer9-proxy     | {'get_xid': 4.22, 'lock': 24.53, 'base_update': 11.73, 'view_udpate': 512.07, 'prop_view': 110.62, 'communication': 14.89}
-Peer9-proxy     | benchmark finished
+alliance5-proxy    | {'get_xid': 6.33, 'lock': 63.37, 'base_update': 19.07, 'view_udpate': 69.74, 'prop_view': 28.66, 'communication': 20.93}
+alliance5-proxy    | benchmark finished
+provider1-proxy    | {'get_xid': 9.71, 'lock': 96.92, 'base_update': 13.68, 'view_udpate': 91.14, 'prop_view': 17.86, 'communication': 13.24}
+provider1-proxy    | benchmark finished
+provider6-proxy    | {'get_xid': 12.0, 'lock': 101.7, 'base_update': 27.46, 'view_udpate': 118.06, 'prop_view': 31.5, 'communication': 17.62}
+provider6-proxy    | benchmark finished
+alliance7-proxy    | {'get_xid': 5.9, 'lock': 76.98, 'base_update': 18.64, 'view_udpate': 60.9, 'prop_view': 23.46, 'communication': 18.42}
+alliance7-proxy    | benchmark finished
+provider2-proxy    | {'get_xid': 12.64, 'lock': 103.27, 'base_update': 27.97, 'view_udpate': 119.42, 'prop_view': 32.58, 'communication': 17.98}
+provider2-proxy    | benchmark finished
+alliance4-proxy    | {'get_xid': 5.92, 'lock': 64.08, 'base_update': 18.44, 'view_udpate': 69.49, 'prop_view': 28.64, 'communication': 21.06}
+alliance4-proxy    | benchmark finished
+alliance3-proxy    | {'get_xid': 6.03, 'lock': 64.11, 'base_update': 18.04, 'view_udpate': 71.21, 'prop_view': 28.35, 'communication': 21.07}
+alliance3-proxy    | benchmark finished
+provider3-proxy    | {'get_xid': 12.12, 'lock': 102.58, 'base_update': 27.4, 'view_udpate': 117.42, 'prop_view': 31.85, 'communication': 17.68}
+provider3-proxy    | benchmark finished
+provider8-proxy    | {'get_xid': 9.38, 'lock': 96.47, 'base_update': 12.77, 'view_udpate': 84.27, 'prop_view': 16.61, 'communication': 13.33}
+provider8-proxy    | benchmark finished
+provider5-proxy    | {'get_xid': 12.1, 'lock': 101.24, 'base_update': 27.79, 'view_udpate': 117.91, 'prop_view': 31.79, 'communication': 17.41}
+provider5-proxy    | benchmark finished
+alliance2-proxy    | {'get_xid': 6.03, 'lock': 62.88, 'base_update': 19.28, 'view_udpate': 70.78, 'prop_view': 28.79, 'communication': 21.09}
+alliance2-proxy    | benchmark finished
+alliance1-proxy    | {'get_xid': 5.79, 'lock': 78.73, 'base_update': 18.4, 'view_udpate': 61.02, 'prop_view': 24.16, 'communication': 17.52}
+alliance1-proxy    | benchmark finished
+provider7-proxy    | {'get_xid': 12.26, 'lock': 101.5, 'base_update': 28.59, 'view_udpate': 114.11, 'prop_view': 32.07, 'communication': 18.56}
+provider7-proxy    | benchmark finished
+provider4-proxy    | {'get_xid': 12.17, 'lock': 101.39, 'base_update': 27.3, 'view_udpate': 116.11, 'prop_view': 31.03, 'communication': 17.81}
+provider4-proxy    | benchmark finished
+alliance6-proxy    | {'get_xid': 6.23, 'lock': 64.6, 'base_update': 18.4, 'view_udpate': 70.83, 'prop_view': 28.77, 'communication': 20.88}
+alliance6-proxy    | benchmark finished
 """
 
 result = {}

@@ -34,3 +34,44 @@ for i in range(neighbor_hop):
             next_target_peers = next_target_peers | peerset_for_each_dt
     target_peers = target_peers | next_target_peers
 target_peers.remove(peer_name)
+
+
+class TimestampManagement:
+    def __init__(self):
+        self.duration_time = {'get_xid': 0, 'lock': 0, 'base_update': 0, 'view_udpate': 0, 'prop_view': 0, 'communication': 0}
+        self.data_num = {'get_xid': 0, 'lock': 0, 'base_update': 0, 'view_udpate': 0, 'prop_view': 0, 'communication': 0}
+        
+    def print_timestamps(self, timestamps):
+        res = []
+        for timestamp in timestamps:
+            # short_format = map(lambda time: '{:.2f}'.format(time), timestamp)
+            short_format = map(lambda time: float('{:.2f}'.format(time)), timestamp)
+            res.append(list(short_format))
+        print(res)
+        
+    def add_duration_time(self, time_name, duration_time):
+        self.duration_time[time_name] += duration_time
+        self.data_num[time_name] += 1
+    
+    def add_timestamps(self, timestamps):
+        timestamps = list(reversed(timestamps))
+        # self.print_timestamps(timestamps)
+        for i, timestamp in enumerate(timestamps):
+            self.add_duration_time('get_xid', (timestamp[1]-timestamp[0]) + timestamp[4]-timestamp[3])
+            self.add_duration_time('lock', timestamp[2]-timestamp[1])
+            if i == 0:
+                self.add_duration_time('base_update', timestamp[3]-timestamp[2])
+            else:
+                self.add_duration_time('view_udpate', timestamp[3]-timestamp[2])
+            self.add_duration_time('prop_view', timestamp[5]-timestamp[4])
+            if i != len(timestamps)-1:
+                duration_time = (timestamps[i+1][0]-timestamps[i][5]) + timestamps[i][-1]-timestamps[i+1][-1]
+                self.add_duration_time('communication', duration_time)
+    
+    def get_result(self):
+        result = {'get_xid': 0, 'lock': 0, 'base_update': 0, 'view_udpate': 0, 'prop_view': 0, 'communication': 0}
+        for key in self.duration_time:
+            time = self.duration_time[key] / self.data_num[key]
+            result[key] = float('{:.2f}'.format(time))
+        return result
+timestamp_management = TimestampManagement()

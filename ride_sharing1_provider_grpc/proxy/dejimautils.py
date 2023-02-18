@@ -93,7 +93,7 @@ def prop_request(arg_dict, global_xid, method, max_hop=-1, measure_time=False):
             data["max_hop"] = max_hop
             req = data_pb2.Request(json_str=json.dumps(data))
             # thread = threading.Thread(target=base_request, args=([url, data, results, lock]))
-            args = ([peer_address, service_stub, req, results, lock])
+            args = ([peer_address, service_stub, req, results, lock, timestamps_list])
             thread = threading.Thread(target=base_request, args=args)
             thread_list.append(thread)
     

@@ -9,6 +9,10 @@ class FRSPropagation(object):
         pass
 
     def on_post(self, req, resp):
+        timestamps = []
+        timestamp = []
+        timestamp.append(time.perf_counter())
+        
         time.sleep(config.SLEEP_MS * 0.001)
 
         if req.content_length:
@@ -16,6 +20,7 @@ class FRSPropagation(object):
             params = json.loads(body)
 
         global_xid = params['xid']
+        measure_time = params['measure_time']
         if global_xid in config.tx_dict:
             tx = config.tx_dict[global_xid]
             locked_flag = True
@@ -46,7 +51,7 @@ class FRSPropagation(object):
                     # else:
                     #     for delete in params['delta']["deletions"]:
                     #         tx.cur.execute("SELECT * FROM bt WHERE id={} FOR UPDATE NOWAIT".format(delete['id']))
-                            
+                    timestamp.append(time.perf_counter())
                     if bt == "bt":
                         for delete in params['delta']["deletions"]:
                             tx.cur.execute("SELECT * FROM bt WHERE v={} FOR UPDATE NOWAIT".format(delete['v']))
@@ -55,7 +60,12 @@ class FRSPropagation(object):
                         for delete in params['delta']["deletions"]:
                             tx.cur.execute("SELECT * FROM mt WHERE v={} FOR UPDATE NOWAIT".format(delete['v']))
                             # lock_stmts.append("SELECT * FROM mt WHERE v={} FOR UPDATE NOWAIT".format(delete['v']))
+                    timestamp.append(time.perf_counter())
+            else:
+                timestamp.append(time.perf_counter())
+                timestamp.append(time.perf_counter())
             tx.cur.execute(stmt)
+            timestamp.append(time.perf_counter())
         except Exception as e:
             print(e)
             resp.text = json.dumps({"result": "Nak", "info": e.__class__.__name__})
@@ -65,6 +75,7 @@ class FRSPropagation(object):
             # get local xid
             tx.cur.execute("SELECT txid_current()")
             local_xid, *_ = tx.cur.fetchone()
+            timestamp.append(time.perf_counter())
 
             # propagation
             updated_dt = params['delta']['view'].split('.')[1]
@@ -98,15 +109,24 @@ class FRSPropagation(object):
             resp.text = json.dumps(msg)
             return
 
+        timestamp.append(time.perf_counter())
         if prop_dict != {}:
-            result = dejimautils.prop_request(prop_dict, global_xid, "frs")
+            result = dejimautils.prop_request(prop_dict, global_xid, "frs", measure_time=measure_time)
         else:
             result = "Ack"
+        timestamp.append(time.perf_counter())
 
+        if result == "Ack" and measure_time == True:
+            result = []
+        if isinstance(result, list):
+            timestamps = result
+            timestamps.append(timestamp)
+            result = "Ack"
+        
         if result != "Ack":
             msg = {"result": "Nak"}
         else:
-            msg = {"result": "Ack"}
+            msg = {"result": "Ack", "timestamps": timestamps}
             
         if result == "Ack" and params['insert_delete'] == True:
             dejimautils.update_candidate_list(params['delta'])

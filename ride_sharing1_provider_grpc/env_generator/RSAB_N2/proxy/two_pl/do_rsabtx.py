@@ -115,7 +115,7 @@ def doRSAB_2pl():
         timestamps.append(timestamp)
         timestamps = ((np.array(timestamps)-start_time)*1000).tolist()
         # print(timestamps)
-        print_timestamps(timestamps)
+        # print_timestamps(timestamps)
         result = "Ack"
         
     if result != "Ack":

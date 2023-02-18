@@ -34,36 +34,30 @@ def get_stmt_for_load(start_id, record_num, step):
     stmt = stmt + ",".join(records)
     return stmt
 
-def get_workload_for_provider(updated_data_list):
+def get_workload_for_provider():
     stmts = []
-    t_type = 'transaction'
-    
     if random.randint(1, 100) <= 20:
-        V_list = random.sample(config.candidate_record_id_list, 10)
+        V_list = random.sample(config.candidate_record_id_list, 3)
         for V in V_list:
             stmts.append("SELECT * WHERE V={}".format(V))
     else:
-        V_list = random.sample(config.candidate_record_id_list, 10)
+        V_list = random.sample(config.candidate_record_id_list, 3)
         for V in V_list:
             L = random.randint(1, 9999)
             stmts.append("UPDATE bt SET L={}, R=0 WHERE V={}".format(L, V))
-        
-    return stmts, t_type
+    return stmts
     
-def get_workload_for_alliance(updated_data_list):
+def get_workload_for_alliance():
     stmts = []
-    t_type = 'transaction'
-    
     if random.randint(1, 100) <= 20:
-        V_list = random.sample(config.candidate_record_id_list, 10)
+        V_list = random.sample(config.candidate_record_id_list, 3)
         for V in V_list:
             stmts.append("SELECT * WHERE V={}".format(V))
     else:
         D = random.randint(1, 9999)
         V = random.choice(config.candidate_record_id_list)
         stmts.append("UPDATE mt SET D={}, R=1 WHERE V={}".format(D, V))
-        
-    return stmts, t_type
+    return stmts
 
 # prepare zipf generator
 class zipfGenerator:

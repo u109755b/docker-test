@@ -37,7 +37,6 @@ def get_stmt_for_load(start_id, record_num, step, max_hop):
 
 def get_workload_for_rsab():
     stmts = []
-    print(len(config.candidate_record_id_list))
     
     r = random.randint(1, 100)
     if 0 < r and r <= 70:

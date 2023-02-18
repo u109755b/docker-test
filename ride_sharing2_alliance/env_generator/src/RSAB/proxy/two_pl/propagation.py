@@ -9,6 +9,10 @@ class TPLPropagation(object):
         pass
 
     def on_post(self, req, resp):
+        timestamps = []
+        timestamp = []
+        timestamp.append(time.perf_counter())
+        
         time.sleep(config.SLEEP_MS * 0.001)
 
         if req.content_length:
@@ -18,6 +22,8 @@ class TPLPropagation(object):
         global_xid = params['xid']
         tx = Tx(global_xid)
         config.tx_dict[global_xid] = tx
+        
+        measure_time = params['measure_time']
 
         if tx.propagation_cnt == 0:
             tx.propagation_cnt += 1
@@ -58,11 +64,13 @@ class TPLPropagation(object):
 
         # update dejima table and propagate to base tables
         try:
+            timestamp.append(time.perf_counter())
             for lock_stmt in lock_stmts:
                 tx.cur.execute(lock_stmt)
                 # print(lock_stmt)
                 # print("execute lock")
             # print(stmt)
+            timestamp.append(time.perf_counter())
             tx.cur.execute(stmt)
             # print("execute query")
         except Exception as e:
@@ -70,10 +78,12 @@ class TPLPropagation(object):
             resp.text = json.dumps({"result": "Nak", "info": e.__class__.__name__})
             return
 
+        timestamp.append(time.perf_counter())
         try: 
             # get local xid
             tx.cur.execute("SELECT txid_current()")
             local_xid, *_ = tx.cur.fetchone()
+            timestamp.append(time.perf_counter())
 
             # propagation
             updated_dt = params['delta']['view'].split('.')[1]
@@ -109,16 +119,24 @@ class TPLPropagation(object):
             resp.text = json.dumps(msg)
             return
 
+        timestamp.append(time.perf_counter())
         if prop_dict != {}:
-            result = dejimautils.prop_request(prop_dict, global_xid, "2pl")
+            result = dejimautils.prop_request(prop_dict, global_xid, "2pl", measure_time=measure_time)
         else:
             result = "Ack"
-
+        timestamp.append(time.perf_counter())
+        
+        if result == "Ack" and measure_time == True:
+            result = []
+        if isinstance(result, list):
+            timestamps = result
+            timestamps.append(timestamp)
+            result = "Ack"
+        
         if result != "Ack":
-            # print("case 3")
             msg = {"result": "Nak"}
         else:
-            msg = {"result": "Ack"}
+            msg = {"result": "Ack", "timestamps": timestamps}
 
         resp.text = json.dumps(msg)
         return

@@ -4,24 +4,27 @@ import config
 import rsabutils
 import json
 import sqlparse
-        
+import time
+import numpy as np
 
-def doRSAB_PROVIDER_2pl(is_updated):
+def doRSAB_PROVIDER_2pl():
+    measure_time = True
+    timestamps = []
+    timestamp = []
+    start_time = time.perf_counter()
+    timestamp.append(start_time)
+    
     # create new tx
     global_xid = dejimautils.get_unique_id()
     tx = Tx(global_xid)
     config.tx_dict[global_xid] = tx
     
-    # get updated data
-    uv_result = []
-    
     # workload
-    stmts, t_type = rsabutils.get_workload_for_provider(uv_result)
-    # print(stmts, t_type)
+    stmts = rsabutils.get_workload_for_provider()
     if stmts == []:
         tx.abort()
         del config.tx_dict[global_xid]
-        return "miss", t_type
+        return "miss"
 
     lock_stmts = []
     for stmt in stmts:
@@ -33,28 +36,33 @@ def doRSAB_PROVIDER_2pl(is_updated):
     try:
         miss_flag = True
         # lock
+        timestamp.append(time.perf_counter())
         for stmt in lock_stmts:
             tx.cur.execute(stmt)            
             if tx.cur.fetchone() != None:
                 miss_flag = False 
         # execution
+        timestamp.append(time.perf_counter())
         for stmt in stmts:
             tx.cur.execute(stmt)
     except:
         # abort during local lock
         tx.abort()
         del config.tx_dict[global_xid]
-        return False, t_type
+        return False
 
     if miss_flag:
         tx.abort()
         del config.tx_dict[global_xid]
-        return "miss", t_type
-
+        return "miss"
+    
+    timestamp.append(time.perf_counter())
     # propagation
     try:
         tx.cur.execute("SELECT txid_current()")
         local_xid, *_ = tx.cur.fetchone()
+        timestamp.append(time.perf_counter())
+        
         prop_dict = {}
         for dt in config.dt_list:
             target_peers = list(config.dejima_config_dict['dejima_table'][dt])
@@ -80,11 +88,23 @@ def doRSAB_PROVIDER_2pl(is_updated):
         print('error during BIRDS: ', e)
         tx.abort()
         del config.tx_dict[global_xid]
-        return False, t_type
+        return False
     
+    timestamp.append(time.perf_counter())
     if prop_dict != {}:
-        result = dejimautils.prop_request(prop_dict, global_xid, "2pl")
+        result = dejimautils.prop_request(prop_dict, global_xid, "2pl", measure_time=measure_time)
     else:
+        result = "Ack"
+    timestamp.append(time.perf_counter())
+    
+    if result == "Ack" and measure_time == True:
+        result = []
+    if isinstance(result, list):
+        timestamps = result
+        timestamps.append(timestamp)
+        timestamps = ((np.array(timestamps)-start_time)*1000).tolist()
+        # print(timestamps)
+        config.timestamp_management.add_timestamps(timestamps)
         result = "Ack"
 
     if result != "Ack":
@@ -101,4 +121,4 @@ def doRSAB_PROVIDER_2pl(is_updated):
         dejimautils.termination_request("abort", global_xid, "2pl")
     del config.tx_dict[global_xid]
 
-    return commit, t_type
+    return commit

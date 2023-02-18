@@ -19,6 +19,7 @@ class RSAB(object):
                 return
         bench_time = int(params['bench_time'])
         METHOD = params['method']
+        # config.target_peers = config.create_target_peers(neighbor_hop=30)
             
         # benchmark
         commit_num = 0

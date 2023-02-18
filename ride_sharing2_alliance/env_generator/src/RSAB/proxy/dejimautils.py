@@ -57,9 +57,10 @@ def release_lock_request(global_xid):
     else:
         return "Nak"
 
-def prop_request(arg_dict, global_xid, method, insert_delete=False):
+def prop_request(arg_dict, global_xid, method, insert_delete=False, measure_time=False):
     thread_list = []
     results = []
+    timestamps_list = []
     lock = threading.Lock()
     for dt in arg_dict.keys():
         for peer in arg_dict[dt]['peers']:
@@ -68,10 +69,11 @@ def prop_request(arg_dict, global_xid, method, insert_delete=False):
                 "dejima_table": dt,
                 "delta": arg_dict[dt]['delta'],
                 "parent_peer": config.peer_name,
-                "insert_delete": insert_delete
+                "insert_delete": insert_delete,
+                "measure_time": measure_time
             }
             url = "http://{}/{}/_propagate".format(config.dejima_config_dict['peer_address'][peer], method)
-            thread = threading.Thread(target=base_request, args=([url, data, results, lock]))
+            thread = threading.Thread(target=base_request, args=([url, data, results, lock, timestamps_list]))
             thread_list.append(thread)
     
     for thread in thread_list:
@@ -81,6 +83,8 @@ def prop_request(arg_dict, global_xid, method, insert_delete=False):
         thread.join()
     
     if all(results):
+        if len(timestamps_list) != 0 and measure_time == True:
+            return timestamps_list[-1]
         return "Ack"
     else:
         return "Nak"
@@ -110,15 +114,18 @@ def termination_request(result, current_xid, method):
     else:
         return "Nak"
 
-def base_request(url, data, results, lock):
+def base_request(url, data, results, lock, timestamps_list=[]):
     try:
         headers = {"Content-Type": "application/json"}
         res = requests.post(url, json.dumps(data), headers=headers)
+        res_dic = res.json()
         with lock:
-            if res.json()['result'] == "Ack":
+            if res_dic['result'] == "Ack":
                 results.append(True)
             else:
                 results.append(False)
+            if 'timestamps' in res_dic:
+                timestamps_list.append(res_dic['timestamps'])
     except Exception as e:
         print(e)
         results.append(False)
