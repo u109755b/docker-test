@@ -24,7 +24,7 @@ if peer_name[0] == 'p':
     sorted_al_list = sorted(dejima_config_dict['alliance_list'][peer_name])
 
 # neighbor peers
-neighbor_hop = 20
+neighbor_hop = 1
 target_peers = {peer_name}
 for i in range(neighbor_hop):
     next_target_peers = set()

@@ -13,13 +13,13 @@ if len(sys.argv) != 3:
     exit()
     
 N = sys.argv[1]
-if not N.isdigit():
+if not N.isdigit() or int(N) < 1:
     print("Invalid argument.")
     exit()
 N = int(N)
 
 M = sys.argv[2]
-if not M.isdigit():
+if not M.isdigit() or int(M) < 1:
     print("Invalid argument.")
     exit()
 M = int(M)
@@ -79,12 +79,15 @@ for j in range(1,M+1):
     config['peer_address']['provider{}'.format(j)] = 'provider{}-proxy:8000'.format(j)
     # connect nodes
     al_list = []
-    for i in range(2):
+    n = random.randint(1, N)
+    al_idx_list = list(range(1, N+1))
+    target_node_list = random.sample(al_idx_list, n)
+    for target_node in target_node_list:
         cond = random.randint(0, cond_n - 1)
         # target_node = random.randint(1,i-1)
-        target_node = j+i-1
-        if target_node < 1 or N < target_node:
-            continue
+        # target_node = i
+        # if target_node < 1 or N < target_node:
+        #     continue
         G.edge('P{}'.format(j), 'A{}'.format(target_node), color=colors[cond], style='bold')
         dt_name = 'd{}_{}'.format(target_node, j)
         config['dejima_table'][dt_name] = ['provider{}'.format(j), 'alliance{}'.format(target_node)]

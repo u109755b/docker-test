@@ -25,4 +25,6 @@ dic['detect_update'] = {'commit': 0, 'abort': 0, 'miss': 0}
 dic['transaction']['abort'] += 1
 # print(dic)
 
-print("{}".format(1, 2))
+l = list(range(1, 10+1))
+l2 = random.sample(l, 3)
+print(l2)
