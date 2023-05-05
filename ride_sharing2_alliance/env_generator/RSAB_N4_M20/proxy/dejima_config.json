@@ -1,0 +1,376 @@
+{
+  "dejima_table": {
+    "d3_1": [
+      "provider1",
+      "alliance3"
+    ],
+    "d1_1": [
+      "provider1",
+      "alliance1"
+    ],
+    "d4_1": [
+      "provider1",
+      "alliance4"
+    ],
+    "d2_1": [
+      "provider1",
+      "alliance2"
+    ],
+    "d4_2": [
+      "provider2",
+      "alliance4"
+    ],
+    "d2_2": [
+      "provider2",
+      "alliance2"
+    ],
+    "d2_3": [
+      "provider3",
+      "alliance2"
+    ],
+    "d1_4": [
+      "provider4",
+      "alliance1"
+    ],
+    "d4_5": [
+      "provider5",
+      "alliance4"
+    ],
+    "d3_6": [
+      "provider6",
+      "alliance3"
+    ],
+    "d2_6": [
+      "provider6",
+      "alliance2"
+    ],
+    "d4_6": [
+      "provider6",
+      "alliance4"
+    ],
+    "d1_6": [
+      "provider6",
+      "alliance1"
+    ],
+    "d3_7": [
+      "provider7",
+      "alliance3"
+    ],
+    "d4_7": [
+      "provider7",
+      "alliance4"
+    ],
+    "d2_7": [
+      "provider7",
+      "alliance2"
+    ],
+    "d4_8": [
+      "provider8",
+      "alliance4"
+    ],
+    "d2_8": [
+      "provider8",
+      "alliance2"
+    ],
+    "d3_8": [
+      "provider8",
+      "alliance3"
+    ],
+    "d1_8": [
+      "provider8",
+      "alliance1"
+    ],
+    "d1_9": [
+      "provider9",
+      "alliance1"
+    ],
+    "d1_10": [
+      "provider10",
+      "alliance1"
+    ],
+    "d2_10": [
+      "provider10",
+      "alliance2"
+    ],
+    "d4_10": [
+      "provider10",
+      "alliance4"
+    ],
+    "d3_10": [
+      "provider10",
+      "alliance3"
+    ],
+    "d4_11": [
+      "provider11",
+      "alliance4"
+    ],
+    "d1_11": [
+      "provider11",
+      "alliance1"
+    ],
+    "d3_11": [
+      "provider11",
+      "alliance3"
+    ],
+    "d2_12": [
+      "provider12",
+      "alliance2"
+    ],
+    "d3_13": [
+      "provider13",
+      "alliance3"
+    ],
+    "d2_13": [
+      "provider13",
+      "alliance2"
+    ],
+    "d3_14": [
+      "provider14",
+      "alliance3"
+    ],
+    "d4_15": [
+      "provider15",
+      "alliance4"
+    ],
+    "d2_15": [
+      "provider15",
+      "alliance2"
+    ],
+    "d2_16": [
+      "provider16",
+      "alliance2"
+    ],
+    "d2_17": [
+      "provider17",
+      "alliance2"
+    ],
+    "d1_17": [
+      "provider17",
+      "alliance1"
+    ],
+    "d3_17": [
+      "provider17",
+      "alliance3"
+    ],
+    "d4_17": [
+      "provider17",
+      "alliance4"
+    ],
+    "d3_18": [
+      "provider18",
+      "alliance3"
+    ],
+    "d4_18": [
+      "provider18",
+      "alliance4"
+    ],
+    "d1_19": [
+      "provider19",
+      "alliance1"
+    ],
+    "d2_19": [
+      "provider19",
+      "alliance2"
+    ],
+    "d2_20": [
+      "provider20",
+      "alliance2"
+    ],
+    "d4_20": [
+      "provider20",
+      "alliance4"
+    ],
+    "d1_20": [
+      "provider20",
+      "alliance1"
+    ]
+  },
+  "base_table": {
+    "alliance1": [
+      "mt"
+    ],
+    "alliance2": [
+      "mt"
+    ],
+    "alliance3": [
+      "mt"
+    ],
+    "alliance4": [
+      "mt"
+    ],
+    "provider1": [
+      "bt"
+    ],
+    "provider2": [
+      "bt"
+    ],
+    "provider3": [
+      "bt"
+    ],
+    "provider4": [
+      "bt"
+    ],
+    "provider5": [
+      "bt"
+    ],
+    "provider6": [
+      "bt"
+    ],
+    "provider7": [
+      "bt"
+    ],
+    "provider8": [
+      "bt"
+    ],
+    "provider9": [
+      "bt"
+    ],
+    "provider10": [
+      "bt"
+    ],
+    "provider11": [
+      "bt"
+    ],
+    "provider12": [
+      "bt"
+    ],
+    "provider13": [
+      "bt"
+    ],
+    "provider14": [
+      "bt"
+    ],
+    "provider15": [
+      "bt"
+    ],
+    "provider16": [
+      "bt"
+    ],
+    "provider17": [
+      "bt"
+    ],
+    "provider18": [
+      "bt"
+    ],
+    "provider19": [
+      "bt"
+    ],
+    "provider20": [
+      "bt"
+    ]
+  },
+  "alliance_list": {
+    "provider1": [
+      "AL3",
+      "AL1",
+      "AL4",
+      "AL2"
+    ],
+    "provider2": [
+      "AL4",
+      "AL2"
+    ],
+    "provider3": [
+      "AL2"
+    ],
+    "provider4": [
+      "AL1"
+    ],
+    "provider5": [
+      "AL4"
+    ],
+    "provider6": [
+      "AL3",
+      "AL2",
+      "AL4",
+      "AL1"
+    ],
+    "provider7": [
+      "AL3",
+      "AL4",
+      "AL2"
+    ],
+    "provider8": [
+      "AL4",
+      "AL2",
+      "AL3",
+      "AL1"
+    ],
+    "provider9": [
+      "AL1"
+    ],
+    "provider10": [
+      "AL1",
+      "AL2",
+      "AL4",
+      "AL3"
+    ],
+    "provider11": [
+      "AL4",
+      "AL1",
+      "AL3"
+    ],
+    "provider12": [
+      "AL2"
+    ],
+    "provider13": [
+      "AL3",
+      "AL2"
+    ],
+    "provider14": [
+      "AL3"
+    ],
+    "provider15": [
+      "AL4",
+      "AL2"
+    ],
+    "provider16": [
+      "AL2"
+    ],
+    "provider17": [
+      "AL2",
+      "AL1",
+      "AL3",
+      "AL4"
+    ],
+    "provider18": [
+      "AL3",
+      "AL4"
+    ],
+    "provider19": [
+      "AL1",
+      "AL2"
+    ],
+    "provider20": [
+      "AL2",
+      "AL4",
+      "AL1"
+    ]
+  },
+  "peer_address": {
+    "alliance1": "alliance1-proxy:8000",
+    "alliance2": "alliance2-proxy:8000",
+    "alliance3": "alliance3-proxy:8000",
+    "alliance4": "alliance4-proxy:8000",
+    "provider1": "provider1-proxy:8000",
+    "provider2": "provider2-proxy:8000",
+    "provider3": "provider3-proxy:8000",
+    "provider4": "provider4-proxy:8000",
+    "provider5": "provider5-proxy:8000",
+    "provider6": "provider6-proxy:8000",
+    "provider7": "provider7-proxy:8000",
+    "provider8": "provider8-proxy:8000",
+    "provider9": "provider9-proxy:8000",
+    "provider10": "provider10-proxy:8000",
+    "provider11": "provider11-proxy:8000",
+    "provider12": "provider12-proxy:8000",
+    "provider13": "provider13-proxy:8000",
+    "provider14": "provider14-proxy:8000",
+    "provider15": "provider15-proxy:8000",
+    "provider16": "provider16-proxy:8000",
+    "provider17": "provider17-proxy:8000",
+    "provider18": "provider18-proxy:8000",
+    "provider19": "provider19-proxy:8000",
+    "provider20": "provider20-proxy:8000"
+  }
+}
