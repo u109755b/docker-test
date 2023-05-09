@@ -37,11 +37,11 @@ def get_stmt_for_load(start_id, record_num, step):
 def get_workload_for_provider():
     stmts = []
     if random.randint(1, 100) <= 20:
-        V_list = random.sample(config.candidate_record_id_list, 3)
+        V_list = random.sample(config.candidate_record_id_list, 1)
         for V in V_list:
             stmts.append("SELECT * WHERE V={}".format(V))
     else:
-        V_list = random.sample(config.candidate_record_id_list, 3)
+        V_list = random.sample(config.candidate_record_id_list, 1)
         for V in V_list:
             L = random.randint(1, 9999)
             stmts.append("UPDATE bt SET L={}, R=0 WHERE V={}".format(L, V))
@@ -50,7 +50,7 @@ def get_workload_for_provider():
 def get_workload_for_alliance():
     stmts = []
     if random.randint(1, 100) <= 20:
-        V_list = random.sample(config.candidate_record_id_list, 3)
+        V_list = random.sample(config.candidate_record_id_list, 1)
         for V in V_list:
             stmts.append("SELECT * WHERE V={}".format(V))
     else:
