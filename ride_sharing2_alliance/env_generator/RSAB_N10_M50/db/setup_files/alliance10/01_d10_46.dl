@@ -1,0 +1,10 @@
+% schema:
+source mt('V':int, 'L':int, 'D':int, 'R':int, 'P':int, 'LINEAGE':string).
+view d10_46('V':int, 'L':int, 'D':int, 'R':int, 'LINEAGE':string).
+
+% view definition
+d10_46(V,L,D,R,LINEAGE) :- mt(V,L,D,R,P,LINEAGE), P=46.
+
+% rules for update strategy:
+-mt(V,L,D,R,P,LINEAGE) :- mt(V,L,D,R,P,LINEAGE), NOT d10_46(V,L,D,R,LINEAGE), P=46.
++mt(V,L,D,R,P,LINEAGE) :- NOT mt(V,L,D,R,P,LINEAGE), d10_46(V,L,D,R,LINEAGE), P=46.

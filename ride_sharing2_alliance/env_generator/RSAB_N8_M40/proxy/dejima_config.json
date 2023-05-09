@@ -1,0 +1,1112 @@
+{
+  "dejima_table": {
+    "d3_1": [
+      "provider1",
+      "alliance3"
+    ],
+    "d1_1": [
+      "provider1",
+      "alliance1"
+    ],
+    "d4_1": [
+      "provider1",
+      "alliance4"
+    ],
+    "d6_1": [
+      "provider1",
+      "alliance6"
+    ],
+    "d8_1": [
+      "provider1",
+      "alliance8"
+    ],
+    "d2_1": [
+      "provider1",
+      "alliance2"
+    ],
+    "d7_1": [
+      "provider1",
+      "alliance7"
+    ],
+    "d5_1": [
+      "provider1",
+      "alliance5"
+    ],
+    "d4_2": [
+      "provider2",
+      "alliance4"
+    ],
+    "d1_2": [
+      "provider2",
+      "alliance1"
+    ],
+    "d8_2": [
+      "provider2",
+      "alliance8"
+    ],
+    "d7_2": [
+      "provider2",
+      "alliance7"
+    ],
+    "d6_2": [
+      "provider2",
+      "alliance6"
+    ],
+    "d5_3": [
+      "provider3",
+      "alliance5"
+    ],
+    "d3_3": [
+      "provider3",
+      "alliance3"
+    ],
+    "d2_3": [
+      "provider3",
+      "alliance2"
+    ],
+    "d6_3": [
+      "provider3",
+      "alliance6"
+    ],
+    "d7_3": [
+      "provider3",
+      "alliance7"
+    ],
+    "d8_4": [
+      "provider4",
+      "alliance8"
+    ],
+    "d5_4": [
+      "provider4",
+      "alliance5"
+    ],
+    "d4_4": [
+      "provider4",
+      "alliance4"
+    ],
+    "d2_4": [
+      "provider4",
+      "alliance2"
+    ],
+    "d6_4": [
+      "provider4",
+      "alliance6"
+    ],
+    "d7_4": [
+      "provider4",
+      "alliance7"
+    ],
+    "d1_4": [
+      "provider4",
+      "alliance1"
+    ],
+    "d3_4": [
+      "provider4",
+      "alliance3"
+    ],
+    "d2_5": [
+      "provider5",
+      "alliance2"
+    ],
+    "d5_6": [
+      "provider6",
+      "alliance5"
+    ],
+    "d6_6": [
+      "provider6",
+      "alliance6"
+    ],
+    "d2_7": [
+      "provider7",
+      "alliance2"
+    ],
+    "d1_8": [
+      "provider8",
+      "alliance1"
+    ],
+    "d6_8": [
+      "provider8",
+      "alliance6"
+    ],
+    "d6_9": [
+      "provider9",
+      "alliance6"
+    ],
+    "d4_10": [
+      "provider10",
+      "alliance4"
+    ],
+    "d3_10": [
+      "provider10",
+      "alliance3"
+    ],
+    "d2_10": [
+      "provider10",
+      "alliance2"
+    ],
+    "d6_10": [
+      "provider10",
+      "alliance6"
+    ],
+    "d1_11": [
+      "provider11",
+      "alliance1"
+    ],
+    "d2_11": [
+      "provider11",
+      "alliance2"
+    ],
+    "d8_11": [
+      "provider11",
+      "alliance8"
+    ],
+    "d6_12": [
+      "provider12",
+      "alliance6"
+    ],
+    "d4_12": [
+      "provider12",
+      "alliance4"
+    ],
+    "d1_12": [
+      "provider12",
+      "alliance1"
+    ],
+    "d8_12": [
+      "provider12",
+      "alliance8"
+    ],
+    "d3_12": [
+      "provider12",
+      "alliance3"
+    ],
+    "d2_13": [
+      "provider13",
+      "alliance2"
+    ],
+    "d4_14": [
+      "provider14",
+      "alliance4"
+    ],
+    "d2_14": [
+      "provider14",
+      "alliance2"
+    ],
+    "d3_14": [
+      "provider14",
+      "alliance3"
+    ],
+    "d1_14": [
+      "provider14",
+      "alliance1"
+    ],
+    "d7_14": [
+      "provider14",
+      "alliance7"
+    ],
+    "d8_14": [
+      "provider14",
+      "alliance8"
+    ],
+    "d6_14": [
+      "provider14",
+      "alliance6"
+    ],
+    "d5_14": [
+      "provider14",
+      "alliance5"
+    ],
+    "d3_15": [
+      "provider15",
+      "alliance3"
+    ],
+    "d5_15": [
+      "provider15",
+      "alliance5"
+    ],
+    "d6_15": [
+      "provider15",
+      "alliance6"
+    ],
+    "d8_15": [
+      "provider15",
+      "alliance8"
+    ],
+    "d2_15": [
+      "provider15",
+      "alliance2"
+    ],
+    "d6_16": [
+      "provider16",
+      "alliance6"
+    ],
+    "d8_16": [
+      "provider16",
+      "alliance8"
+    ],
+    "d2_16": [
+      "provider16",
+      "alliance2"
+    ],
+    "d3_16": [
+      "provider16",
+      "alliance3"
+    ],
+    "d5_16": [
+      "provider16",
+      "alliance5"
+    ],
+    "d4_16": [
+      "provider16",
+      "alliance4"
+    ],
+    "d5_17": [
+      "provider17",
+      "alliance5"
+    ],
+    "d8_17": [
+      "provider17",
+      "alliance8"
+    ],
+    "d3_17": [
+      "provider17",
+      "alliance3"
+    ],
+    "d2_17": [
+      "provider17",
+      "alliance2"
+    ],
+    "d7_17": [
+      "provider17",
+      "alliance7"
+    ],
+    "d4_17": [
+      "provider17",
+      "alliance4"
+    ],
+    "d1_17": [
+      "provider17",
+      "alliance1"
+    ],
+    "d6_18": [
+      "provider18",
+      "alliance6"
+    ],
+    "d7_18": [
+      "provider18",
+      "alliance7"
+    ],
+    "d2_18": [
+      "provider18",
+      "alliance2"
+    ],
+    "d1_18": [
+      "provider18",
+      "alliance1"
+    ],
+    "d5_18": [
+      "provider18",
+      "alliance5"
+    ],
+    "d4_19": [
+      "provider19",
+      "alliance4"
+    ],
+    "d6_19": [
+      "provider19",
+      "alliance6"
+    ],
+    "d8_19": [
+      "provider19",
+      "alliance8"
+    ],
+    "d2_19": [
+      "provider19",
+      "alliance2"
+    ],
+    "d7_19": [
+      "provider19",
+      "alliance7"
+    ],
+    "d8_20": [
+      "provider20",
+      "alliance8"
+    ],
+    "d2_20": [
+      "provider20",
+      "alliance2"
+    ],
+    "d4_20": [
+      "provider20",
+      "alliance4"
+    ],
+    "d1_20": [
+      "provider20",
+      "alliance1"
+    ],
+    "d3_20": [
+      "provider20",
+      "alliance3"
+    ],
+    "d7_20": [
+      "provider20",
+      "alliance7"
+    ],
+    "d6_20": [
+      "provider20",
+      "alliance6"
+    ],
+    "d5_20": [
+      "provider20",
+      "alliance5"
+    ],
+    "d5_21": [
+      "provider21",
+      "alliance5"
+    ],
+    "d4_21": [
+      "provider21",
+      "alliance4"
+    ],
+    "d3_21": [
+      "provider21",
+      "alliance3"
+    ],
+    "d2_21": [
+      "provider21",
+      "alliance2"
+    ],
+    "d7_21": [
+      "provider21",
+      "alliance7"
+    ],
+    "d4_22": [
+      "provider22",
+      "alliance4"
+    ],
+    "d5_23": [
+      "provider23",
+      "alliance5"
+    ],
+    "d2_24": [
+      "provider24",
+      "alliance2"
+    ],
+    "d3_24": [
+      "provider24",
+      "alliance3"
+    ],
+    "d8_24": [
+      "provider24",
+      "alliance8"
+    ],
+    "d5_24": [
+      "provider24",
+      "alliance5"
+    ],
+    "d7_24": [
+      "provider24",
+      "alliance7"
+    ],
+    "d3_25": [
+      "provider25",
+      "alliance3"
+    ],
+    "d1_25": [
+      "provider25",
+      "alliance1"
+    ],
+    "d2_25": [
+      "provider25",
+      "alliance2"
+    ],
+    "d5_25": [
+      "provider25",
+      "alliance5"
+    ],
+    "d4_25": [
+      "provider25",
+      "alliance4"
+    ],
+    "d7_25": [
+      "provider25",
+      "alliance7"
+    ],
+    "d8_25": [
+      "provider25",
+      "alliance8"
+    ],
+    "d6_25": [
+      "provider25",
+      "alliance6"
+    ],
+    "d5_26": [
+      "provider26",
+      "alliance5"
+    ],
+    "d7_27": [
+      "provider27",
+      "alliance7"
+    ],
+    "d6_28": [
+      "provider28",
+      "alliance6"
+    ],
+    "d2_29": [
+      "provider29",
+      "alliance2"
+    ],
+    "d1_29": [
+      "provider29",
+      "alliance1"
+    ],
+    "d5_29": [
+      "provider29",
+      "alliance5"
+    ],
+    "d6_29": [
+      "provider29",
+      "alliance6"
+    ],
+    "d4_29": [
+      "provider29",
+      "alliance4"
+    ],
+    "d7_29": [
+      "provider29",
+      "alliance7"
+    ],
+    "d3_29": [
+      "provider29",
+      "alliance3"
+    ],
+    "d3_30": [
+      "provider30",
+      "alliance3"
+    ],
+    "d7_30": [
+      "provider30",
+      "alliance7"
+    ],
+    "d6_31": [
+      "provider31",
+      "alliance6"
+    ],
+    "d3_32": [
+      "provider32",
+      "alliance3"
+    ],
+    "d1_32": [
+      "provider32",
+      "alliance1"
+    ],
+    "d7_32": [
+      "provider32",
+      "alliance7"
+    ],
+    "d8_33": [
+      "provider33",
+      "alliance8"
+    ],
+    "d3_33": [
+      "provider33",
+      "alliance3"
+    ],
+    "d7_33": [
+      "provider33",
+      "alliance7"
+    ],
+    "d1_33": [
+      "provider33",
+      "alliance1"
+    ],
+    "d5_33": [
+      "provider33",
+      "alliance5"
+    ],
+    "d3_34": [
+      "provider34",
+      "alliance3"
+    ],
+    "d1_34": [
+      "provider34",
+      "alliance1"
+    ],
+    "d5_34": [
+      "provider34",
+      "alliance5"
+    ],
+    "d4_34": [
+      "provider34",
+      "alliance4"
+    ],
+    "d6_34": [
+      "provider34",
+      "alliance6"
+    ],
+    "d7_34": [
+      "provider34",
+      "alliance7"
+    ],
+    "d8_34": [
+      "provider34",
+      "alliance8"
+    ],
+    "d6_35": [
+      "provider35",
+      "alliance6"
+    ],
+    "d3_35": [
+      "provider35",
+      "alliance3"
+    ],
+    "d4_35": [
+      "provider35",
+      "alliance4"
+    ],
+    "d1_35": [
+      "provider35",
+      "alliance1"
+    ],
+    "d8_35": [
+      "provider35",
+      "alliance8"
+    ],
+    "d7_35": [
+      "provider35",
+      "alliance7"
+    ],
+    "d5_35": [
+      "provider35",
+      "alliance5"
+    ],
+    "d7_36": [
+      "provider36",
+      "alliance7"
+    ],
+    "d6_36": [
+      "provider36",
+      "alliance6"
+    ],
+    "d3_36": [
+      "provider36",
+      "alliance3"
+    ],
+    "d4_36": [
+      "provider36",
+      "alliance4"
+    ],
+    "d1_36": [
+      "provider36",
+      "alliance1"
+    ],
+    "d8_36": [
+      "provider36",
+      "alliance8"
+    ],
+    "d7_37": [
+      "provider37",
+      "alliance7"
+    ],
+    "d5_37": [
+      "provider37",
+      "alliance5"
+    ],
+    "d8_37": [
+      "provider37",
+      "alliance8"
+    ],
+    "d2_37": [
+      "provider37",
+      "alliance2"
+    ],
+    "d3_37": [
+      "provider37",
+      "alliance3"
+    ],
+    "d2_38": [
+      "provider38",
+      "alliance2"
+    ],
+    "d8_38": [
+      "provider38",
+      "alliance8"
+    ],
+    "d6_38": [
+      "provider38",
+      "alliance6"
+    ],
+    "d7_38": [
+      "provider38",
+      "alliance7"
+    ],
+    "d5_39": [
+      "provider39",
+      "alliance5"
+    ],
+    "d8_39": [
+      "provider39",
+      "alliance8"
+    ],
+    "d4_40": [
+      "provider40",
+      "alliance4"
+    ],
+    "d6_40": [
+      "provider40",
+      "alliance6"
+    ],
+    "d7_40": [
+      "provider40",
+      "alliance7"
+    ],
+    "d2_40": [
+      "provider40",
+      "alliance2"
+    ]
+  },
+  "base_table": {
+    "alliance1": [
+      "mt"
+    ],
+    "alliance2": [
+      "mt"
+    ],
+    "alliance3": [
+      "mt"
+    ],
+    "alliance4": [
+      "mt"
+    ],
+    "alliance5": [
+      "mt"
+    ],
+    "alliance6": [
+      "mt"
+    ],
+    "alliance7": [
+      "mt"
+    ],
+    "alliance8": [
+      "mt"
+    ],
+    "provider1": [
+      "bt"
+    ],
+    "provider2": [
+      "bt"
+    ],
+    "provider3": [
+      "bt"
+    ],
+    "provider4": [
+      "bt"
+    ],
+    "provider5": [
+      "bt"
+    ],
+    "provider6": [
+      "bt"
+    ],
+    "provider7": [
+      "bt"
+    ],
+    "provider8": [
+      "bt"
+    ],
+    "provider9": [
+      "bt"
+    ],
+    "provider10": [
+      "bt"
+    ],
+    "provider11": [
+      "bt"
+    ],
+    "provider12": [
+      "bt"
+    ],
+    "provider13": [
+      "bt"
+    ],
+    "provider14": [
+      "bt"
+    ],
+    "provider15": [
+      "bt"
+    ],
+    "provider16": [
+      "bt"
+    ],
+    "provider17": [
+      "bt"
+    ],
+    "provider18": [
+      "bt"
+    ],
+    "provider19": [
+      "bt"
+    ],
+    "provider20": [
+      "bt"
+    ],
+    "provider21": [
+      "bt"
+    ],
+    "provider22": [
+      "bt"
+    ],
+    "provider23": [
+      "bt"
+    ],
+    "provider24": [
+      "bt"
+    ],
+    "provider25": [
+      "bt"
+    ],
+    "provider26": [
+      "bt"
+    ],
+    "provider27": [
+      "bt"
+    ],
+    "provider28": [
+      "bt"
+    ],
+    "provider29": [
+      "bt"
+    ],
+    "provider30": [
+      "bt"
+    ],
+    "provider31": [
+      "bt"
+    ],
+    "provider32": [
+      "bt"
+    ],
+    "provider33": [
+      "bt"
+    ],
+    "provider34": [
+      "bt"
+    ],
+    "provider35": [
+      "bt"
+    ],
+    "provider36": [
+      "bt"
+    ],
+    "provider37": [
+      "bt"
+    ],
+    "provider38": [
+      "bt"
+    ],
+    "provider39": [
+      "bt"
+    ],
+    "provider40": [
+      "bt"
+    ]
+  },
+  "alliance_list": {
+    "provider1": [
+      "AL3",
+      "AL1",
+      "AL4",
+      "AL6",
+      "AL8",
+      "AL2",
+      "AL7",
+      "AL5"
+    ],
+    "provider2": [
+      "AL4",
+      "AL1",
+      "AL8",
+      "AL7",
+      "AL6"
+    ],
+    "provider3": [
+      "AL5",
+      "AL3",
+      "AL2",
+      "AL6",
+      "AL7"
+    ],
+    "provider4": [
+      "AL8",
+      "AL5",
+      "AL4",
+      "AL2",
+      "AL6",
+      "AL7",
+      "AL1",
+      "AL3"
+    ],
+    "provider5": [
+      "AL2"
+    ],
+    "provider6": [
+      "AL5",
+      "AL6"
+    ],
+    "provider7": [
+      "AL2"
+    ],
+    "provider8": [
+      "AL1",
+      "AL6"
+    ],
+    "provider9": [
+      "AL6"
+    ],
+    "provider10": [
+      "AL4",
+      "AL3",
+      "AL2",
+      "AL6"
+    ],
+    "provider11": [
+      "AL1",
+      "AL2",
+      "AL8"
+    ],
+    "provider12": [
+      "AL6",
+      "AL4",
+      "AL1",
+      "AL8",
+      "AL3"
+    ],
+    "provider13": [
+      "AL2"
+    ],
+    "provider14": [
+      "AL4",
+      "AL2",
+      "AL3",
+      "AL1",
+      "AL7",
+      "AL8",
+      "AL6",
+      "AL5"
+    ],
+    "provider15": [
+      "AL3",
+      "AL5",
+      "AL6",
+      "AL8",
+      "AL2"
+    ],
+    "provider16": [
+      "AL6",
+      "AL8",
+      "AL2",
+      "AL3",
+      "AL5",
+      "AL4"
+    ],
+    "provider17": [
+      "AL5",
+      "AL8",
+      "AL3",
+      "AL2",
+      "AL7",
+      "AL4",
+      "AL1"
+    ],
+    "provider18": [
+      "AL6",
+      "AL7",
+      "AL2",
+      "AL1",
+      "AL5"
+    ],
+    "provider19": [
+      "AL4",
+      "AL6",
+      "AL8",
+      "AL2",
+      "AL7"
+    ],
+    "provider20": [
+      "AL8",
+      "AL2",
+      "AL4",
+      "AL1",
+      "AL3",
+      "AL7",
+      "AL6",
+      "AL5"
+    ],
+    "provider21": [
+      "AL5",
+      "AL4",
+      "AL3",
+      "AL2",
+      "AL7"
+    ],
+    "provider22": [
+      "AL4"
+    ],
+    "provider23": [
+      "AL5"
+    ],
+    "provider24": [
+      "AL2",
+      "AL3",
+      "AL8",
+      "AL5",
+      "AL7"
+    ],
+    "provider25": [
+      "AL3",
+      "AL1",
+      "AL2",
+      "AL5",
+      "AL4",
+      "AL7",
+      "AL8",
+      "AL6"
+    ],
+    "provider26": [
+      "AL5"
+    ],
+    "provider27": [
+      "AL7"
+    ],
+    "provider28": [
+      "AL6"
+    ],
+    "provider29": [
+      "AL2",
+      "AL1",
+      "AL5",
+      "AL6",
+      "AL4",
+      "AL7",
+      "AL3"
+    ],
+    "provider30": [
+      "AL3",
+      "AL7"
+    ],
+    "provider31": [
+      "AL6"
+    ],
+    "provider32": [
+      "AL3",
+      "AL1",
+      "AL7"
+    ],
+    "provider33": [
+      "AL8",
+      "AL3",
+      "AL7",
+      "AL1",
+      "AL5"
+    ],
+    "provider34": [
+      "AL3",
+      "AL1",
+      "AL5",
+      "AL4",
+      "AL6",
+      "AL7",
+      "AL8"
+    ],
+    "provider35": [
+      "AL6",
+      "AL3",
+      "AL4",
+      "AL1",
+      "AL8",
+      "AL7",
+      "AL5"
+    ],
+    "provider36": [
+      "AL7",
+      "AL6",
+      "AL3",
+      "AL4",
+      "AL1",
+      "AL8"
+    ],
+    "provider37": [
+      "AL7",
+      "AL5",
+      "AL8",
+      "AL2",
+      "AL3"
+    ],
+    "provider38": [
+      "AL2",
+      "AL8",
+      "AL6",
+      "AL7"
+    ],
+    "provider39": [
+      "AL5",
+      "AL8"
+    ],
+    "provider40": [
+      "AL4",
+      "AL6",
+      "AL7",
+      "AL2"
+    ]
+  },
+  "peer_address": {
+    "alliance1": "alliance1-proxy:8000",
+    "alliance2": "alliance2-proxy:8000",
+    "alliance3": "alliance3-proxy:8000",
+    "alliance4": "alliance4-proxy:8000",
+    "alliance5": "alliance5-proxy:8000",
+    "alliance6": "alliance6-proxy:8000",
+    "alliance7": "alliance7-proxy:8000",
+    "alliance8": "alliance8-proxy:8000",
+    "provider1": "provider1-proxy:8000",
+    "provider2": "provider2-proxy:8000",
+    "provider3": "provider3-proxy:8000",
+    "provider4": "provider4-proxy:8000",
+    "provider5": "provider5-proxy:8000",
+    "provider6": "provider6-proxy:8000",
+    "provider7": "provider7-proxy:8000",
+    "provider8": "provider8-proxy:8000",
+    "provider9": "provider9-proxy:8000",
+    "provider10": "provider10-proxy:8000",
+    "provider11": "provider11-proxy:8000",
+    "provider12": "provider12-proxy:8000",
+    "provider13": "provider13-proxy:8000",
+    "provider14": "provider14-proxy:8000",
+    "provider15": "provider15-proxy:8000",
+    "provider16": "provider16-proxy:8000",
+    "provider17": "provider17-proxy:8000",
+    "provider18": "provider18-proxy:8000",
+    "provider19": "provider19-proxy:8000",
+    "provider20": "provider20-proxy:8000",
+    "provider21": "provider21-proxy:8000",
+    "provider22": "provider22-proxy:8000",
+    "provider23": "provider23-proxy:8000",
+    "provider24": "provider24-proxy:8000",
+    "provider25": "provider25-proxy:8000",
+    "provider26": "provider26-proxy:8000",
+    "provider27": "provider27-proxy:8000",
+    "provider28": "provider28-proxy:8000",
+    "provider29": "provider29-proxy:8000",
+    "provider30": "provider30-proxy:8000",
+    "provider31": "provider31-proxy:8000",
+    "provider32": "provider32-proxy:8000",
+    "provider33": "provider33-proxy:8000",
+    "provider34": "provider34-proxy:8000",
+    "provider35": "provider35-proxy:8000",
+    "provider36": "provider36-proxy:8000",
+    "provider37": "provider37-proxy:8000",
+    "provider38": "provider38-proxy:8000",
+    "provider39": "provider39-proxy:8000",
+    "provider40": "provider40-proxy:8000"
+  }
+}

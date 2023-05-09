@@ -1,0 +1,1602 @@
+networks:
+  dejima_net:
+    driver: bridge
+    ipam:
+      driver: default
+services:
+  alliance1-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: alliance1-db
+    environment:
+    - PEER_NAME=alliance1
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  alliance1-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: alliance1-proxy
+    depends_on:
+    - alliance1-db
+    environment:
+    - PEER_NAME=alliance1
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8001:8000
+    volumes:
+    - ./proxy:/code
+  alliance2-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: alliance2-db
+    environment:
+    - PEER_NAME=alliance2
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  alliance2-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: alliance2-proxy
+    depends_on:
+    - alliance2-db
+    environment:
+    - PEER_NAME=alliance2
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8002:8000
+    volumes:
+    - ./proxy:/code
+  alliance3-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: alliance3-db
+    environment:
+    - PEER_NAME=alliance3
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  alliance3-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: alliance3-proxy
+    depends_on:
+    - alliance3-db
+    environment:
+    - PEER_NAME=alliance3
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8003:8000
+    volumes:
+    - ./proxy:/code
+  alliance4-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: alliance4-db
+    environment:
+    - PEER_NAME=alliance4
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  alliance4-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: alliance4-proxy
+    depends_on:
+    - alliance4-db
+    environment:
+    - PEER_NAME=alliance4
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8004:8000
+    volumes:
+    - ./proxy:/code
+  alliance5-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: alliance5-db
+    environment:
+    - PEER_NAME=alliance5
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  alliance5-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: alliance5-proxy
+    depends_on:
+    - alliance5-db
+    environment:
+    - PEER_NAME=alliance5
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8005:8000
+    volumes:
+    - ./proxy:/code
+  provider1-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider1-db
+    environment:
+    - PEER_NAME=provider1
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider1-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider1-proxy
+    depends_on:
+    - provider1-db
+    environment:
+    - PEER_NAME=provider1
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8006:8000
+    volumes:
+    - ./proxy:/code
+  provider10-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider10-db
+    environment:
+    - PEER_NAME=provider10
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider10-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider10-proxy
+    depends_on:
+    - provider10-db
+    environment:
+    - PEER_NAME=provider10
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8015:8000
+    volumes:
+    - ./proxy:/code
+  provider11-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider11-db
+    environment:
+    - PEER_NAME=provider11
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider11-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider11-proxy
+    depends_on:
+    - provider11-db
+    environment:
+    - PEER_NAME=provider11
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8016:8000
+    volumes:
+    - ./proxy:/code
+  provider12-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider12-db
+    environment:
+    - PEER_NAME=provider12
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider12-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider12-proxy
+    depends_on:
+    - provider12-db
+    environment:
+    - PEER_NAME=provider12
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8017:8000
+    volumes:
+    - ./proxy:/code
+  provider13-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider13-db
+    environment:
+    - PEER_NAME=provider13
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider13-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider13-proxy
+    depends_on:
+    - provider13-db
+    environment:
+    - PEER_NAME=provider13
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8018:8000
+    volumes:
+    - ./proxy:/code
+  provider14-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider14-db
+    environment:
+    - PEER_NAME=provider14
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider14-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider14-proxy
+    depends_on:
+    - provider14-db
+    environment:
+    - PEER_NAME=provider14
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8019:8000
+    volumes:
+    - ./proxy:/code
+  provider15-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider15-db
+    environment:
+    - PEER_NAME=provider15
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider15-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider15-proxy
+    depends_on:
+    - provider15-db
+    environment:
+    - PEER_NAME=provider15
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8020:8000
+    volumes:
+    - ./proxy:/code
+  provider16-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider16-db
+    environment:
+    - PEER_NAME=provider16
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider16-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider16-proxy
+    depends_on:
+    - provider16-db
+    environment:
+    - PEER_NAME=provider16
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8021:8000
+    volumes:
+    - ./proxy:/code
+  provider17-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider17-db
+    environment:
+    - PEER_NAME=provider17
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider17-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider17-proxy
+    depends_on:
+    - provider17-db
+    environment:
+    - PEER_NAME=provider17
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8022:8000
+    volumes:
+    - ./proxy:/code
+  provider18-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider18-db
+    environment:
+    - PEER_NAME=provider18
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider18-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider18-proxy
+    depends_on:
+    - provider18-db
+    environment:
+    - PEER_NAME=provider18
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8023:8000
+    volumes:
+    - ./proxy:/code
+  provider19-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider19-db
+    environment:
+    - PEER_NAME=provider19
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider19-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider19-proxy
+    depends_on:
+    - provider19-db
+    environment:
+    - PEER_NAME=provider19
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8024:8000
+    volumes:
+    - ./proxy:/code
+  provider2-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider2-db
+    environment:
+    - PEER_NAME=provider2
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider2-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider2-proxy
+    depends_on:
+    - provider2-db
+    environment:
+    - PEER_NAME=provider2
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8007:8000
+    volumes:
+    - ./proxy:/code
+  provider20-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider20-db
+    environment:
+    - PEER_NAME=provider20
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider20-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider20-proxy
+    depends_on:
+    - provider20-db
+    environment:
+    - PEER_NAME=provider20
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8025:8000
+    volumes:
+    - ./proxy:/code
+  provider21-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider21-db
+    environment:
+    - PEER_NAME=provider21
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider21-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider21-proxy
+    depends_on:
+    - provider21-db
+    environment:
+    - PEER_NAME=provider21
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8026:8000
+    volumes:
+    - ./proxy:/code
+  provider22-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider22-db
+    environment:
+    - PEER_NAME=provider22
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider22-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider22-proxy
+    depends_on:
+    - provider22-db
+    environment:
+    - PEER_NAME=provider22
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8027:8000
+    volumes:
+    - ./proxy:/code
+  provider23-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider23-db
+    environment:
+    - PEER_NAME=provider23
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider23-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider23-proxy
+    depends_on:
+    - provider23-db
+    environment:
+    - PEER_NAME=provider23
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8028:8000
+    volumes:
+    - ./proxy:/code
+  provider24-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider24-db
+    environment:
+    - PEER_NAME=provider24
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider24-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider24-proxy
+    depends_on:
+    - provider24-db
+    environment:
+    - PEER_NAME=provider24
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8029:8000
+    volumes:
+    - ./proxy:/code
+  provider25-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider25-db
+    environment:
+    - PEER_NAME=provider25
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider25-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider25-proxy
+    depends_on:
+    - provider25-db
+    environment:
+    - PEER_NAME=provider25
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8030:8000
+    volumes:
+    - ./proxy:/code
+  provider26-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider26-db
+    environment:
+    - PEER_NAME=provider26
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider26-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider26-proxy
+    depends_on:
+    - provider26-db
+    environment:
+    - PEER_NAME=provider26
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8031:8000
+    volumes:
+    - ./proxy:/code
+  provider27-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider27-db
+    environment:
+    - PEER_NAME=provider27
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider27-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider27-proxy
+    depends_on:
+    - provider27-db
+    environment:
+    - PEER_NAME=provider27
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8032:8000
+    volumes:
+    - ./proxy:/code
+  provider28-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider28-db
+    environment:
+    - PEER_NAME=provider28
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider28-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider28-proxy
+    depends_on:
+    - provider28-db
+    environment:
+    - PEER_NAME=provider28
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8033:8000
+    volumes:
+    - ./proxy:/code
+  provider29-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider29-db
+    environment:
+    - PEER_NAME=provider29
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider29-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider29-proxy
+    depends_on:
+    - provider29-db
+    environment:
+    - PEER_NAME=provider29
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8034:8000
+    volumes:
+    - ./proxy:/code
+  provider3-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider3-db
+    environment:
+    - PEER_NAME=provider3
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider3-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider3-proxy
+    depends_on:
+    - provider3-db
+    environment:
+    - PEER_NAME=provider3
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8008:8000
+    volumes:
+    - ./proxy:/code
+  provider30-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider30-db
+    environment:
+    - PEER_NAME=provider30
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider30-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider30-proxy
+    depends_on:
+    - provider30-db
+    environment:
+    - PEER_NAME=provider30
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8035:8000
+    volumes:
+    - ./proxy:/code
+  provider31-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider31-db
+    environment:
+    - PEER_NAME=provider31
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider31-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider31-proxy
+    depends_on:
+    - provider31-db
+    environment:
+    - PEER_NAME=provider31
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8036:8000
+    volumes:
+    - ./proxy:/code
+  provider32-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider32-db
+    environment:
+    - PEER_NAME=provider32
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider32-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider32-proxy
+    depends_on:
+    - provider32-db
+    environment:
+    - PEER_NAME=provider32
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8037:8000
+    volumes:
+    - ./proxy:/code
+  provider33-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider33-db
+    environment:
+    - PEER_NAME=provider33
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider33-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider33-proxy
+    depends_on:
+    - provider33-db
+    environment:
+    - PEER_NAME=provider33
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8038:8000
+    volumes:
+    - ./proxy:/code
+  provider34-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider34-db
+    environment:
+    - PEER_NAME=provider34
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider34-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider34-proxy
+    depends_on:
+    - provider34-db
+    environment:
+    - PEER_NAME=provider34
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8039:8000
+    volumes:
+    - ./proxy:/code
+  provider35-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider35-db
+    environment:
+    - PEER_NAME=provider35
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider35-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider35-proxy
+    depends_on:
+    - provider35-db
+    environment:
+    - PEER_NAME=provider35
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8040:8000
+    volumes:
+    - ./proxy:/code
+  provider36-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider36-db
+    environment:
+    - PEER_NAME=provider36
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider36-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider36-proxy
+    depends_on:
+    - provider36-db
+    environment:
+    - PEER_NAME=provider36
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8041:8000
+    volumes:
+    - ./proxy:/code
+  provider37-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider37-db
+    environment:
+    - PEER_NAME=provider37
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider37-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider37-proxy
+    depends_on:
+    - provider37-db
+    environment:
+    - PEER_NAME=provider37
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8042:8000
+    volumes:
+    - ./proxy:/code
+  provider38-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider38-db
+    environment:
+    - PEER_NAME=provider38
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider38-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider38-proxy
+    depends_on:
+    - provider38-db
+    environment:
+    - PEER_NAME=provider38
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8043:8000
+    volumes:
+    - ./proxy:/code
+  provider39-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider39-db
+    environment:
+    - PEER_NAME=provider39
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider39-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider39-proxy
+    depends_on:
+    - provider39-db
+    environment:
+    - PEER_NAME=provider39
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8044:8000
+    volumes:
+    - ./proxy:/code
+  provider4-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider4-db
+    environment:
+    - PEER_NAME=provider4
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider4-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider4-proxy
+    depends_on:
+    - provider4-db
+    environment:
+    - PEER_NAME=provider4
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8009:8000
+    volumes:
+    - ./proxy:/code
+  provider40-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider40-db
+    environment:
+    - PEER_NAME=provider40
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider40-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider40-proxy
+    depends_on:
+    - provider40-db
+    environment:
+    - PEER_NAME=provider40
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8045:8000
+    volumes:
+    - ./proxy:/code
+  provider41-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider41-db
+    environment:
+    - PEER_NAME=provider41
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider41-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider41-proxy
+    depends_on:
+    - provider41-db
+    environment:
+    - PEER_NAME=provider41
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8046:8000
+    volumes:
+    - ./proxy:/code
+  provider42-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider42-db
+    environment:
+    - PEER_NAME=provider42
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider42-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider42-proxy
+    depends_on:
+    - provider42-db
+    environment:
+    - PEER_NAME=provider42
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8047:8000
+    volumes:
+    - ./proxy:/code
+  provider43-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider43-db
+    environment:
+    - PEER_NAME=provider43
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider43-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider43-proxy
+    depends_on:
+    - provider43-db
+    environment:
+    - PEER_NAME=provider43
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8048:8000
+    volumes:
+    - ./proxy:/code
+  provider44-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider44-db
+    environment:
+    - PEER_NAME=provider44
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider44-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider44-proxy
+    depends_on:
+    - provider44-db
+    environment:
+    - PEER_NAME=provider44
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8049:8000
+    volumes:
+    - ./proxy:/code
+  provider45-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider45-db
+    environment:
+    - PEER_NAME=provider45
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider45-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider45-proxy
+    depends_on:
+    - provider45-db
+    environment:
+    - PEER_NAME=provider45
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8050:8000
+    volumes:
+    - ./proxy:/code
+  provider46-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider46-db
+    environment:
+    - PEER_NAME=provider46
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider46-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider46-proxy
+    depends_on:
+    - provider46-db
+    environment:
+    - PEER_NAME=provider46
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8051:8000
+    volumes:
+    - ./proxy:/code
+  provider47-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider47-db
+    environment:
+    - PEER_NAME=provider47
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider47-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider47-proxy
+    depends_on:
+    - provider47-db
+    environment:
+    - PEER_NAME=provider47
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8052:8000
+    volumes:
+    - ./proxy:/code
+  provider48-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider48-db
+    environment:
+    - PEER_NAME=provider48
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider48-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider48-proxy
+    depends_on:
+    - provider48-db
+    environment:
+    - PEER_NAME=provider48
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8053:8000
+    volumes:
+    - ./proxy:/code
+  provider49-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider49-db
+    environment:
+    - PEER_NAME=provider49
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider49-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider49-proxy
+    depends_on:
+    - provider49-db
+    environment:
+    - PEER_NAME=provider49
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8054:8000
+    volumes:
+    - ./proxy:/code
+  provider5-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider5-db
+    environment:
+    - PEER_NAME=provider5
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider5-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider5-proxy
+    depends_on:
+    - provider5-db
+    environment:
+    - PEER_NAME=provider5
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8010:8000
+    volumes:
+    - ./proxy:/code
+  provider50-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider50-db
+    environment:
+    - PEER_NAME=provider50
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider50-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider50-proxy
+    depends_on:
+    - provider50-db
+    environment:
+    - PEER_NAME=provider50
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8055:8000
+    volumes:
+    - ./proxy:/code
+  provider6-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider6-db
+    environment:
+    - PEER_NAME=provider6
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider6-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider6-proxy
+    depends_on:
+    - provider6-db
+    environment:
+    - PEER_NAME=provider6
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8011:8000
+    volumes:
+    - ./proxy:/code
+  provider7-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider7-db
+    environment:
+    - PEER_NAME=provider7
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider7-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider7-proxy
+    depends_on:
+    - provider7-db
+    environment:
+    - PEER_NAME=provider7
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8012:8000
+    volumes:
+    - ./proxy:/code
+  provider8-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider8-db
+    environment:
+    - PEER_NAME=provider8
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider8-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider8-proxy
+    depends_on:
+    - provider8-db
+    environment:
+    - PEER_NAME=provider8
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8013:8000
+    volumes:
+    - ./proxy:/code
+  provider9-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: provider9-db
+    environment:
+    - PEER_NAME=provider9
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  provider9-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: gunicorn -b 0.0.0.0:8000 --threads 60 server:app
+    container_name: provider9-proxy
+    depends_on:
+    - provider9-db
+    environment:
+    - PEER_NAME=provider9
+    image: ekayim/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8014:8000
+    volumes:
+    - ./proxy:/code
+version: '3'
