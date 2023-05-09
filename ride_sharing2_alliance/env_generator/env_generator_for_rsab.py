@@ -79,7 +79,8 @@ for j in range(1,M+1):
     config['peer_address']['provider{}'.format(j)] = 'provider{}-proxy:8000'.format(j)
     # connect nodes
     al_list = []
-    n = random.randint(1, N)
+    # n = random.randint(1, N)
+    n = 1
     al_idx_list = list(range(1, N+1))
     target_node_list = random.sample(al_idx_list, n)
     for target_node in target_node_list:
