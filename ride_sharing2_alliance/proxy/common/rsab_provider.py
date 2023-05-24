@@ -184,7 +184,7 @@ class RSABProvider(object):
         # transaction_result = " ".join(transaction_result)
         
         msg = " ".join([config.peer_name, str(commit_num), str(abort_num), str(miss_num), str(bench_time-miss_time)])
-        print("total commit time{}, total abort time{}".format(total_commit_time, total_abort_time))
+        print("total commit time: {}, total abort time: {}".format(total_commit_time, total_abort_time))
         # msg = config.peer_name + ":  " + transaction_result + ",  " + str(bench_time-miss_time)
         
         if switch_cnt != []:
