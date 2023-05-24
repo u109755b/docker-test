@@ -52,6 +52,7 @@ def doRSAB_ALLIANCE_frs():
         # abort during local lock
         tx.abort()
         del config.tx_dict[global_xid]
+        config.timestamp_management.commit_or_abort(start_time, time.perf_counter(), "abort")
         return False
 
     if miss_flag:
@@ -70,6 +71,7 @@ def doRSAB_ALLIANCE_frs():
         dejimautils.release_lock_request(global_xid) 
         tx.abort()
         del config.tx_dict[global_xid]
+        config.timestamp_management.commit_or_abort(start_time, time.perf_counter(), "abort")
         return False
 
     # execution
@@ -82,6 +84,7 @@ def doRSAB_ALLIANCE_frs():
         dejimautils.release_lock_request(global_xid) 
         tx.abort()
         del config.tx_dict[global_xid]
+        config.timestamp_management.commit_or_abort(start_time, time.perf_counter(), "abort")
         return False
 
     # propagation
@@ -117,6 +120,7 @@ def doRSAB_ALLIANCE_frs():
         dejimautils.release_lock_request(global_xid) 
         tx.abort()
         del config.tx_dict[global_xid]
+        config.timestamp_management.commit_or_abort(start_time, time.perf_counter(), "abort")
         return False
     
     timestamp.append(time.perf_counter())
@@ -143,9 +147,11 @@ def doRSAB_ALLIANCE_frs():
     if commit:
         tx.commit()
         dejimautils.termination_request("commit", global_xid, "frs")
+        config.timestamp_management.commit_or_abort(start_time, time.perf_counter(), "commit")
     else:
         tx.abort()
         dejimautils.termination_request("abort", global_xid, "frs")
+        config.timestamp_management.commit_or_abort(start_time, time.perf_counter(), "abort")
     del config.tx_dict[global_xid]
 
     return commit

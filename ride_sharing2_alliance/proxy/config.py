@@ -73,17 +73,26 @@ class TimestampManagement:
                 self.add_duration_time('communication', duration_time)
     
     def commit_or_abort(self, start_time, end_time, ca_type):
-        self.commit_abort_time[ca_type] += end_time - start_time
-        self.ca_num[ca_type] += 1
+        if ca_type in self.ca_num:
+            self.commit_abort_time[ca_type] += end_time - start_time
+            self.ca_num[ca_type] += 1
+        else:
+            self.commit_abort_time[ca_type] = end_time - start_time
+            self.ca_num[ca_type] = 1
+        if ca_type != 'commit':
+            self.commit_abort_time['abort'] += end_time - start_time
+            self.ca_num['abort'] += 1
     
     def get_result(self):
-        result = {'get_xid': 0, 'lock': 0, 'base_update': 0, 'prop_view_0': 0, 'view_udpate': 0, 'prop_view_k': 0, 'communication': 0}
+        result1 = {'get_xid': 0, 'lock': 0, 'base_update': 0, 'prop_view_0': 0, 'view_udpate': 0, 'prop_view_k': 0, 'communication': 0}
         for key in self.duration_time:
             time = self.duration_time[key] / self.data_num[key]
-            result[key] = float('{:.2f}'.format(time))
+            result1[key] = float('{:.2f}'.format(time))
+        result2 = ''
         for key in self.ca_num:
             if self.ca_num[key] != 0:
                 time = self.commit_abort_time[key] / self.ca_num[key]
-                result[key] = float('{:.2f}'.format(time))
-        return result
+                result2 += ',  {}: {}, {:.2f}'.format(key, self.ca_num[key], time)
+                # result[key] = float('{:.2f}'.format(time))
+        return json.dumps(result1) + '\n' + result2
 timestamp_management = TimestampManagement()
