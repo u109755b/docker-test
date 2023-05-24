@@ -73,7 +73,7 @@ class TimestampManagement:
                 self.add_duration_time('communication', duration_time)
     
     def commit_or_abort(self, start_time, end_time, ca_type):
-        self.commit_abort_time[ca_type] = end_time - start_time
+        self.commit_abort_time[ca_type] += end_time - start_time
         self.ca_num[ca_type] += 1
     
     def get_result(self):
