@@ -49,6 +49,7 @@ def doRSAB_ALLIANCE_2pl():
         # abort during local lock
         tx.abort()
         del config.tx_dict[global_xid]
+        config.timestamp_management.commit_or_abort(start_time, time.perf_counter(), "abort")
         return False
 
     if miss_flag:
@@ -88,6 +89,7 @@ def doRSAB_ALLIANCE_2pl():
         print('error during BIRDS: ', e)
         tx.abort()
         del config.tx_dict[global_xid]
+        config.timestamp_management.commit_or_abort(start_time, time.perf_counter(), "abort")
         return False
     
     timestamp.append(time.perf_counter())
@@ -116,9 +118,11 @@ def doRSAB_ALLIANCE_2pl():
     if commit:
         tx.commit()
         dejimautils.termination_request("commit", global_xid, "2pl")
+        config.timestamp_management.commit_or_abort(start_time, time.perf_counter(), "commit")
     else:
         tx.abort()
         dejimautils.termination_request("abort", global_xid, "2pl")
+        config.timestamp_management.commit_or_abort(start_time, time.perf_counter(), "abort")
     del config.tx_dict[global_xid]
 
     return commit
