@@ -36,6 +36,9 @@ class RSABProvider(object):
         start_time = time.time()
         print("benchmark start")
         random.seed()
+        
+        total_commit_time = 0
+        total_abort_time = 0
 
         # frs & 2pl
         if METHOD == "frs" or METHOD == "2pl":
@@ -53,17 +56,21 @@ class RSABProvider(object):
                     next_epoch_start_time += epoch_time
                     epoch += 1
                     result_per_epoch.append({'commit': 0, 'abort': 0})
-
+                
+                start_doRSAB = time.perf_counter()
                 result = doRSAB()
+                end_doRSAB = time.perf_counter()
                 t_type = 'transaction'
                 if result == True:
                     commit_num += 1
                     result_per_epoch[epoch]['commit'] += 1
                     commit_abort_miss[t_type]['commit'] += 1
+                    total_commit_time += end_doRSAB-start_doRSAB
                 elif result == False:
                     abort_num += 1
                     result_per_epoch[epoch]['abort'] += 1
                     commit_abort_miss[t_type]['abort'] += 1
+                    total_abort_time += end_doRSAB-start_doRSAB
                 elif result == "miss":
                     miss_num += 1
                     miss_time += time.time() - start_time - current_time
@@ -177,6 +184,7 @@ class RSABProvider(object):
         # transaction_result = " ".join(transaction_result)
         
         msg = " ".join([config.peer_name, str(commit_num), str(abort_num), str(miss_num), str(bench_time-miss_time)])
+        print("total commit time{}, total abort time{}".format(total_commit_time, total_abort_time))
         # msg = config.peer_name + ":  " + transaction_result + ",  " + str(bench_time-miss_time)
         
         if switch_cnt != []:

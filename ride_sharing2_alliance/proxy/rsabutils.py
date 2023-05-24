@@ -39,7 +39,7 @@ def get_workload_for_provider():
     if random.randint(1, 100) <= 20:
         V_list = random.sample(config.candidate_record_id_list, 1)
         for V in V_list:
-            stmts.append("SELECT * WHERE V={}".format(V))
+            stmts.append("SELECT * FROM bt WHERE V={}".format(V))
     else:
         V_list = random.sample(config.candidate_record_id_list, 1)
         for V in V_list:
@@ -52,7 +52,7 @@ def get_workload_for_alliance():
     if random.randint(1, 100) <= 20:
         V_list = random.sample(config.candidate_record_id_list, 1)
         for V in V_list:
-            stmts.append("SELECT * WHERE V={}".format(V))
+            stmts.append("SELECT * FROM mt WHERE V={}".format(V))
     else:
         D = random.randint(1, 9999)
         V = random.choice(config.candidate_record_id_list)
