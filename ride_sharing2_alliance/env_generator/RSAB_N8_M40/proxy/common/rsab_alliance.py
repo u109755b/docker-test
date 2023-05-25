@@ -173,7 +173,7 @@ class RSABAlliance(object):
             return
 
         msg = " ".join([config.peer_name, str(commit_num), str(abort_num), str(miss_num), str(bench_time-miss_time)])
-        print("total commit time: {}, total abort time: {}".format(total_commit_time, total_abort_time))
+        print("total commit time: {:.2f}, total abort time: {:.2f}".format(total_commit_time, total_abort_time))
         
         if switch_cnt != []:
             msg += " *" + " ".join(map(str, switch_cnt)) + "*"

@@ -52,7 +52,7 @@ def doRSAB_PROVIDER_frs():
         # abort during local lock
         tx.abort()
         del config.tx_dict[global_xid]
-        config.timestamp_management.commit_or_abort(start_time, time.perf_counter(), "abort")
+        config.timestamp_management.commit_or_abort(start_time, time.perf_counter(), "abort_during_local_lock")
         return False
 
     if miss_flag:
@@ -71,7 +71,7 @@ def doRSAB_PROVIDER_frs():
         dejimautils.release_lock_request(global_xid) 
         tx.abort()
         del config.tx_dict[global_xid]
-        config.timestamp_management.commit_or_abort(start_time, time.perf_counter(), "abort")
+        config.timestamp_management.commit_or_abort(start_time, time.perf_counter(), "abort_during_global_lock")
         return False
 
     # execution
@@ -84,7 +84,7 @@ def doRSAB_PROVIDER_frs():
         dejimautils.release_lock_request(global_xid) 
         tx.abort()
         del config.tx_dict[global_xid]
-        config.timestamp_management.commit_or_abort(start_time, time.perf_counter(), "abort")
+        config.timestamp_management.commit_or_abort(start_time, time.perf_counter(), "abort_during_local_exec")
         return False
 
     # propagation
@@ -120,7 +120,7 @@ def doRSAB_PROVIDER_frs():
         dejimautils.release_lock_request(global_xid) 
         tx.abort()
         del config.tx_dict[global_xid]
-        config.timestamp_management.commit_or_abort(start_time, time.perf_counter(), "abort")
+        config.timestamp_management.commit_or_abort(start_time, time.perf_counter(), "abort_from_BIRDS")
         return False
     
     timestamp.append(time.perf_counter())
@@ -153,7 +153,7 @@ def doRSAB_PROVIDER_frs():
     else:
         tx.abort()
         dejimautils.termination_request("abort", global_xid, "frs")
-        config.timestamp_management.commit_or_abort(start_time, time.perf_counter(), "abort")
+        config.timestamp_management.commit_or_abort(start_time, time.perf_counter(), "abort_during_prop")
     del config.tx_dict[global_xid]
 
     return commit

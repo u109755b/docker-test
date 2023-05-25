@@ -54,9 +54,13 @@ def get_workload_for_alliance():
         for V in V_list:
             stmts.append("SELECT * FROM mt WHERE V={}".format(V))
     else:
-        D = random.randint(1, 9999)
-        V = random.choice(config.candidate_record_id_list)
-        stmts.append("UPDATE mt SET D={}, R=1 WHERE V={}".format(D, V))
+        # D = random.randint(1, 9999)
+        # V = random.choice(config.candidate_record_id_list)
+        # stmts.append("UPDATE mt SET D={}, R=1 WHERE V={}".format(D, V))
+        V_list = random.sample(config.candidate_record_id_list, 1)
+        for V in V_list:
+            D = random.randint(1, 9999)
+            stmts.append("UPDATE mt SET D={}, R=1 WHERE V={}".format(D, V))
     return stmts
 
 # prepare zipf generator
