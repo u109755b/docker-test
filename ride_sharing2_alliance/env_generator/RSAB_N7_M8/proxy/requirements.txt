@@ -1,6 +1,0 @@
-gunicorn
-falcon
-psycopg2
-requests
-sqlparse
-numpy

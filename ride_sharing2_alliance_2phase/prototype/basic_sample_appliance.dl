@@ -1,0 +1,7 @@
+% schema:
+source mt('V':int, 'L':int, 'D':int, 'R':int, 'P':string).
+view a1('V':int, 'L':int, 'D':int, 'R':int).
+
+% rules for update strategy:
+-mt(V,L,D,R,P) :- mt(V,L,D,R,P), NOT a1(V,L,D,R), P='A'.
++mt(V,L,D,R,P) :- NOT mt(V,L,D,R,P), a1(V,L,D,R), P='A'.

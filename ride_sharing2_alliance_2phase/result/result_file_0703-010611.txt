@@ -1,0 +1,10 @@
+provider3 35 1126 0 120
+alliance1 0 1759 0 120
+provider5 32 1638 0 120
+provider4 28 2637 0 120
+provider1 4 3042 0 120
+provider2 71 1800 0 120
+alliance2 5 2631 0 120
+alliance0 2 1451 0 120
+177
+16084

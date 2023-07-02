@@ -1,0 +1,6 @@
+graph {
+	graph [rankdir=BT]
+	A1
+	P1
+	P1 -- A1 [color="#DDCC77" style=bold]
+}

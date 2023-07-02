@@ -1,0 +1,13 @@
+% schema:
+source mt('V':int, 'L':int, 'D':int, 'R':int, 'P':string).
+source bt('V':int, 'L':int, 'D':int, 'R':int).
+view a1('V':int, 'L':int, 'D':int, 'R':int).
+
+% view definition
+a1(V,L,D,R) :- bt(V,L,D,R).
+
+% rules for update strategy:
+-mt(V,L,D,R,P) :- mt(V,L,D,R,P), NOT a1(V,L,D,R), P='A'.
++mt(V,L,D,R,P) :- NOT mt(V,L,D,R,P), a1(V,L,D,R), P='A'.
+-bt(V,L,D,R) :- bt(V,L,D,R), NOT a1(V,L,D,R).
++bt(V,L,D,R) :- NOT bt(V,L,D,R), a1(V,L,D,R).

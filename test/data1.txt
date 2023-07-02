@@ -1,0 +1,812 @@
+alliance1-proxy    | benchmark start
+alliance1-proxy    | [9, 14, 1, 49]
+alliance0-proxy    | benchmark start
+alliance2-proxy    | benchmark start
+alliance2-proxy    | [20, 32, 45, 23]
+alliance0-proxy    | [37, 34, 21, 35]
+provider2-proxy    | benchmark start
+provider2-proxy    | [22, 37, 27, 2]
+provider1-proxy    | benchmark start
+provider1-proxy    | [26, 31, 21, 41]
+provider5-proxy    | benchmark start
+provider5-proxy    | [5, 25, 30, 15]
+provider3-proxy    | benchmark start
+alliance0-proxy    | succeeded
+provider3-proxy    | [8, 43, 18, 38]
+provider1-proxy    | succeeded
+provider4-proxy    | benchmark start
+provider4-proxy    | [34, 19, 49, 14]
+provider5-proxy    | succeeded
+alliance2-proxy    | succeeded
+alliance1-proxy    | succeeded
+provider3-proxy    | succeeded
+provider2-proxy    | succeeded
+provider4-proxy    | succeeded
+provider1-proxy    | abort
+provider1-proxy    | [6, 11, 36, 46]
+provider1-proxy    | succeeded
+provider4-proxy    | abort
+provider4-proxy    | [29, 39, 14, 19]
+provider4-proxy    | succeeded
+provider5-proxy    | released
+provider5-proxy    | [15, 50, 30, 20]
+provider5-proxy    | local lock failed
+provider5-proxy    | [45, 5, 25, 15]
+provider5-proxy    | local lock failed
+provider5-proxy    | [10, 15, 45, 20]
+provider5-proxy    | local lock failed
+provider5-proxy    | [25, 10, 15, 35]
+provider5-proxy    | local lock failed
+provider5-proxy    | [35, 25, 5, 20]
+provider5-proxy    | local lock failed
+provider5-proxy    | [40, 45, 15, 35]
+provider5-proxy    | local lock failed
+provider5-proxy    | [40, 25, 50, 10]
+provider5-proxy    | succeeded
+provider3-proxy    | released
+provider2-proxy    | abort
+provider3-proxy    | [13, 33, 48, 28]
+provider2-proxy    | [32, 7, 22, 37]
+provider3-proxy    | succeeded
+provider2-proxy    | local lock failed
+provider2-proxy    | [22, 2, 17, 7]
+provider2-proxy    | succeeded
+alliance1-proxy    | abort
+alliance1-proxy    | [5, 20, 43, 24]
+alliance2-proxy    | released
+alliance1-proxy    | local lock failed
+alliance1-proxy    | [19, 7, 4, 42]
+alliance2-proxy    | [44, 20, 28, 37]
+alliance1-proxy    | succeeded
+alliance2-proxy    | succeeded
+alliance0-proxy    | abort
+alliance0-proxy    | [24, 16, 20, 43]
+alliance1-proxy    | abort
+alliance0-proxy    | succeeded
+alliance1-proxy    | [48, 37, 50, 33]
+alliance1-proxy    | succeeded
+provider1-proxy    | released
+provider1-proxy    | [26, 31, 16, 41]
+provider1-proxy    | succeeded
+alliance1-proxy    | abort
+alliance1-proxy    | [49, 48, 17, 2]
+provider4-proxy    | abort
+provider4-proxy    | [14, 34, 39, 4]
+alliance1-proxy    | succeeded
+provider4-proxy    | succeeded
+provider3-proxy    | abort
+provider2-proxy    | abort
+provider3-proxy    | [18, 8, 43, 23]
+provider3-proxy    | local lock failed
+provider3-proxy    | [33, 38, 3, 28]
+provider2-proxy    | [22, 42, 2, 17]
+provider3-proxy    | succeeded
+provider5-proxy    | released
+provider2-proxy    | succeeded
+provider5-proxy    | [50, 45, 35, 40]
+provider5-proxy    | succeeded
+alliance2-proxy    | abort
+provider1-proxy    | abort
+alliance2-proxy    | [28, 36, 34, 47]
+alliance2-proxy    | local lock failed
+alliance2-proxy    | [26, 8, 29, 44]
+provider1-proxy    | [46, 16, 11, 26]
+provider1-proxy    | succeeded
+alliance2-proxy    | succeeded
+alliance1-proxy    | abort
+alliance1-proxy    | [17, 1, 43, 38]
+alliance1-proxy    | local lock failed
+provider4-proxy    | released
+alliance1-proxy    | [44, 42, 8, 19]
+provider4-proxy    | [49, 14, 29, 4]
+provider4-proxy    | local lock failed
+provider4-proxy    | [19, 34, 49, 14]
+alliance1-proxy    | succeeded
+provider4-proxy    | succeeded
+alliance1-proxy    | abort
+provider2-proxy    | abort
+provider2-proxy    | [2, 12, 22, 32]
+alliance1-proxy    | [3, 7, 43, 36]
+alliance1-proxy    | local lock failed
+alliance1-proxy    | [10, 39, 42, 30]
+provider2-proxy    | succeeded
+provider3-proxy    | released
+provider3-proxy    | [3, 48, 23, 38]
+alliance1-proxy    | succeeded
+provider3-proxy    | succeeded
+provider5-proxy    | released
+provider1-proxy    | abort
+provider1-proxy    | [46, 11, 41, 16]
+provider5-proxy    | [20, 50, 40, 45]
+provider1-proxy    | succeeded
+alliance0-proxy    | abort
+provider5-proxy    | succeeded
+alliance0-proxy    | [2, 21, 7, 28]
+alliance0-proxy    | succeeded
+alliance2-proxy    | abort
+alliance2-proxy    | [9, 44, 34, 18]
+alliance2-proxy    | local lock failed
+alliance2-proxy    | [13, 1, 43, 14]
+alliance2-proxy    | local lock failed
+alliance2-proxy    | [44, 3, 33, 37]
+alliance2-proxy    | local lock failed
+alliance2-proxy    | [35, 25, 48, 34]
+alliance2-proxy    | local lock failed
+alliance2-proxy    | [10, 5, 43, 20]
+provider4-proxy    | released
+alliance2-proxy    | succeeded
+provider4-proxy    | [29, 4, 19, 14]
+provider4-proxy    | succeeded
+provider2-proxy    | abort
+provider2-proxy    | [37, 22, 47, 17]
+provider2-proxy    | succeeded
+provider3-proxy    | released
+provider3-proxy    | [3, 8, 28, 13]
+provider3-proxy    | succeeded
+provider1-proxy    | released
+provider1-proxy    | [41, 21, 16, 1]
+alliance1-proxy    | abort
+provider1-proxy    | succeeded
+alliance1-proxy    | [49, 44, 37, 8]
+provider5-proxy    | abort
+provider5-proxy    | [20, 40, 45, 25]
+alliance1-proxy    | succeeded
+provider5-proxy    | succeeded
+provider4-proxy    | released
+alliance2-proxy    | abort
+provider3-proxy    | abort
+provider2-proxy    | abort
+alliance2-proxy    | [5, 1, 50, 41]
+provider3-proxy    | [13, 43, 38, 33]
+provider4-proxy    | [4, 14, 34, 39]
+provider2-proxy    | [32, 12, 7, 2]
+provider3-proxy    | succeeded
+provider4-proxy    | succeeded
+provider2-proxy    | local lock failed
+provider2-proxy    | [17, 22, 2, 37]
+provider2-proxy    | local lock failed
+provider2-proxy    | [47, 42, 32, 7]
+provider2-proxy    | local lock failed
+provider2-proxy    | [42, 32, 22, 37]
+alliance2-proxy    | succeeded
+provider2-proxy    | succeeded
+provider1-proxy    | abort
+provider1-proxy    | [6, 21, 36, 26]
+provider1-proxy    | succeeded
+provider5-proxy    | released
+alliance0-proxy    | abort
+provider5-proxy    | [45, 5, 20, 40]
+alliance0-proxy    | [14, 15, 19, 41]
+provider5-proxy    | local lock failed
+provider5-proxy    | [25, 40, 5, 10]
+provider5-proxy    | local lock failed
+provider5-proxy    | [15, 25, 50, 10]
+alliance0-proxy    | local lock failed
+alliance1-proxy    | abort
+provider5-proxy    | local lock failed
+alliance0-proxy    | [42, 6, 29, 17]
+provider5-proxy    | [5, 45, 40, 50]
+provider5-proxy    | local lock failed
+provider5-proxy    | [20, 10, 40, 5]
+provider5-proxy    | local lock failed
+provider5-proxy    | [35, 15, 5, 50]
+provider5-proxy    | local lock failed
+provider5-proxy    | [25, 10, 35, 50]
+alliance1-proxy    | [2, 11, 39, 4]
+alliance0-proxy    | succeeded
+alliance1-proxy    | local lock failed
+alliance1-proxy    | [47, 5, 23, 2]
+provider5-proxy    | local lock failed
+provider5-proxy    | [50, 5, 40, 30]
+provider5-proxy    | local lock failed
+provider5-proxy    | [5, 15, 10, 40]
+provider5-proxy    | local lock failed
+provider5-proxy    | [5, 15, 10, 25]
+provider5-proxy    | local lock failed
+provider5-proxy    | [40, 30, 35, 45]
+alliance1-proxy    | succeeded
+provider5-proxy    | succeeded
+provider4-proxy    | released
+provider4-proxy    | [14, 4, 29, 34]
+provider3-proxy    | released
+provider4-proxy    | succeeded
+provider3-proxy    | [13, 28, 33, 23]
+provider3-proxy    | local lock failed
+provider3-proxy    | [33, 23, 38, 13]
+provider3-proxy    | local lock failed
+provider3-proxy    | [38, 23, 48, 28]
+provider3-proxy    | local lock failed
+provider3-proxy    | [48, 38, 28, 23]
+provider2-proxy    | abort
+provider3-proxy    | local lock failed
+provider3-proxy    | [43, 33, 38, 18]
+alliance2-proxy    | abort
+alliance0-proxy    | abort
+alliance0-proxy    | [8, 17, 18, 11]
+provider3-proxy    | succeeded
+provider2-proxy    | [17, 12, 7, 32]
+provider2-proxy    | succeeded
+alliance2-proxy    | [37, 42, 23, 19]
+alliance0-proxy    | succeeded
+alliance2-proxy    | succeeded
+provider1-proxy    | released
+provider1-proxy    | [16, 11, 6, 36]
+provider1-proxy    | succeeded
+alliance1-proxy    | abort
+alliance1-proxy    | [35, 21, 18, 7]
+alliance1-proxy    | local lock failed
+alliance1-proxy    | [39, 23, 11, 8]
+provider5-proxy    | released
+alliance1-proxy    | succeeded
+provider5-proxy    | [25, 50, 5, 30]
+provider5-proxy    | succeeded
+provider4-proxy    | released
+provider3-proxy    | abort
+provider4-proxy    | [44, 49, 19, 39]
+provider4-proxy    | local lock failed
+provider4-proxy    | [14, 49, 19, 24]
+provider3-proxy    | [23, 13, 48, 38]
+provider4-proxy    | local lock failed
+provider4-proxy    | [14, 34, 39, 44]
+provider3-proxy    | local lock failed
+provider3-proxy    | [28, 18, 3, 38]
+provider4-proxy    | local lock failed
+provider4-proxy    | [14, 39, 44, 49]
+provider4-proxy    | local lock failed
+provider4-proxy    | [39, 19, 44, 9]
+provider3-proxy    | succeeded
+provider4-proxy    | local lock failed
+provider4-proxy    | [19, 34, 24, 29]
+provider4-proxy    | local lock failed
+provider4-proxy    | [19, 24, 29, 9]
+provider4-proxy    | local lock failed
+provider4-proxy    | [29, 4, 14, 49]
+alliance0-proxy    | abort
+provider4-proxy    | succeeded
+provider2-proxy    | abort
+alliance0-proxy    | [14, 29, 30, 48]
+alliance0-proxy    | succeeded
+provider2-proxy    | [27, 7, 42, 47]
+provider2-proxy    | local lock failed
+provider2-proxy    | [37, 7, 22, 42]
+provider2-proxy    | local lock failed
+provider2-proxy    | [7, 17, 22, 37]
+provider2-proxy    | local lock failed
+provider2-proxy    | [22, 32, 27, 17]
+provider2-proxy    | succeeded
+provider1-proxy    | abort
+provider1-proxy    | [46, 11, 21, 36]
+alliance2-proxy    | abort
+provider1-proxy    | succeeded
+alliance2-proxy    | [48, 26, 39, 2]
+provider5-proxy    | abort
+alliance2-proxy    | succeeded
+provider5-proxy    | [20, 10, 40, 35]
+provider5-proxy    | succeeded
+alliance1-proxy    | abort
+alliance1-proxy    | [3, 1, 29, 13]
+alliance1-proxy    | local lock failed
+alliance1-proxy    | [24, 15, 28, 12]
+alliance1-proxy    | local lock failed
+alliance1-proxy    | [19, 16, 8, 43]
+alliance1-proxy    | succeeded
+provider3-proxy    | released
+provider4-proxy    | abort
+provider3-proxy    | [28, 38, 33, 43]
+provider3-proxy    | local lock failed
+provider3-proxy    | [33, 8, 28, 3]
+provider4-proxy    | [39, 14, 29, 24]
+provider3-proxy    | local lock failed
+provider3-proxy    | [13, 18, 3, 23]
+provider4-proxy    | succeeded
+provider3-proxy    | succeeded
+provider2-proxy    | released
+provider2-proxy    | [2, 12, 42, 47]
+provider2-proxy    | local lock failed
+provider2-proxy    | [12, 17, 47, 42]
+provider2-proxy    | succeeded
+provider1-proxy    | released
+provider1-proxy    | [41, 1, 46, 21]
+provider1-proxy    | succeeded
+provider5-proxy    | released
+provider5-proxy    | [30, 10, 15, 20]
+provider5-proxy    | local lock failed
+provider5-proxy    | [10, 50, 15, 45]
+provider5-proxy    | succeeded
+alliance2-proxy    | abort
+alliance2-proxy    | [50, 15, 29, 7]
+alliance2-proxy    | local lock failed
+alliance2-proxy    | [28, 32, 42, 1]
+alliance1-proxy    | released
+alliance2-proxy    | succeeded
+alliance1-proxy    | [34, 16, 50, 20]
+provider4-proxy    | abort
+provider4-proxy    | [29, 49, 4, 14]
+provider4-proxy    | succeeded
+alliance1-proxy    | succeeded
+alliance0-proxy    | abort
+alliance0-proxy    | [2, 4, 23, 31]
+alliance0-proxy    | local lock failed
+alliance0-proxy    | [15, 2, 20, 38]
+alliance0-proxy    | succeeded
+provider3-proxy    | released
+provider2-proxy    | abort
+provider3-proxy    | [48, 8, 3, 23]
+provider2-proxy    | [27, 7, 32, 47]
+provider2-proxy    | succeeded
+provider3-proxy    | succeeded
+provider5-proxy    | abort
+provider1-proxy    | abort
+provider5-proxy    | [35, 20, 10, 30]
+provider1-proxy    | [6, 41, 36, 11]
+provider5-proxy    | succeeded
+provider1-proxy    | succeeded
+provider4-proxy    | released
+alliance0-proxy    | abort
+alliance0-proxy    | [48, 7, 49, 5]
+alliance0-proxy    | local lock failed
+alliance0-proxy    | [30, 40, 5, 14]
+provider4-proxy    | [49, 19, 24, 34]
+provider4-proxy    | local lock failed
+alliance0-proxy    | succeeded
+provider4-proxy    | [19, 44, 9, 39]
+alliance2-proxy    | abort
+provider4-proxy    | succeeded
+alliance1-proxy    | abort
+alliance2-proxy    | [43, 10, 9, 40]
+alliance1-proxy    | [42, 7, 41, 37]
+alliance1-proxy    | local lock failed
+alliance2-proxy    | succeeded
+alliance1-proxy    | [26, 18, 34, 27]
+alliance1-proxy    | local lock failed
+alliance1-proxy    | [27, 24, 14, 31]
+alliance1-proxy    | local lock failed
+alliance1-proxy    | [43, 26, 22, 41]
+alliance1-proxy    | succeeded
+provider2-proxy    | released
+provider2-proxy    | [22, 2, 17, 42]
+provider2-proxy    | succeeded
+provider3-proxy    | released
+alliance1-proxy    | abort
+provider5-proxy    | abort
+provider3-proxy    | [38, 48, 18, 13]
+alliance1-proxy    | [6, 22, 21, 4]
+provider5-proxy    | [45, 50, 30, 15]
+provider3-proxy    | succeeded
+provider5-proxy    | succeeded
+alliance1-proxy    | succeeded
+provider1-proxy    | abort
+provider1-proxy    | [6, 26, 46, 41]
+provider1-proxy    | succeeded
+provider4-proxy    | abort
+provider4-proxy    | [14, 9, 39, 24]
+alliance2-proxy    | abort
+provider4-proxy    | succeeded
+provider2-proxy    | abort
+alliance2-proxy    | [35, 48, 18, 5]
+alliance2-proxy    | local lock failed
+alliance2-proxy    | [50, 30, 33, 10]
+provider2-proxy    | [2, 22, 42, 27]
+provider2-proxy    | succeeded
+alliance2-proxy    | succeeded
+provider5-proxy    | abort
+provider5-proxy    | [25, 10, 20, 45]
+provider5-proxy    | succeeded
+alliance0-proxy    | abort
+alliance0-proxy    | [24, 43, 16, 12]
+provider3-proxy    | released
+alliance0-proxy    | succeeded
+provider3-proxy    | [23, 18, 43, 3]
+alliance1-proxy    | abort
+provider3-proxy    | succeeded
+alliance1-proxy    | [33, 22, 34, 31]
+alliance1-proxy    | local lock failed
+alliance1-proxy    | [48, 10, 14, 29]
+alliance1-proxy    | local lock failed
+alliance1-proxy    | [14, 7, 37, 35]
+alliance1-proxy    | local lock failed
+alliance1-proxy    | [20, 9, 25, 6]
+alliance1-proxy    | local lock failed
+alliance1-proxy    | [44, 33, 21, 14]
+alliance1-proxy    | local lock failed
+alliance1-proxy    | [9, 17, 22, 37]
+alliance1-proxy    | local lock failed
+alliance1-proxy    | [4, 48, 33, 22]
+alliance1-proxy    | local lock failed
+alliance1-proxy    | [38, 44, 19, 20]
+provider1-proxy    | abort
+provider1-proxy    | [36, 26, 6, 46]
+provider1-proxy    | succeeded
+alliance1-proxy    | succeeded
+provider4-proxy    | abort
+provider4-proxy    | [34, 49, 44, 39]
+provider4-proxy    | local lock failed
+provider4-proxy    | [49, 34, 14, 24]
+provider4-proxy    | succeeded
+alliance2-proxy    | abort
+provider2-proxy    | released
+alliance2-proxy    | [8, 11, 27, 1]
+alliance2-proxy    | local lock failed
+alliance2-proxy    | [38, 33, 41, 26]
+provider2-proxy    | [37, 22, 12, 42]
+provider2-proxy    | succeeded
+provider5-proxy    | abort
+alliance2-proxy    | succeeded
+provider5-proxy    | [40, 30, 35, 50]
+provider5-proxy    | succeeded
+alliance2-proxy    | abort
+alliance2-proxy    | [17, 6, 21, 3]
+provider3-proxy    | abort
+provider1-proxy    | abort
+provider3-proxy    | [33, 48, 28, 18]
+provider1-proxy    | [46, 31, 41, 26]
+provider3-proxy    | succeeded
+alliance2-proxy    | succeeded
+provider1-proxy    | succeeded
+provider4-proxy    | abort
+provider4-proxy    | [9, 4, 14, 24]
+provider2-proxy    | abort
+alliance1-proxy    | abort
+provider4-proxy    | succeeded
+provider2-proxy    | [47, 2, 42, 32]
+provider2-proxy    | succeeded
+alliance1-proxy    | [11, 42, 33, 2]
+alliance1-proxy    | succeeded
+provider5-proxy    | released
+provider5-proxy    | [50, 35, 40, 10]
+provider5-proxy    | succeeded
+alliance0-proxy    | abort
+provider3-proxy    | abort
+provider3-proxy    | [48, 28, 18, 33]
+provider3-proxy    | succeeded
+alliance0-proxy    | [31, 11, 12, 34]
+alliance0-proxy    | local lock failed
+alliance0-proxy    | [25, 45, 19, 18]
+alliance0-proxy    | succeeded
+provider1-proxy    | released
+provider1-proxy    | [16, 21, 31, 26]
+provider1-proxy    | local lock failed
+provider1-proxy    | [6, 21, 31, 16]
+provider1-proxy    | local lock failed
+provider1-proxy    | [11, 41, 46, 16]
+provider1-proxy    | local lock failed
+provider1-proxy    | [16, 36, 26, 31]
+provider1-proxy    | succeeded
+alliance2-proxy    | released
+alliance2-proxy    | [3, 50, 23, 4]
+alliance2-proxy    | local lock failed
+alliance2-proxy    | [1, 49, 8, 35]
+alliance2-proxy    | local lock failed
+alliance2-proxy    | [13, 40, 35, 48]
+alliance2-proxy    | local lock failed
+alliance2-proxy    | [49, 24, 14, 45]
+provider2-proxy    | abort
+alliance1-proxy    | abort
+alliance2-proxy    | local lock failed
+alliance2-proxy    | [21, 8, 40, 7]
+alliance2-proxy    | local lock failed
+alliance2-proxy    | [31, 15, 23, 9]
+alliance2-proxy    | local lock failed
+provider4-proxy    | released
+alliance2-proxy    | [36, 5, 9, 21]
+alliance2-proxy    | local lock failed
+provider2-proxy    | [32, 27, 12, 7]
+alliance2-proxy    | [8, 41, 21, 47]
+alliance1-proxy    | [49, 23, 17, 40]
+alliance1-proxy    | local lock failed
+alliance1-proxy    | [34, 41, 46, 20]
+provider2-proxy    | succeeded
+provider4-proxy    | [34, 29, 39, 49]
+alliance2-proxy    | succeeded
+provider4-proxy    | succeeded
+alliance1-proxy    | succeeded
+provider5-proxy    | released
+provider5-proxy    | [5, 15, 45, 40]
+provider3-proxy    | abort
+provider5-proxy    | succeeded
+provider3-proxy    | [8, 23, 3, 38]
+provider3-proxy    | local lock failed
+provider3-proxy    | [18, 23, 43, 33]
+provider3-proxy    | succeeded
+provider1-proxy    | released
+provider1-proxy    | [31, 41, 21, 16]
+provider1-proxy    | local lock failed
+provider1-proxy    | [36, 1, 11, 21]
+provider1-proxy    | local lock failed
+provider1-proxy    | [46, 41, 21, 26]
+provider1-proxy    | local lock failed
+provider1-proxy    | [16, 11, 21, 31]
+provider1-proxy    | local lock failed
+provider1-proxy    | [46, 11, 6, 1]
+provider1-proxy    | succeeded
+provider2-proxy    | released
+provider2-proxy    | [27, 12, 42, 47]
+provider4-proxy    | abort
+provider2-proxy    | local lock failed
+provider2-proxy    | [7, 37, 27, 22]
+provider4-proxy    | [24, 49, 39, 34]
+provider2-proxy    | succeeded
+provider4-proxy    | succeeded
+alliance2-proxy    | abort
+alliance1-proxy    | abort
+alliance2-proxy    | [2, 36, 37, 49]
+alliance1-proxy    | [10, 42, 3, 44]
+provider5-proxy    | abort
+alliance0-proxy    | abort
+alliance2-proxy    | succeeded
+provider5-proxy    | [15, 20, 45, 35]
+alliance1-proxy    | succeeded
+provider5-proxy    | succeeded
+alliance0-proxy    | [7, 11, 8, 20]
+alliance0-proxy    | succeeded
+provider3-proxy    | released
+provider1-proxy    | abort
+provider1-proxy    | [31, 46, 6, 11]
+provider1-proxy    | succeeded
+provider3-proxy    | [8, 33, 48, 18]
+provider4-proxy    | abort
+provider3-proxy    | succeeded
+alliance0-proxy    | abort
+alliance0-proxy    | [16, 41, 12, 26]
+provider4-proxy    | [19, 39, 14, 34]
+alliance0-proxy    | succeeded
+provider4-proxy    | succeeded
+provider2-proxy    | abort
+provider2-proxy    | [47, 42, 22, 12]
+provider2-proxy    | local lock failed
+provider2-proxy    | [37, 2, 12, 47]
+provider2-proxy    | succeeded
+provider5-proxy    | released
+provider5-proxy    | [15, 30, 25, 20]
+provider5-proxy    | succeeded
+alliance2-proxy    | abort
+alliance1-proxy    | released
+alliance2-proxy    | [32, 9, 7, 43]
+alliance1-proxy    | [7, 5, 3, 27]
+alliance2-proxy    | succeeded
+alliance1-proxy    | succeeded
+provider1-proxy    | released
+provider1-proxy    | [46, 21, 16, 1]
+provider1-proxy    | succeeded
+provider3-proxy    | released
+provider3-proxy    | [18, 38, 33, 3]
+provider3-proxy    | local lock failed
+provider3-proxy    | [43, 18, 28, 3]
+provider3-proxy    | local lock failed
+provider3-proxy    | [8, 28, 18, 3]
+provider3-proxy    | local lock failed
+provider3-proxy    | [23, 33, 38, 8]
+provider3-proxy    | succeeded
+alliance2-proxy    | abort
+alliance2-proxy    | [3, 49, 41, 11]
+alliance2-proxy    | local lock failed
+alliance2-proxy    | [21, 20, 32, 40]
+provider4-proxy    | released
+provider4-proxy    | [9, 44, 14, 34]
+alliance2-proxy    | succeeded
+provider4-proxy    | succeeded
+provider5-proxy    | abort
+provider2-proxy    | abort
+provider5-proxy    | [45, 20, 40, 30]
+provider2-proxy    | [42, 2, 47, 32]
+provider5-proxy    | succeeded
+provider2-proxy    | succeeded
+provider1-proxy    | abort
+alliance2-proxy    | abort
+provider1-proxy    | [11, 41, 21, 46]
+alliance2-proxy    | [22, 38, 47, 12]
+provider1-proxy    | succeeded
+alliance2-proxy    | succeeded
+alliance1-proxy    | abort
+alliance1-proxy    | [28, 27, 47, 43]
+alliance2-proxy    | abort
+alliance1-proxy    | succeeded
+alliance2-proxy    | [20, 48, 29, 28]
+alliance0-proxy    | abort
+alliance2-proxy    | succeeded
+alliance0-proxy    | [35, 8, 14, 42]
+alliance0-proxy    | local lock failed
+alliance0-proxy    | [25, 38, 48, 7]
+alliance0-proxy    | local lock failed
+alliance0-proxy    | [3, 14, 9, 40]
+alliance0-proxy    | local lock failed
+alliance0-proxy    | [22, 14, 39, 35]
+alliance0-proxy    | local lock failed
+alliance0-proxy    | [8, 13, 31, 45]
+alliance0-proxy    | local lock failed
+alliance0-proxy    | [20, 11, 15, 16]
+alliance0-proxy    | local lock failed
+alliance0-proxy    | [49, 25, 16, 12]
+alliance0-proxy    | succeeded
+provider3-proxy    | released
+provider3-proxy    | [23, 28, 43, 48]
+provider3-proxy    | local lock failed
+provider3-proxy    | [18, 38, 3, 13]
+provider3-proxy    | succeeded
+provider5-proxy    | abort
+provider4-proxy    | released
+provider2-proxy    | abort
+alliance2-proxy    | abort
+provider5-proxy    | [30, 45, 15, 5]
+provider5-proxy    | succeeded
+provider4-proxy    | [14, 49, 34, 44]
+provider2-proxy    | [42, 2, 27, 37]
+provider2-proxy    | succeeded
+alliance2-proxy    | [46, 39, 7, 25]
+provider4-proxy    | succeeded
+alliance2-proxy    | local lock failed
+alliance2-proxy    | [28, 6, 25, 1]
+alliance1-proxy    | abort
+alliance2-proxy    | succeeded
+alliance1-proxy    | [43, 2, 27, 23]
+provider1-proxy    | released
+alliance1-proxy    | succeeded
+provider1-proxy    | [41, 6, 36, 16]
+provider1-proxy    | local lock failed
+provider1-proxy    | [31, 16, 46, 41]
+provider1-proxy    | local lock failed
+provider1-proxy    | [11, 16, 36, 31]
+provider1-proxy    | local lock failed
+provider1-proxy    | [1, 11, 16, 31]
+provider1-proxy    | local lock failed
+provider1-proxy    | [26, 36, 31, 1]
+provider1-proxy    | local lock failed
+provider1-proxy    | [41, 6, 21, 1]
+provider1-proxy    | local lock failed
+provider1-proxy    | [16, 11, 21, 41]
+provider1-proxy    | local lock failed
+provider1-proxy    | [16, 1, 31, 11]
+provider1-proxy    | local lock failed
+provider3-proxy    | released
+provider1-proxy    | [41, 16, 1, 46]
+provider1-proxy    | local lock failed
+provider1-proxy    | [16, 36, 26, 41]
+provider1-proxy    | local lock failed
+provider1-proxy    | [31, 21, 16, 46]
+provider1-proxy    | local lock failed
+provider1-proxy    | [21, 36, 46, 6]
+provider1-proxy    | local lock failed
+provider1-proxy    | [36, 26, 31, 11]
+provider3-proxy    | [43, 48, 8, 28]
+provider3-proxy    | local lock failed
+provider3-proxy    | [13, 43, 18, 48]
+provider3-proxy    | local lock failed
+provider3-proxy    | [3, 23, 48, 13]
+provider1-proxy    | succeeded
+provider3-proxy    | local lock failed
+provider3-proxy    | [28, 38, 33, 13]
+provider3-proxy    | local lock failed
+provider3-proxy    | [28, 43, 8, 38]
+provider3-proxy    | local lock failed
+provider3-proxy    | [48, 18, 28, 3]
+provider3-proxy    | local lock failed
+provider3-proxy    | [23, 33, 43, 13]
+provider3-proxy    | local lock failed
+provider3-proxy    | [28, 18, 38, 33]
+provider3-proxy    | local lock failed
+provider3-proxy    | [13, 48, 18, 38]
+provider3-proxy    | succeeded
+provider5-proxy    | released
+provider2-proxy    | abort
+provider5-proxy    | [5, 20, 25, 40]
+provider2-proxy    | [42, 17, 32, 47]
+provider5-proxy    | local lock failed
+provider5-proxy    | [20, 30, 10, 25]
+provider5-proxy    | local lock failed
+provider5-proxy    | [30, 10, 25, 5]
+provider2-proxy    | succeeded
+provider5-proxy    | local lock failed
+provider5-proxy    | [35, 25, 5, 50]
+provider5-proxy    | local lock failed
+provider5-proxy    | [50, 40, 20, 30]
+provider5-proxy    | succeeded
+alliance0-proxy    | abort
+provider4-proxy    | abort
+provider4-proxy    | [29, 49, 34, 14]
+alliance0-proxy    | [7, 50, 23, 27]
+alliance0-proxy    | local lock failed
+alliance0-proxy    | [11, 19, 33, 25]
+provider4-proxy    | succeeded
+alliance0-proxy    | succeeded
+alliance1-proxy    | abort
+alliance2-proxy    | abort
+alliance1-proxy    | [22, 6, 15, 9]
+alliance1-proxy    | local lock failed
+alliance1-proxy    | [13, 33, 20, 27]
+alliance2-proxy    | [8, 33, 35, 50]
+alliance1-proxy    | succeeded
+alliance2-proxy    | succeeded
+provider3-proxy    | abort
+provider1-proxy    | abort
+provider3-proxy    | [38, 33, 28, 48]
+provider1-proxy    | [26, 21, 36, 6]
+provider3-proxy    | local lock failed
+provider3-proxy    | [3, 13, 28, 43]
+provider1-proxy    | succeeded
+provider3-proxy    | succeeded
+provider5-proxy    | abort
+provider5-proxy    | [20, 15, 45, 5]
+provider5-proxy    | succeeded
+provider2-proxy    | released
+provider2-proxy    | [7, 47, 32, 12]
+provider2-proxy    | succeeded
+alliance2-proxy    | abort
+alliance2-proxy    | [38, 11, 35, 21]
+alliance2-proxy    | local lock failed
+alliance2-proxy    | [47, 44, 4, 6]
+provider4-proxy    | released
+provider4-proxy    | [24, 4, 19, 29]
+alliance2-proxy    | succeeded
+provider4-proxy    | succeeded
+alliance2-proxy    | abort
+provider1-proxy    | abort
+alliance1-proxy    | abort
+alliance2-proxy    | [15, 18, 25, 6]
+alliance2-proxy    | local lock failed
+alliance2-proxy    | [11, 43, 44, 3]
+provider1-proxy    | [1, 46, 41, 31]
+alliance2-proxy    | local lock failed
+alliance2-proxy    | [42, 8, 43, 28]
+alliance2-proxy    | local lock failed
+alliance2-proxy    | [16, 48, 32, 13]
+alliance1-proxy    | [17, 7, 5, 28]
+provider1-proxy    | succeeded
+alliance2-proxy    | local lock failed
+alliance2-proxy    | [12, 46, 11, 35]
+alliance2-proxy    | local lock failed
+alliance2-proxy    | [12, 1, 37, 10]
+alliance1-proxy    | local lock failed
+alliance1-proxy    | [38, 31, 41, 39]
+alliance1-proxy    | succeeded
+alliance2-proxy    | succeeded
+provider3-proxy    | abort
+provider3-proxy    | [48, 18, 38, 43]
+provider2-proxy    | abort
+provider3-proxy    | local lock failed
+provider3-proxy    | [18, 33, 28, 13]
+provider1-proxy    | abort
+provider1-proxy    | [1, 36, 41, 16]
+alliance0-proxy    | abort
+provider2-proxy    | [17, 42, 7, 32]
+provider3-proxy    | succeeded
+provider1-proxy    | succeeded
+provider2-proxy    | succeeded
+alliance0-proxy    | [5, 50, 25, 38]
+alliance0-proxy    | local lock failed
+alliance0-proxy    | [26, 1, 33, 9]
+alliance0-proxy    | local lock failed
+alliance0-proxy    | [22, 19, 46, 48]
+provider5-proxy    | abort
+provider4-proxy    | abort
+alliance0-proxy    | succeeded
+provider5-proxy    | [35, 20, 40, 45]
+provider4-proxy    | [24, 44, 49, 34]
+alliance2-proxy    | abort
+provider5-proxy    | succeeded
+provider4-proxy    | succeeded
+alliance2-proxy    | [30, 15, 14, 50]
+alliance1-proxy    | abort
+alliance1-proxy    | [7, 18, 48, 11]
+alliance2-proxy    | succeeded
+alliance1-proxy    | local lock failed
+alliance1-proxy    | [33, 39, 16, 47]
+alliance1-proxy    | local lock failed
+alliance1-proxy    | [7, 13, 49, 42]
+alliance1-proxy    | local lock failed
+alliance1-proxy    | [37, 7, 22, 43]
+alliance1-proxy    | local lock failed
+alliance1-proxy    | [12, 21, 6, 19]
+alliance1-proxy    | succeeded
+provider1-proxy    | abort
+provider1-proxy    | [26, 46, 16, 11]
+provider1-proxy    | succeeded
+provider2-proxy    | released
+provider2-proxy    | [7, 22, 2, 17]
+provider2-proxy    | local lock failed
+provider2-proxy    | [37, 22, 42, 7]
+provider2-proxy    | local lock failed
+provider2-proxy    | [42, 37, 2, 7]
+provider2-proxy    | succeeded
+provider3-proxy    | released
+provider3-proxy    | [48, 8, 43, 23]
+provider3-proxy    | local lock failed

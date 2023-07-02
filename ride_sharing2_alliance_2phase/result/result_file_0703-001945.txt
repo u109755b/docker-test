@@ -1,0 +1,10 @@
+provider2 812 730 0 120
+provider3 878 993 0 120
+provider4 845 685 0 120
+alliance2 703 965 0 120
+alliance1 756 1113 0 120
+provider5 850 910 0 120
+provider1 906 1043 0 120
+alliance0 563 812 0 120
+6313
+7251

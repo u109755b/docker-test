@@ -31,10 +31,10 @@ class FRSPropagation(object):
 
         if tx.propagation_cnt == 0:
             tx.propagation_cnt += 1
-        else:
-            resp.text = json.dumps({"result": "Nak"})
-            print("A propagation loop detected")
-            return
+        # else:
+        #     resp.text = json.dumps({"result": "Nak"})
+        #     print("A propagation loop detected")
+        #     return
         
         # update dejima table and propagate to base tables
         try:
@@ -67,7 +67,7 @@ class FRSPropagation(object):
             tx.cur.execute(stmt)
             timestamp.append(time.perf_counter())
         except Exception as e:
-            print(e)
+            print("Error during prop lock:", e)
             resp.text = json.dumps({"result": "Nak", "info": e.__class__.__name__})
             return
 
@@ -91,7 +91,9 @@ class FRSPropagation(object):
                 for bt in config.bt_list:
                     tx.cur.execute("SELECT {}_propagate_updates_to_{}()".format(bt, dt))
                 tx.cur.execute("SELECT public.{}_get_detected_update_data({})".format(dt, local_xid))
-                delta, *_ = tx.cur.fetchone()
+                try:
+                    delta, *_ = tx.cur.fetchone()
+                except: continue
 
                 if delta == None: continue
                 delta = json.loads(delta)
@@ -103,7 +105,7 @@ class FRSPropagation(object):
                 tx.extend_childs(target_peers)
 
         except Exception as e:
-            print(e)
+            print("Error during prop update:", e)
             tx.reset_childs()
             msg = {"result": "Nak"}
             resp.text = json.dumps(msg)
