@@ -15,6 +15,8 @@ def doRSAB_ALLIANCE_2pl():
     start_time = time.perf_counter()
     timestamp.append(start_time)
     
+    config.result_measurement.start_tx()
+    
     # create new tx
     global_xid = dejimautils.get_unique_id()
     tx = Tx(global_xid)
@@ -52,6 +54,7 @@ def doRSAB_ALLIANCE_2pl():
         tx.abort()
         del config.tx_dict[global_xid]
         config.timestamp_management.commit_or_abort(start_time, time.perf_counter(), "abort_in_local")
+        config.result_measurement.abort_tx('local')
         return False
 
     if miss_flag:
@@ -124,12 +127,20 @@ def doRSAB_ALLIANCE_2pl():
         tx.commit()
         dejimautils.termination_request("commit", global_xid, "2pl")
         config.timestamp_management.commit_or_abort(start_time, time.perf_counter(), "commit")
+        
+        all_select = True
+        for stmt in stmts:
+            if not stmt.startswith("SELECT"): all_select = False
+        if all_select: config.result_measurement.commit_tx('read')
+        else: config.result_measurement.commit_tx('update')
+            
         config.stmts = []
     else:
         if LOCK_DEBUG: print("abort")
         tx.abort()
         dejimautils.termination_request("abort", global_xid, "2pl")
         config.timestamp_management.commit_or_abort(start_time, time.perf_counter(), "abort_during_prop")
+        config.result_measurement.abort_tx('global')
     del config.tx_dict[global_xid]
     
     return commit

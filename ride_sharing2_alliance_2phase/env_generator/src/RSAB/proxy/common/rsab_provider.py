@@ -52,6 +52,7 @@ class RSABProvider(object):
                 doRSAB = doRSAB_PROVIDER_2pl
             config.timestamp_management = config.TimestampManagement()
             config.time_measurement = config.TimeMeasurement()
+            config.result_measurement = config.ResultMeasurement()
             
             current_time = time.time() - start_time
             while (current_time < bench_time):
@@ -83,7 +84,7 @@ class RSABProvider(object):
             # print(config.timestamp_management.get_result())
             config.timestamp_management.print_result1()
             config.time_measurement.print_time()
-            config.timestamp_management.print_result2()
+            # config.timestamp_management.print_result2()
                 
                 # time.sleep(0.1)
 
@@ -191,9 +192,8 @@ class RSABProvider(object):
         #     transaction_result.append(str(commit_abort_miss['transaction'][cam_str]))
         # transaction_result = " ".join(transaction_result)
         
-        msg = " ".join([config.peer_name, str(commit_num), str(abort_num), str(miss_num), str(bench_time-miss_time)])
-        print("total commit time: {:.2f}, total abort time: {:.2f}".format(total_commit_time, total_abort_time))
-        # msg = config.peer_name + ":  " + transaction_result + ",  " + str(bench_time-miss_time)
+        # msg = " ".join([config.peer_name, str(commit_num), str(abort_num), str(miss_num), str(bench_time-miss_time)])
+        # print("total commit time: {:.2f}, total abort time: {:.2f}".format(total_commit_time, total_abort_time))
         
         if switch_cnt != []:
             msg += " *" + " ".join(map(str, switch_cnt)) + "*"
@@ -201,6 +201,8 @@ class RSABProvider(object):
         #     msg += " " + str(result['commit'])
         # for result in result_per_epoch:
         #     msg += " " + str(result['abort'])
+        
+        msg = config.result_measurement.get_result(display=True)
         msg += "\n"
 
         print("benchmark finished")

@@ -9,6 +9,7 @@ ZIPF_GEN_MODE = False
 QUERY_ORDER = True
 READ_WRITE_RATE = 0
 RECORDS_TX = 4
+RECORDS_PEER = 10
 
 def randomname(n):
    return ''.join(random.choices(string.ascii_letters + string.digits, k=n))
@@ -45,7 +46,7 @@ def get_workload_for_provider():
     stmts = []
     V_list = random.sample(config.candidate_record_id_list, RECORDS_TX)
     if ZIPF_GEN_MODE == True:
-        index = next(zipf_gen)
+        index = next(zipf_gen)-1
         V_list = [config.candidate_record_id_list[index]]
     if random.randint(1, 100) <= READ_WRITE_RATE:
         for V in V_list:
@@ -65,7 +66,14 @@ def get_workload_for_alliance0():
     keys = random.sample(list(config.candidate_v_dict.keys()), RECORDS_TX)
     VA_list = [random.choice(config.candidate_v_dict[key]) for key in keys]
     if ZIPF_GEN_MODE == True:
-        v = next(zipf_gen)
+        index = next(zipf_gen)-1
+        
+        n = RECORDS_PEER
+        lower_bound = index//n * n
+        upper_bound = lower_bound+n
+        index = random.randint(lower_bound, upper_bound-1)
+        v = index + 1
+        
         VA_list = [random.choice(config.candidate_v_dict[v])]
     if random.randint(1, 100) <= READ_WRITE_RATE:
         # VA_list = random.sample(config.candidate_record_id_list, 2)
@@ -87,7 +95,13 @@ def get_workload_for_alliance():
     stmts = []
     V_list = random.sample(config.candidate_record_id_list, RECORDS_TX)
     if ZIPF_GEN_MODE == True:
-        index = next(zipf_gen)
+        index = next(zipf_gen)-1
+        
+        n = RECORDS_PEER
+        lower_bound = index//n * n
+        upper_bound = lower_bound+n
+        index = random.randint(lower_bound, upper_bound-1)
+        
         V_list = [config.candidate_record_id_list[index]]
     if random.randint(1, 100) <= READ_WRITE_RATE:
         for V in V_list:

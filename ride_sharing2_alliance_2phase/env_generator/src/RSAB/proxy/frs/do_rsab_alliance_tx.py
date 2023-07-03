@@ -17,6 +17,7 @@ def doRSAB_ALLIANCE_frs():
     timestamp.append(start_time)
     
     if DEBUG: print("step0")
+    config.result_measurement.start_tx()
     
     # create new tx
     global_xid = dejimautils.get_unique_id()
@@ -60,6 +61,7 @@ def doRSAB_ALLIANCE_frs():
         tx.abort()
         del config.tx_dict[global_xid]
         config.timestamp_management.commit_or_abort(start_time, time.perf_counter(), "abort_during_local_lock")
+        config.result_measurement.abort_tx('local')
         return False
     
     if miss_flag:
@@ -83,6 +85,7 @@ def doRSAB_ALLIANCE_frs():
         tx.abort()
         del config.tx_dict[global_xid]
         config.timestamp_management.commit_or_abort(start_time, time.perf_counter(), "abort_during_global_lock")
+        config.result_measurement.abort_tx('global')
         return False
     
     if LOCK_DEBUG: print("succeeded")
@@ -95,7 +98,7 @@ def doRSAB_ALLIANCE_frs():
             tx.cur.execute(stmt)
     except:
         # abort during local execution
-        # print("abort during local execution")
+        print("abort during local execution")
         dejimautils.release_lock_request(global_xid) 
         tx.abort()
         del config.tx_dict[global_xid]
@@ -176,8 +179,12 @@ def doRSAB_ALLIANCE_frs():
             if not stmt.startswith("SELECT"):
                 all_select = False
         target_peers = list(set(config.target_peers) - set(target_peers))
-        if target_peers and not all_select:
-            dejimautils.release_lock_request(global_xid, target_peers)
+        if all_select:
+            config.result_measurement.commit_tx('read')
+        else:
+            config.result_measurement.commit_tx('update')
+            if target_peers:
+                dejimautils.release_lock_request(global_xid, target_peers)
             
         config.timestamp_management.commit_or_abort(start_time, time.perf_counter(), "commit")
         config.stmts = []

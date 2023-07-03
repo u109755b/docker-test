@@ -1,9 +1,5 @@
 #!/usr/bin/bash
 
-alliance_num=2
-provider_num=5
-
-
 function load_rsab(){
     n=${1:-10}  # num of records for each peer's insert (default n is 10)
     start_id=1
@@ -36,12 +32,22 @@ function set_read_write_rate(){
 }
 
 
-function query_order(){
-    on_off=${1}
-    echo "query_order ${on_off}"
+function set_records_tx(){
+    records_tx=${1}
+    echo "set_records_tx ${records_tx}"
     for i in `seq 0 $((alliance_num+provider_num))`
     do
-        curl -s "localhost:$((i+8000))/change_val?about=query_order&on_off=${on_off}" >/dev/null
+        curl -s "localhost:$((i+8000))/change_val?about=set_records_tx&records_tx=${records_tx}" >/dev/null
+    done
+}
+
+
+function set_query_order(){
+    on_off=${1}
+    echo "set_query_order ${on_off}"
+    for i in `seq 0 $((alliance_num+provider_num))`
+    do
+        curl -s "localhost:$((i+8000))/change_val?about=set_query_order&on_off=${on_off}" >/dev/null
     done
 }
 
@@ -91,47 +97,84 @@ function bench_rsab(){
     sleep 5
 
     # calculate result
-    awk '{commit+=$2} END {print commit}' ${output_file} | tee -a ${output_file}
-    awk '{commit+=$3} END {print commit}' ${output_file} | tee -a ${output_file}
+    # awk '{commit+=$2} END {print commit}' ${output_file} | tee -a ${output_file}
+    # awk '{commit+=$3} END {print commit}' ${output_file} | tee -a ${output_file}
+    n=$((1+alliance_num+provider_num))
+    sed 's/[()|, ]/ /g; s/\[s\]//g' ${output_file} | awk -v n="$n" '{cn+=$3; cn1+=$4; cn2+=$5; ct+=$6; ct1+=$7; ct2+=$8} 
+        END {printf "commit:  %d (%d %d)   %.2f (%.2f %.2f)[s]\n", cn, cn1, cn2, ct/n, ct1/n, ct2/n}' | tee -a ${output_file}
+    sed 's/[()|, ]/ /g; s/\[s\]//g' ${output_file} | awk -v n="$n" '{an+=$10; an1+=$11; an2+=$12; at+=$13; at1+=$14; at2+=$15} 
+        END {printf "abort:  %d (%d %d)   %.2f (%.2f %.2f)[s]\n", an, an1, an2, at/n, at1/n, at2/n}' | tee -a ${output_file}
 }
 
 
 
-command_name=$1
+alliance_num=2
+provider_num=10
+tx_t=120
 
-if [ $command_name == "load_rsab" ]; then       # load_rsab 10
-    load_rsab $2
-elif [ $command_name == "set_zipf" ]; then      # set_zipf 0.5
-    set_zipf $2
-elif [ $command_name == "set_rate" ]; then      # set_rate 20
-    set_read_write_rate $2
-elif [ $command_name == "query_order" ]; then      # query_order OFF
-    query_order $2
-elif [ $command_name == "bench_rsab" ]; then    # bench_rsab frs 1200
-    bench_rsab $2 $3
-elif [ $command_name == "show_lock" ]; then
+command_name=$1    
+    
+function settings(){
+    set_zipf 0.8
+    set_read_write_rate 0
+    set_records_tx 1
+    set_query_order "on"
+}
+    
+if [ $command_name == "0" ]; then
+    load_rsab 10
+    settings
+elif [ $command_name == "1" ]; then
+    settings
+    bench_rsab "2pl" $tx_t
+    bench_rsab "frs" $tx_t
     show_lock
     
-elif [ $command_name == "0" ]; then
-    load_rsab 10
-    set_read_write_rate 50
-    query_order "on"
-    # bench_rsab "2pl" 10
-    # show_lock
-elif [ $command_name == "1" ]; then
-    set_read_write_rate 20
-    # query_order "on"
-    bench_rsab "2pl" 120
-    show_lock
-elif [ $command_name == "2" ]; then
-    for ((rate = 0; rate <= 40; rate += 10)); do
-        set_read_write_rate $rate
-        
-        bench_rsab "2pl" 120
-        # show_lock
-        
-        bench_rsab "frs" 120
-        # show_lock
+elif [ $command_name == "2" ]; then  # zipfの変更
+    settings
+    thetas=(0 0.2 0.4 0.6 0.8 0.99)
+    for theta in "${thetas[@]}"; do
+        echo ""
+        set_zipf $theta        
+        bench_rsab "2pl" $tx_t
+        bench_rsab "frs" $tx_t
     done
+    show_lock
+elif [ $command_name == "3" ]; then  # read_write_rateの変更
+    settings
+    for ((rate = 0; rate <= 100; rate += 20)); do
+        echo ""
+        set_read_write_rate $rate
+        bench_rsab "2pl" $tx_t
+        bench_rsab "frs" $tx_t
+    done
+    show_lock
+elif [ $command_name == "4" ]; then  # records/Txの変更
+    settings
+    for ((records = 1; records <= 4; records += 1)); do
+        echo ""
+        set_records_tx $records
+        bench_rsab "2pl" $tx_t
+        bench_rsab "frs" $tx_t
+    done
+    show_lock
+fi
+
+
+
+
+if [ $command_name == "load_rsab" ]; then           # load_rsab 10
+    load_rsab $2
+elif [ $command_name == "set_zipf" ]; then          # set_zipf 0.5
+    set_zipf $2
+elif [ $command_name == "set_rate" ]; then          # set_rate 20
+    set_read_write_rate $2
+elif [ $command_name == "set_records_tx" ]; then    # set_records_tx 4
+    set_records_tx $2
+elif [ $command_name == "set_query_order" ]; then   # set_query_order OFF
+    set_query_order $2
+elif [ $command_name == "bench_rsab" ]; then        # bench_rsab frs 1200
+    bench_rsab $2 $3
+elif [ $command_name == "show_lock" ]; then         # show_lock
     show_lock
 fi
