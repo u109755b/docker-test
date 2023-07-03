@@ -94,7 +94,7 @@ function bench_rsab(){
     done
 
     sleep ${t}
-    sleep 5
+    sleep $((1+alliance_num+provider_num))
 
     # calculate result
     # awk '{commit+=$2} END {print commit}' ${output_file} | tee -a ${output_file}
