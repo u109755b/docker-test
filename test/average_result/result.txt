@@ -1,0 +1,78 @@
+1 records/Tx
+set_rate=0 - 2pl: 1102 (12405)
+set_rate=0 - frs: 1189 (14699)
+
+set_rate=20 - 2pl: 1297 (14761)
+set_rate=20 - frs: 1528 (22134)
+
+set_rate=40 - 2pl: 1849 (15630)
+set_rate=40 - frs: 1997 (36842)
+
+set_rate=60 - 2pl: 2792 (23660)
+set_rate=60 - frs: 2981 (58003)
+
+set_rate=80 - 2pl: 5469 (33830)
+set_rate=80 - frs: 5728 (101107)
+
+set_rate=100 - 2pl: 167305 (0)
+set_rate=100 - frs: 167733 (0)
+
+
+2 records/Tx
+set_rate=0 - 2pl: 588 (14196)
+set_rate=0 - frs: 799 (25835)
+
+set_rate=20 - 2pl: 705 (16140)
+set_rate=20 - frs: 1067 (51410)
+
+set_rate=40 - 2pl: 1159 (14096)
+set_rate=40 - frs: 1376 (75606)
+
+set_rate=60 - 2pl: 1478 (17827)
+set_rate=60 - frs: 2034 (117269)
+
+set_rate=80 - 2pl: 3238 (26347)
+set_rate=80 - frs: 4116 (194468)
+
+set_rate=100 - 2pl: 144800 (0)
+set_rate=100 - frs: 146187 (0)
+
+
+3 records/Tx
+set_rate=0 - 2pl: 371 (11592)
+set_rate=0 - frs: 644 (34463)
+
+set_rate=20 - 2pl: 290 (15174)
+set_rate=20 - frs: 800 (61457)
+
+set_rate=40 - 2pl: 419 (17144)
+set_rate=40 - frs: 1043 (84913)
+
+set_rate=60 - 2pl: 708 (19384)
+set_rate=60 - frs: 1580 (144065)
+
+set_rate=80 - 2pl: 1498 (22689)
+set_rate=80 - frs: 2874 (181083)
+
+set_rate=100 - 2pl: 128266 (0)
+set_rate=100 - frs: 129486 (0)
+
+4 records/Tx
+set_rate=0 - 2pl: 94 (12422)
+set_rate=0 - frs: 548 (35830)
+
+set_rate=20 - 2pl: 121 (14088)
+set_rate=20 - frs: 695 (69956)
+
+set_rate=40 - 2pl: 233 (17107)
+set_rate=40 - frs: 881 (94882)
+
+set_rate=60 - 2pl: 745 (14882)
+set_rate=60 - frs: 1339 (155026)
+
+set_rate=80 - 2pl: 1258 (12455)
+set_rate=80 - frs: 2866 (192167)
+
+set_rate=100 - 2pl: 113569 (0)
+set_rate=100 - frs: 114148 (0)
+

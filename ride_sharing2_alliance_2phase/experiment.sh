@@ -99,25 +99,33 @@ function bench_rsab(){
     # calculate result
     # awk '{commit+=$2} END {print commit}' ${output_file} | tee -a ${output_file}
     # awk '{commit+=$3} END {print commit}' ${output_file} | tee -a ${output_file}
+    # n=$((provider_num))
     n=$((1+alliance_num+provider_num))
     sed 's/[()|, ]/ /g; s/\[s\]//g' ${output_file} | awk -v n="$n" '{cn+=$3; cn1+=$4; cn2+=$5; ct+=$6; ct1+=$7; ct2+=$8} 
-        END {printf "commit:  %d (%d %d)   %.2f (%.2f %.2f)[s]\n", cn, cn1, cn2, ct/n, ct1/n, ct2/n}' | tee -a ${output_file}
+        END {printf "commit:  %d (%d %d)   %.2f (%.2f %.2f)[s]\n", cn, cn1, cn2, ct/n, ct1/n, ct2/n}'
     sed 's/[()|, ]/ /g; s/\[s\]//g' ${output_file} | awk -v n="$n" '{an+=$10; an1+=$11; an2+=$12; at+=$13; at1+=$14; at2+=$15} 
-        END {printf "abort:  %d (%d %d)   %.2f (%.2f %.2f)[s]\n", an, an1, an2, at/n, at1/n, at2/n}' | tee -a ${output_file}
+        END {printf "abort:  %d (%d %d)   %.2f (%.2f %.2f)[s]\n", an, an1, an2, at/n, at1/n, at2/n}'
+        
+    # echo ""
+        
+    # sed 's/[()|, ]/ /g; s/\[s\]//g' ${output_file} | awk -v t="$t" -v n="$n" '{cn+=$3; cn1+=$4; cn2+=$5; ct+=$6; ct1+=$7; ct2+=$8} 
+    #     END {printf "commit:  %.2f (%.2f %.2f)   %.2f (%.2f %.2f)[s]\n", cn/t, cn1/t, cn2/t, ct/n/t, ct1/n/t, ct2/n/t}'
+    # sed 's/[()|, ]/ /g; s/\[s\]//g' ${output_file} | awk -v t="$t" -v n="$n" '{an+=$10; an1+=$11; an2+=$12; at+=$13; at1+=$14; at2+=$15} 
+    #     END {printf "abort:  %.2f (%.2f %.2f)   %.2f (%.2f %.2f)[s]\n", an/t, an1/t, an2/t, at/n/t, at1/n/t, at2/n/t}'
 }
 
 
 
 alliance_num=2
-provider_num=10
+provider_num=5
 tx_t=120
 
 command_name=$1    
     
 function settings(){
-    set_zipf 0.8
-    set_read_write_rate 0
-    set_records_tx 1
+    set_zipf -1
+    set_read_write_rate 0   # 0のときupdateのみ、100のときreadのみ
+    set_records_tx 4
     set_query_order "on"
 }
     
@@ -126,7 +134,9 @@ if [ $command_name == "0" ]; then
     settings
 elif [ $command_name == "1" ]; then
     settings
+    echo -e "\n"
     bench_rsab "2pl" $tx_t
+    echo ""
     bench_rsab "frs" $tx_t
     show_lock
     
@@ -134,27 +144,30 @@ elif [ $command_name == "2" ]; then  # zipfの変更
     settings
     thetas=(0 0.2 0.4 0.6 0.8 0.99)
     for theta in "${thetas[@]}"; do
-        echo ""
+        echo -e "\n"
         set_zipf $theta        
         bench_rsab "2pl" $tx_t
+        echo ""
         bench_rsab "frs" $tx_t
     done
     show_lock
 elif [ $command_name == "3" ]; then  # read_write_rateの変更
     settings
     for ((rate = 0; rate <= 100; rate += 20)); do
-        echo ""
+        echo -e "\n"
         set_read_write_rate $rate
         bench_rsab "2pl" $tx_t
+        echo ""
         bench_rsab "frs" $tx_t
     done
     show_lock
 elif [ $command_name == "4" ]; then  # records/Txの変更
     settings
     for ((records = 1; records <= 4; records += 1)); do
-        echo ""
+        echo -e "\n"
         set_records_tx $records
         bench_rsab "2pl" $tx_t
+        echo ""
         bench_rsab "frs" $tx_t
     done
     show_lock

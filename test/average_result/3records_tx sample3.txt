@@ -1,0 +1,58 @@
+load_rsab 10
+set_zipf -1
+set_rate 0
+set_records_tx 3
+set_query_order on
+[ec2-user@ip-172-31-21-22 ride_sharing2_alliance_2phase]$ bash experiment.sh 3
+set_zipf -1
+set_rate 0
+set_records_tx 3
+set_query_order on
+
+set_rate 0
+bench_rsab 2pl 120
+commit:  405 (405 0)   30.16 (30.16 0.00)[s]
+abort:  10639 (1907 8732)   90.59 (83.47 7.12)[s]
+bench_rsab frs 120
+commit:  554 (554 0)   82.73 (82.73 0.00)[s]
+abort:  36017 (837 35180)   37.63 (6.82 30.81)[s]
+
+set_rate 20
+bench_rsab 2pl 120
+commit:  289 (219 70)   16.36 (16.29 0.07)[s]
+abort:  16237 (1724 14513)   104.37 (94.53 9.84)[s]
+bench_rsab frs 120
+commit:  791 (636 155)   79.31 (79.10 0.21)[s]
+abort:  56157 (1002 55155)   40.93 (9.01 31.92)[s]
+
+set_rate 40
+bench_rsab 2pl 120
+commit:  316 (181 135)   13.57 (13.46 0.12)[s]
+abort:  19236 (1791 17445)   107.10 (96.40 10.70)[s]
+bench_rsab frs 120
+commit:  1025 (612 413)   76.78 (76.26 0.52)[s]
+abort:  94947 (986 93961)   43.14 (8.89 34.25)[s]
+
+set_rate 60
+bench_rsab 2pl 120
+commit:  566 (223 343)   15.99 (15.69 0.29)[s]
+abort:  20251 (1880 18371)   104.35 (93.01 11.33)[s]
+bench_rsab frs 120
+commit:  1526 (601 925)   76.24 (75.10 1.13)[s]
+abort:  139042 (735 138307)   43.58 (6.49 37.09)[s]
+
+set_rate 80
+bench_rsab 2pl 120
+commit:  1331 (276 1055)   21.38 (20.57 0.81)[s]
+abort:  18436 (1704 16732)   98.91 (88.82 10.09)[s]
+bench_rsab frs 120
+commit:  2956 (623 2333)   71.21 (68.59 2.62)[s]
+abort:  176877 (856 176021)   48.28 (7.56 40.72)[s]
+
+set_rate 100
+bench_rsab 2pl 120
+commit:  127733 (0 127733)   119.67 (0.00 119.67)[s]
+abort:  0 (0 0)   0.00 (0.00 0.00)[s]
+bench_rsab frs 120
+commit:  129353 (0 129353)   119.57 (0.00 119.57)[s]
+abort:  0 (0 0)   0.00 (0.00 0.00)[s]
