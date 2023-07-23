@@ -172,6 +172,8 @@ function batch_bench2(){
         bench_rsab "2pl" $tx_t
         echo ""
         bench_rsab "frs" $tx_t
+        echo ""
+    bench_rsab "hybrid" $tx_t
     done
     show_lock
 }
@@ -188,6 +190,8 @@ function batch_bench3(){
         bench_rsab "2pl" $tx_t
         echo ""
         bench_rsab "frs" $tx_t
+        echo ""
+    bench_rsab "hybrid" $tx_t
     done
     show_lock
 }
@@ -204,6 +208,8 @@ function batch_bench4(){
         bench_rsab "2pl" $tx_t
         echo ""
         bench_rsab "frs" $tx_t
+        echo ""
+    bench_rsab "hybrid" $tx_t
     done
     show_lock
 }
