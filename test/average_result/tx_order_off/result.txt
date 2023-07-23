@@ -1,0 +1,80 @@
+parameter - method: avg_commit/s (avg_abort/s)
+
+1 records/Tx
+set_rate=0 - 2pl: 11.13 (1.29)
+set_rate=0 - frs: 10.19 (1.13)
+
+set_rate=20 - 2pl: 13.87 (1.43)
+set_rate=20 - frs: 13.10 (1.20)
+
+set_rate=40 - 2pl: 18.66 (1.72)
+set_rate=40 - frs: 17.46 (1.58)
+
+set_rate=60 - 2pl: 28.75 (2.27)
+set_rate=60 - frs: 26.07 (2.59)
+
+set_rate=80 - 2pl: 57.67 (3.58)
+set_rate=80 - frs: 52.33 (4.98)
+
+set_rate=100 - 2pl: 1346.50 (0.00)
+set_rate=100 - frs: 1352.67 (0.00)
+
+
+2 records/Tx
+set_rate=0 - 2pl: 7.81 (4.53)
+set_rate=0 - frs: 7.78 (4.22)
+
+set_rate=20 - 2pl: 10.12 (5.03)
+set_rate=20 - frs: 9.93 (5.24)
+
+set_rate=40 - 2pl: 14.22 (6.13)
+set_rate=40 - frs: 13.42 (7.08)
+
+set_rate=60 - 2pl: 22.79 (8.29)
+set_rate=60 - frs: 19.88 (10.32)
+
+set_rate=80 - 2pl: 49.76 (13.27)
+set_rate=80 - frs: 41.77 (21.38)
+
+set_rate=100 - 2pl: 1175.23 (0.00)
+set_rate=100 - frs: 1179.94 (0.00)
+
+
+3 records/Tx
+set_rate=0 - 2pl: 5.26 (10.10)
+set_rate=0 - frs: 6.47 (14.07)
+
+set_rate=20 - 2pl: 7.39 (11.51)
+set_rate=20 - frs: 8.05 (18.03)
+
+set_rate=40 - 2pl: 11.56 (13.69)
+set_rate=40 - frs: 11.07 (23.77)
+
+set_rate=60 - 2pl: 20.39 (18.61)
+set_rate=60 - frs: 16.86 (35.14)
+
+set_rate=80 - 2pl: 42.94 (28.19)
+set_rate=80 - frs: 33.03 (67.72)
+
+set_rate=100 - 2pl: 1024.53 (0.00)
+set_rate=100 - frs: 1030.38 (0.00)
+
+
+3 records/Tx
+set_rate=0 - 2pl: 3.36 (18.90)
+set_rate=0 - frs: 5.54 (59.10)
+
+set_rate=20 - 2pl: 5.76 (20.90)
+set_rate=20 - frs: 7.22 (70.48)
+
+set_rate=40 - 2pl: 10.07 (25.94)
+set_rate=40 - frs: 9.91 (95.70)
+
+set_rate=60 - 2pl: 19.56 (31.89)
+set_rate=60 - frs: 15.31 (134.60)
+
+set_rate=80 - 2pl: 44.63 (52.57)
+set_rate=80 - frs: 32.86 (244.93)
+
+set_rate=100 - 2pl: 906.77 (0.00)
+set_rate=100 - frs: 910.33 (0.00)

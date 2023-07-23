@@ -1,0 +1,65 @@
+set_zipf -1
+set_rate 0
+set_records_tx 1
+set_query_order off
+
+
+set_rate 0
+bench_rsab 2pl 120
+commit:  1343 (1343 0)   117.51 (117.51 0.00)[s]
+abort:  154 (70 84)   3.58 (3.53 0.04)[s]
+
+bench_rsab frs 120
+commit:  1221 (1221 0)   119.85 (119.85 0.00)[s]
+abort:  130 (7 123)   0.12 (0.06 0.06)[s]
+
+
+set_rate 20
+bench_rsab 2pl 120
+commit:  1635 (1280 355)   117.42 (117.08 0.34)[s]
+abort:  166 (62 104)   3.21 (3.15 0.06)[s]
+
+bench_rsab frs 120
+commit:  1532 (1213 319)   119.46 (119.14 0.32)[s]
+abort:  142 (6 136)   0.13 (0.05 0.08)[s]
+
+
+set_rate 40
+bench_rsab 2pl 120
+commit:  2228 (1305 923)   117.43 (116.51 0.91)[s]
+abort:  204 (62 142)   3.21 (3.15 0.06)[s]
+
+bench_rsab frs 120
+commit:  2129 (1261 868)   119.46 (118.62 0.85)[s]
+abort:  203 (5 198)   0.13 (0.05 0.08)[s]
+
+
+set_rate 60
+bench_rsab 2pl 120
+commit:  3465 (1313 2152)   115.89 (113.96 1.93)[s]
+abort:  288 (87 201)   4.42 (4.36 0.06)[s]
+
+bench_rsab frs 120
+commit:  3172 (1258 1914)   119.40 (117.63 1.77)[s]
+abort:  336 (3 333)   0.13 (0.02 0.12)[s]
+
+
+set_rate 80
+bench_rsab 2pl 120
+commit:  7056 (1334 5722)   117.47 (112.46 5.02)[s]
+abort:  467 (61 406)   3.06 (2.97 0.09)[s]
+
+bench_rsab frs 120
+commit:  6164 (1222 4942)   119.25 (114.96 4.29)[s]
+abort:  633 (7 626)   0.19 (0.06 0.13)[s]
+
+
+set_rate 100
+bench_rsab 2pl 120
+commit:  161892 (0 161892)   119.58 (0.00 119.58)[s]
+abort:  0 (0 0)   0.00 (0.00 0.00)[s]
+
+bench_rsab frs 120
+commit:  162348 (0 162348)   119.46 (0.00 119.46)[s]
+abort:  0 (0 0)   0.00 (0.00 0.00)[s]
+show_lock

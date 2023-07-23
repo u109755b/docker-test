@@ -27,9 +27,9 @@ def get_sample_data(file_name, parameter_name):
 
 t = 120
 sample_num=5
-file_name_k = '1records_tx sample{k}.txt'
+file_name_k = 'tx_order_off/4records_tx sample{k}.txt'
 parameter_name = 'set_rate'
-output_mode = 4    # 1:全データ出力,  2:平均値だけ出力,  3:1秒あたりの平均値を出力,  4:倍率を出力,  5: ChatGPT用に出力
+output_mode = 3    # 1:全データ出力,  2:平均値だけ出力,  3:1秒あたりの平均値を出力,  4:倍率を出力,  5: ChatGPT用に出力
 
 file_names = []
 results = []    # results[k_sample][parameter_key][method]
