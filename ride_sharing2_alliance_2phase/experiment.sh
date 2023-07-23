@@ -120,38 +120,61 @@ alliance_num=2
 provider_num=5
 tx_t=120
 
+default_zipf=-1     # zipf
+default_rate=0      # read-write率
+default_records_tx=4    # レコード数/tx
+default_query_order="on"    # txをコミットするまで次のtxに行かない
+
 command_name=$1    
     
 function settings(){
-    set_zipf -1
-    set_read_write_rate 0   # 0のときupdateのみ、100のときreadのみ
-    set_records_tx 4
-    set_query_order "on"
+    set_zipf $default_zipf
+    set_read_write_rate $default_rate   # 0のときupdateのみ、100のときreadのみ
+    set_records_tx $default_records_tx
+    set_query_order $default_query_order
 }
-    
-if [ $command_name == "0" ]; then
+
+# 初期化 - 0
+function batch_bench0(){
     load_rsab 10
     settings
-elif [ $command_name == "1" ]; then
+}
+if [ $command_name == "0" ]; then
+    batch_bench0
+fi
+
+# 単にそれぞれの手法で実行 - 1
+function batch_bench1(){
     settings
     echo -e "\n"
     bench_rsab "2pl" $tx_t
     echo ""
     bench_rsab "frs" $tx_t
     show_lock
-    
-elif [ $command_name == "2" ]; then  # zipfの変更
+}
+if [ $command_name == "1" ]; then
+    batch_bench1
+fi
+
+# zipfの変更 - 2
+function batch_bench2(){
     settings
     thetas=(0 0.2 0.4 0.6 0.8 0.99)
     for theta in "${thetas[@]}"; do
         echo -e "\n"
-        set_zipf $theta        
+        set_zipf $theta
         bench_rsab "2pl" $tx_t
         echo ""
         bench_rsab "frs" $tx_t
     done
     show_lock
-elif [ $command_name == "3" ]; then  # read_write_rateの変更
+}
+if [ $command_name == "2" ]; then
+    batch_bench2
+fi
+
+# read_write_rateの変更 - 3
+function batch_bench3(){
     settings
     for ((rate = 0; rate <= 100; rate += 20)); do
         echo -e "\n"
@@ -161,7 +184,13 @@ elif [ $command_name == "3" ]; then  # read_write_rateの変更
         bench_rsab "frs" $tx_t
     done
     show_lock
-elif [ $command_name == "4" ]; then  # records/Txの変更
+}
+if [ $command_name == "3" ]; then
+    batch_bench3
+fi
+
+# records/Txの変更 - 4
+function batch_bench4(){
     settings
     for ((records = 1; records <= 4; records += 1)); do
         echo -e "\n"
@@ -171,6 +200,23 @@ elif [ $command_name == "4" ]; then  # records/Txの変更
         bench_rsab "frs" $tx_t
     done
     show_lock
+}
+if [ $command_name == "4" ]; then
+    batch_bench4
+fi
+
+# 2次元表の元データ作成 - 5
+function batch_bench5(){
+    for ((records = 1; records <= 4; records += 1)); do
+        default_records_tx=$records
+        for (( batch_i = 1; batch_i <= 5; batch_i++ )); do
+            batch_bench3
+            echo -e "\n"
+        done
+    done
+}
+if [ $command_name == "5" ]; then
+    batch_bench5
 fi
 
 

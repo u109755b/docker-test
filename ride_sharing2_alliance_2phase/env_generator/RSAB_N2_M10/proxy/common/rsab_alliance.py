@@ -75,10 +75,8 @@ class RSABAlliance(object):
                 elif result == "miss":
                     miss_num += 1
                     miss_time += time.time() - start_time - current_time
-            # print(config.timestamp_management.get_result())
             config.timestamp_management.print_result1()
             config.time_measurement.print_time()
-            # config.timestamp_management.print_result2()
                 
                 # time.sleep(0.5)
 
@@ -181,15 +179,8 @@ class RSABAlliance(object):
             resp.text = "invalid method"
             return
 
-        # msg = " ".join([config.peer_name, str(commit_num), str(abort_num), str(miss_num), str(bench_time-miss_time)])
-        # print("total commit time: {:.2f}, total abort time: {:.2f}".format(total_commit_time, total_abort_time))
-        
-        if switch_cnt != []:
-            msg += " *" + " ".join(map(str, switch_cnt)) + "*"
-        # for result in result_per_epoch:
-        #     msg += " " + str(result['commit'])
-        # for result in result_per_epoch:
-        #     msg += " " + str(result['abort'])
+        # if switch_cnt != []:
+        #     msg += " *" + " ".join(map(str, switch_cnt)) + "*"
         
         msg = config.result_measurement.get_result(display=True)
         msg += "\n"
