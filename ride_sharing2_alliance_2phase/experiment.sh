@@ -73,14 +73,14 @@ function bench_rsab(){
     
     echo "bench_rsab ${method} ${t}"
 
-    (curl -s "localhost:$((8000))/rsab_alliance?bench_time=${t}&method=${method}" | cat >> ${output_file}) &
+    (curl -s "localhost:$((8000))/rsab_alliance?bench_time=${t}&method=${method}&test_time=${test_time}" | cat >> ${output_file}) &
 
     # for i in `seq 1 1`
     for i in `seq 1 $alliance_num`
     do
         for j in `seq $threads`
         do
-            (curl -s "localhost:$((i+8000))/rsab_alliance?bench_time=${t}&method=${method}" | cat >> ${output_file}) &
+            (curl -s "localhost:$((i+8000))/rsab_alliance?bench_time=${t}&method=${method}&test_time=${test_time}" | cat >> ${output_file}) &
         done
     done
 
@@ -89,10 +89,13 @@ function bench_rsab(){
     do
         for j in `seq $threads`
         do
-            (curl -s "localhost:$((alliance_num+i+8000))/rsab_provider?bench_time=${t}&method=${method}" | cat >> ${output_file}) &
+            (curl -s "localhost:$((alliance_num+i+8000))/rsab_provider?bench_time=${t}&method=${method}&test_time=${test_time}" | cat >> ${output_file}) &
         done
     done
-
+    
+    if [ $method == "hybrid" ]; then
+        sleep ${test_time}
+    fi
     sleep ${t}
     sleep $((1+alliance_num+provider_num))
 
@@ -119,6 +122,7 @@ function bench_rsab(){
 alliance_num=2
 provider_num=5
 tx_t=120
+test_time=90
 
 default_zipf=-1     # zipf
 default_rate=0      # read-write率
@@ -150,6 +154,8 @@ function batch_bench1(){
     bench_rsab "2pl" $tx_t
     echo ""
     bench_rsab "frs" $tx_t
+    echo ""
+    bench_rsab "hybrid" $tx_t
     show_lock
 }
 if [ $command_name == "1" ]; then

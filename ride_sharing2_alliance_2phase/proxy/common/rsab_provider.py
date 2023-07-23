@@ -43,6 +43,10 @@ class RSABProvider(object):
         provider_num = int(config.peer_name[8:])
         random.seed(2*provider_num+1)
         config.stmts = []
+        
+        config.timestamp_management = config.TimestampManagement()
+        config.time_measurement = config.TimeMeasurement()
+        config.result_measurement = config.ResultMeasurement()
 
         # frs & 2pl
         if METHOD == "frs" or METHOD == "2pl":
@@ -50,9 +54,6 @@ class RSABProvider(object):
                 doRSAB = doRSAB_PROVIDER_frs
             else:
                 doRSAB = doRSAB_PROVIDER_2pl
-            config.timestamp_management = config.TimestampManagement()
-            config.time_measurement = config.TimeMeasurement()
-            config.result_measurement = config.ResultMeasurement()
             
             current_time = time.time() - start_time
             while (current_time < bench_time):
@@ -81,8 +82,6 @@ class RSABProvider(object):
                     miss_num += 1
                     miss_time += time.time() - start_time - current_time
                     commit_abort_miss[t_type]['miss'] += 1
-            config.timestamp_management.print_result1()
-            config.time_measurement.print_time()
                 
                 # time.sleep(0.1)
 
@@ -90,8 +89,10 @@ class RSABProvider(object):
         elif METHOD == "hybrid":
             current_method = "2pl"
             doRSAB = doRSAB_PROVIDER_2pl
-            check_time = 30
-            check_interval = 300
+            check_time = 3
+            check_interval = 30
+            test_time = int(params.get('test_time', 0))
+            bench_time += test_time
             # determine first check timing
             next_check = random.randint(0,check_interval - check_time * 2)
 
@@ -101,12 +102,18 @@ class RSABProvider(object):
             current_time = time.time() - start_time
             while (current_time < bench_time):
                 current_time = time.time() - start_time
+                if test_time != 0 and current_time > test_time:
+                    config.timestamp_management = config.TimestampManagement()
+                    config.time_measurement = config.TimeMeasurement()
+                    config.result_measurement = config.ResultMeasurement()
+                    test_time = 0
 
                 # epoch update
                 if current_time > next_epoch_start_time:
                     next_epoch_start_time += epoch_time
                     epoch += 1
                     result_per_epoch.append({'commit': 0, 'abort': 0})
+                    
                 # normal mode
                 if current_time < next_check:
                     result = doRSAB()
@@ -188,6 +195,8 @@ class RSABProvider(object):
         # if switch_cnt != []:
         #     msg += " *" + " ".join(map(str, switch_cnt)) + "*"
         
+        config.timestamp_management.print_result1()
+        config.time_measurement.print_time()
         msg = config.result_measurement.get_result(display=True)
         msg += "\n"
 
