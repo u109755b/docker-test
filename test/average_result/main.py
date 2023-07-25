@@ -10,7 +10,7 @@ def get_sample_data(file_name, parameter_name):
         for line in f:
             if line.startswith(parameter_name):
                 cur_key = '{}={}'.format(parameter_name, line.split()[1])
-                result[cur_key] = {'2pl': [], 'frs': []}
+                result[cur_key] = {'2pl': [], 'frs': [], 'hybrid': []}
             if line.startswith('bench'):
                 method = line.split()[1]    # 2pl or frs
             if line.startswith('commit'):
@@ -27,9 +27,9 @@ def get_sample_data(file_name, parameter_name):
 
 t = 120
 sample_num=5
-file_name_k = 'tx_order_off/4records_tx sample{k}.txt'
+file_name_k = 'tx_order_on_hybrid/4records_tx sample{k}.txt'
 parameter_name = 'set_rate'
-output_mode = 3    # 1:全データ出力,  2:平均値だけ出力,  3:1秒あたりの平均値を出力,  4:倍率を出力,  5: ChatGPT用に出力
+output_mode = 4    # 1:全データ出力,  2:平均値だけ出力,  3:1秒あたりの平均値を出力,  4:倍率を出力,  5: ChatGPT用に出力
 
 file_names = []
 results = []    # results[k_sample][parameter_key][method]
@@ -67,7 +67,7 @@ for parameter_key in results[0]:
         raws = raws_for_output[method]
         average = averages_for_output[method]
         np_average = np.array(averages_for_output[method])
-        np_base_avg = np.array(averages_for_output['frs'])
+        np_base_avg = np.array(averages_for_output['2pl'])
         with np.errstate(divide='ignore', invalid='ignore'):
             relative_avg = np.divide(np_average, np_base_avg)
             relative_avg = np.nan_to_num(relative_avg, nan=0.0) # 0での除算を0に置き換える

@@ -1,0 +1,105 @@
+parameter - method: relative_avg_commit (relative_avg_abort)
+
+1 records/Tx
+set_rate=0 - 2pl: 1.0 (1.0)
+set_rate=0 - frs: 1.07 (1.13)
+set_rate=0 - hybrid: 0.87 (1.05)
+
+set_rate=20 - 2pl: 1.0 (1.0)
+set_rate=20 - frs: 1.15 (1.43)
+set_rate=20 - hybrid: 1.1 (1.23)
+
+set_rate=40 - 2pl: 1.0 (1.0)
+set_rate=40 - frs: 1.1 (2.35)
+set_rate=40 - hybrid: 0.99 (1.46)
+
+set_rate=60 - 2pl: 1.0 (1.0)
+set_rate=60 - frs: 1.06 (2.81)
+set_rate=60 - hybrid: 0.91 (1.43)
+
+set_rate=80 - 2pl: 1.0 (1.0)
+set_rate=80 - frs: 1.13 (4.27)
+set_rate=80 - hybrid: 1.0 (2.63)
+
+set_rate=100 - 2pl: 1.0 (0.0)
+set_rate=100 - frs: 1.0 (0.0)
+set_rate=100 - hybrid: 1.01 (0.0)
+
+
+2 records/Tx
+parameter - method: relative_avg_commit (relative_avg_abort)
+set_rate=0 - 2pl: 1.0 (1.0)
+set_rate=0 - frs: 1.58 (2.15)
+set_rate=0 - hybrid: 1.27 (1.46)
+
+set_rate=20 - 2pl: 1.0 (1.0)
+set_rate=20 - frs: 1.46 (3.32)
+set_rate=20 - hybrid: 1.19 (1.33)
+
+set_rate=40 - 2pl: 1.0 (1.0)
+set_rate=40 - frs: 1.24 (5.07)
+set_rate=40 - hybrid: 1.02 (2.25)
+
+set_rate=60 - 2pl: 1.0 (1.0)
+set_rate=60 - frs: 1.29 (6.72)
+set_rate=60 - hybrid: 1.01 (2.39)
+
+set_rate=80 - 2pl: 1.0 (1.0)
+set_rate=80 - frs: 1.31 (9.02)
+set_rate=80 - hybrid: 1.06 (4.21)
+
+set_rate=100 - 2pl: 1.0 (0.0)
+set_rate=100 - frs: 1.01 (0.0)
+set_rate=100 - hybrid: 1.01 (0.0)
+
+
+3 records/Tx
+set_rate=0 - 2pl: 1.0 (1.0)
+set_rate=0 - frs: 2.27 (2.8)
+set_rate=0 - hybrid: 1.83 (1.98)
+
+set_rate=20 - 2pl: 1.0 (1.0)
+set_rate=20 - frs: 2.11 (4.38)
+set_rate=20 - hybrid: 1.73 (2.34)
+
+set_rate=40 - 2pl: 1.0 (1.0)
+set_rate=40 - frs: 2.41 (4.89)
+set_rate=40 - hybrid: 1.84 (1.97)
+
+set_rate=60 - 2pl: 1.0 (1.0)
+set_rate=60 - frs: 2.22 (7.67)
+set_rate=60 - hybrid: 1.88 (2.77)
+
+set_rate=80 - 2pl: 1.0 (1.0)
+set_rate=80 - frs: 1.92 (7.94)
+set_rate=80 - hybrid: 1.63 (3.97)
+
+set_rate=100 - 2pl: 1.0 (0.0)
+set_rate=100 - frs: 1.01 (0.0)
+set_rate=100 - hybrid: 1.01 (0.0)
+
+
+4 records/Tx
+set_rate=0 - 2pl: 1.0 (1.0)
+set_rate=0 - frs: 3.71 (2.4)
+set_rate=0 - hybrid: 3.07 (1.83)
+
+set_rate=20 - 2pl: 1.0 (1.0)
+set_rate=20 - frs: 2.97 (4.35)
+set_rate=20 - hybrid: 2.27 (1.87)
+
+set_rate=40 - 2pl: 1.0 (1.0)
+set_rate=40 - frs: 2.79 (5.2)
+set_rate=40 - hybrid: 2.29 (2.62)
+
+set_rate=60 - 2pl: 1.0 (1.0)
+set_rate=60 - frs: 1.48 (8.84)
+set_rate=60 - hybrid: 1.28 (4.64)
+
+set_rate=80 - 2pl: 1.0 (1.0)
+set_rate=80 - frs: 2.25 (15.51)
+set_rate=80 - hybrid: 1.86 (6.78)
+
+set_rate=100 - 2pl: 1.0 (0.0)
+set_rate=100 - frs: 1.0 (0.0)
+set_rate=100 - hybrid: 1.0 (0.0)

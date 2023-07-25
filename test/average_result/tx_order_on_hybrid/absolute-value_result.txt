@@ -1,0 +1,104 @@
+parameter - method: relative_avg_commit (relative_avg_abort)
+
+1 records/Tx
+set_rate=0 - 2pl: 9.33 (101.30)
+set_rate=0 - frs: 9.97 (114.66)
+set_rate=0 - hybrid: 8.11 (106.34)
+
+set_rate=20 - 2pl: 11.07 (106.72)
+set_rate=20 - frs: 12.68 (152.98)
+set_rate=20 - hybrid: 12.16 (131.23)
+
+set_rate=40 - 2pl: 14.93 (130.78)
+set_rate=40 - frs: 16.38 (307.48)
+set_rate=40 - hybrid: 14.79 (190.47)
+
+set_rate=60 - 2pl: 22.75 (173.68)
+set_rate=60 - frs: 24.22 (487.71)
+set_rate=60 - hybrid: 20.80 (249.13)
+
+set_rate=80 - 2pl: 41.70 (184.56)
+set_rate=80 - frs: 46.94 (787.73)
+set_rate=80 - hybrid: 41.73 (484.65)
+
+set_rate=100 - 2pl: 1414.13 (0.00)
+set_rate=100 - frs: 1419.85 (0.00)
+set_rate=100 - hybrid: 1422.15 (0.00)
+
+
+2 records/Tx
+set_rate=0 - 2pl: 4.19 (113.31)
+set_rate=0 - frs: 6.61 (243.24)
+set_rate=0 - hybrid: 5.33 (165.50)
+
+set_rate=20 - 2pl: 5.88 (137.77)
+set_rate=20 - frs: 8.58 (457.81)
+set_rate=20 - hybrid: 6.97 (183.49)
+
+set_rate=40 - 2pl: 8.95 (110.50)
+set_rate=40 - frs: 11.10 (560.31)
+set_rate=40 - hybrid: 9.17 (249.13)
+
+set_rate=60 - 2pl: 13.04 (145.85)
+set_rate=60 - frs: 16.83 (980.58)
+set_rate=60 - hybrid: 13.19 (347.88)
+
+set_rate=80 - 2pl: 25.99 (164.58)
+set_rate=80 - frs: 34.08 (1484.61)
+set_rate=80 - hybrid: 27.51 (692.69)
+
+set_rate=100 - 2pl: 1206.34 (0.00)
+set_rate=100 - frs: 1222.59 (0.00)
+set_rate=100 - hybrid: 1217.23 (0.00)
+
+
+3 records/Tx
+set_rate=0 - 2pl: 2.35 (99.96)
+set_rate=0 - frs: 5.34 (280.38)
+set_rate=0 - hybrid: 4.29 (197.86)
+
+set_rate=20 - 2pl: 3.14 (115.05)
+set_rate=20 - frs: 6.64 (503.47)
+set_rate=20 - hybrid: 5.42 (269.33)
+
+set_rate=40 - 2pl: 3.69 (151.43)
+set_rate=40 - frs: 8.89 (741.16)
+set_rate=40 - hybrid: 6.80 (297.72)
+
+set_rate=60 - 2pl: 5.79 (145.34)
+set_rate=60 - frs: 12.86 (1115.47)
+set_rate=60 - hybrid: 10.91 (402.27)
+
+set_rate=80 - 2pl: 12.38 (189.83)
+set_rate=80 - frs: 23.73 (1507.84)
+set_rate=80 - hybrid: 20.22 (754.35)
+
+set_rate=100 - 2pl: 1063.17 (0.00)
+set_rate=100 - frs: 1069.67 (0.00)
+set_rate=100 - hybrid: 1069.39 (0.00)
+
+
+4 records/Tx
+set_rate=0 - 2pl: 1.23 (121.93)
+set_rate=0 - frs: 4.55 (292.96)
+set_rate=0 - hybrid: 3.77 (222.88)
+
+set_rate=20 - 2pl: 1.93 (138.14)
+set_rate=20 - frs: 5.73 (600.62)
+set_rate=20 - hybrid: 4.39 (258.68)
+
+set_rate=40 - 2pl: 2.66 (150.56)
+set_rate=40 - frs: 7.42 (782.30)
+set_rate=40 - hybrid: 6.08 (395.10)
+
+set_rate=60 - 2pl: 7.57 (132.81)
+set_rate=60 - frs: 11.18 (1173.64)
+set_rate=60 - hybrid: 9.70 (616.46)
+
+set_rate=80 - 2pl: 10.18 (105.12)
+set_rate=80 - frs: 22.85 (1630.08)
+set_rate=80 - hybrid: 18.92 (713.09)
+
+set_rate=100 - 2pl: 944.99 (0.00)
+set_rate=100 - frs: 947.75 (0.00)
+set_rate=100 - hybrid: 944.53 (0.00)

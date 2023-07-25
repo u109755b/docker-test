@@ -1,0 +1,89 @@
+set_zipf -1
+set_rate 0
+set_records_tx 1
+set_query_order off
+
+
+set_rate 0
+bench_rsab 2pl 120
+commit:  1334 (1334 0)   116.98 (116.98 0.00)[s]
+abort:  185 (86 99)   4.06 (4.00 0.06)[s]
+
+bench_rsab frs 120
+commit:  1224 (1224 0)   120.00 (120.00 0.00)[s]
+abort:  104 (2 102)   0.07 (0.02 0.05)[s]
+
+bench_rsab hybrid 120
+commit:  1233 (1233 0)   118.95 (118.95 0.00)[s]
+abort:  112 (27 85)   1.05 (0.99 0.06)[s]
+
+
+set_rate 20
+bench_rsab 2pl 120
+commit:  1656 (1304 352)   116.90 (116.52 0.38)[s]
+abort:  172 (74 98)   4.01 (3.96 0.04)[s]
+
+bench_rsab frs 120
+commit:  1573 (1242 331)   119.76 (119.44 0.32)[s]
+abort:  162 (4 158)   0.13 (0.04 0.09)[s]
+
+bench_rsab hybrid 120
+commit:  1604 (1245 359)   118.78 (118.43 0.35)[s]
+abort:  163 (29 134)   1.26 (1.19 0.07)[s]
+
+
+set_rate 40
+bench_rsab 2pl 120
+commit:  2220 (1291 929)   116.65 (115.76 0.89)[s]
+abort:  194 (67 127)   3.84 (3.79 0.04)[s]
+
+bench_rsab frs 120
+commit:  2095 (1249 846)   119.39 (118.55 0.84)[s]
+abort:  175 (6 169)   0.15 (0.07 0.08)[s]
+
+bench_rsab hybrid 120
+commit:  2103 (1242 861)   118.67 (117.87 0.81)[s]
+abort:  214 (28 186)   1.27 (1.19 0.08)[s]
+
+
+set_rate 60
+bench_rsab 2pl 120
+commit:  3409 (1320 2089)   117.55 (115.81 1.74)[s]
+abort:  269 (72 197)   3.41 (3.36 0.05)[s]
+
+bench_rsab frs 120
+commit:  3096 (1237 1859)   119.35 (117.73 1.63)[s]
+abort:  279 (4 275)   0.14 (0.05 0.09)[s]
+
+bench_rsab hybrid 120
+commit:  3253 (1255 1998)   118.47 (116.70 1.77)[s]
+abort:  282 (34 248)   1.51 (1.41 0.09)[s]
+
+
+set_rate 80
+bench_rsab 2pl 120
+commit:  6868 (1309 5559)   117.35 (112.97 4.38)[s]
+abort:  403 (60 343)   3.07 (3.00 0.07)[s]
+
+bench_rsab frs 120
+commit:  6121 (1214 4907)   119.32 (115.25 4.07)[s]
+abort:  590 (5 585)   0.16 (0.04 0.12)[s]
+
+bench_rsab hybrid 120
+commit:  6035 (1221 4814)   118.37 (114.53 3.84)[s]
+abort:  441 (37 404)   1.43 (1.34 0.09)[s]
+
+
+set_rate 100
+bench_rsab 2pl 120
+commit:  167845 (0 167845)   119.55 (0.00 119.55)[s]
+abort:  0 (0 0)   0.00 (0.00 0.00)[s]
+
+bench_rsab frs 120
+commit:  169888 (0 169888)   119.42 (0.00 119.42)[s]
+abort:  0 (0 0)   0.00 (0.00 0.00)[s]
+
+bench_rsab hybrid 120
+commit:  169860 (0 169860)   119.53 (0.00 119.53)[s]
+abort:  0 (0 0)   0.00 (0.00 0.00)[s]
+show_lock
