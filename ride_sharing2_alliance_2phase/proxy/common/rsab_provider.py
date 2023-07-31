@@ -107,9 +107,9 @@ class RSABProvider(object):
                     else:
                         switch_cnt.append(1)
                         if current_method == "2pl":
-                            print("{} {}: FRS -> 2PL".format(config.peer_name, current_time))
+                            print("{:.2f}: FRS -> 2PL  ({} -> {})".format(current_time, temp_commit['before']['commit'], temp_commit['after']['commit']))
                         else:
-                            print("{} {}: S2PL -> FRS".format(config.peer_name, current_time))
+                            print("{:.2f}: S2PL -> FRS  ({} -> {})".format(current_time, temp_commit['before']['commit'], temp_commit['after']['commit']))
 
                     temp_changed_mode_flag = False
                     temp_commit = {'before': {'commit': 0, 'abort': 0}, 'after': {'commit': 0, 'abort': 0}}

@@ -125,12 +125,12 @@ tx_t=1200
 test_time=600
 
 default_zipf=-1     # zipf
-default_rate=0      # read-write率
-default_records_tx=4    # レコード数/tx
-default_query_order="on"    # txをコミットするまで次のtxに行かない
+default_rate=80      # read-write率
+default_records_tx=1    # レコード数/tx
+default_query_order="off"    # txをコミットするまで次のtxに行かない
 
-command_name=$1    
-    
+command_name=$1
+
 function settings(){
     set_zipf $default_zipf
     set_read_write_rate $default_rate   # 0のときupdateのみ、100のときreadのみ
@@ -184,7 +184,7 @@ fi
 # read_write_rateの変更 - 3
 function batch_bench3(){
     settings
-    for ((rate = 20; rate <= 100; rate += 20)); do
+    for ((rate = 0; rate <= 80; rate += 20)); do
         echo -e "\n"
         set_read_write_rate $rate
         bench_rsab "2pl" $tx_t
@@ -221,7 +221,7 @@ fi
 function batch_bench5(){
     for ((records = 1; records <= 4; records += 1)); do
         default_records_tx=$records
-        for (( batch_i = 1; batch_i <= 5; batch_i++ )); do
+        for (( batch_i = 1; batch_i <= 1; batch_i++ )); do
             batch_bench3
             echo -e "\n"
         done
