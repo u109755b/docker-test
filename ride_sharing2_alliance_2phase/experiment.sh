@@ -94,7 +94,7 @@ function bench_rsab(){
     done
     
     if [ $method == "hybrid" ]; then
-        sleep ${test_time}
+        sleep $((test_time+10))
     fi
     sleep ${t}
     sleep $((1+alliance_num+provider_num))
