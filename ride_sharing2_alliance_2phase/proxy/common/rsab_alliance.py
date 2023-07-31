@@ -21,26 +21,16 @@ class RSABAlliance(object):
         METHOD = params['method']
             
         # benchmark
-        commit_num = 0
-        abort_num = 0
-        miss_num = 0
-        miss_time = 0
         switch_cnt = []
-        result_per_epoch = [{'commit': 0, 'abort': 0}]
-        epoch = 0
-        epoch_time = 100
-        next_epoch_start_time = epoch_time
         start_time = time.time()
         print("benchmark start")
         random.seed()
-        
-        total_commit_time = 0
-        total_abort_time = 0
         
         alliance_num = int(config.peer_name[8:])
         random.seed(2*alliance_num)
         config.stmts = []
         
+        # initialize
         config.timestamp_management = config.TimestampManagement()
         config.time_measurement = config.TimeMeasurement()
         config.result_measurement = config.ResultMeasurement()
@@ -55,68 +45,27 @@ class RSABAlliance(object):
             current_time = time.time() - start_time
             while (current_time < bench_time):
                 current_time = time.time() - start_time
-                # epoch update
-                if current_time > next_epoch_start_time:
-                    next_epoch_start_time += epoch_time
-                    epoch += 1
-                    result_per_epoch.append({'commit': 0, 'abort': 0})
-
-                start_doRSAB = time.perf_counter()
-                result = doRSAB()
-                end_doRSAB = time.perf_counter()
-                t_type = 'transaction'
-                if result == True:
-                    commit_num += 1
-                    result_per_epoch[epoch]['commit'] += 1
-                    total_commit_time += end_doRSAB-start_doRSAB
-                elif result == False:
-                    abort_num += 1
-                    result_per_epoch[epoch]['abort'] += 1
-                    total_abort_time += end_doRSAB-start_doRSAB
-                elif result == "miss":
-                    miss_num += 1
-                    miss_time += time.time() - start_time - current_time
-                
-                # time.sleep(0.5)
+                doRSAB()
 
         # hybrid
         elif METHOD == "hybrid":
             current_method = "2pl"
             doRSAB = doRSAB_ALLIANCE_2pl
-            check_time = 3
-            check_interval = 30
+            check_time = 30
+            check_interval = 300
             test_time = int(params.get('test_time', 0))
-            bench_time += test_time
             # determine first check timing
-            next_check = random.randint(0,check_interval - check_time * 2)
+            next_check = random.randint(0,check_interval - check_time * 2 - 2)
 
             temp_commit = {'before': {'commit': 0, 'abort': 0}, 'after': {'commit': 0, 'abort': 0}}
             temp_changed_mode_flag = False
 
             current_time = time.time() - start_time
-            while (current_time < bench_time):
+            while (current_time < test_time):
                 current_time = time.time() - start_time
-                if test_time != 0 and current_time > test_time:
-                    config.timestamp_management = config.TimestampManagement()
-                    config.time_measurement = config.TimeMeasurement()
-                    config.result_measurement = config.ResultMeasurement()
-                    test_time = 0
-
-                # epoch update
-                if current_time > next_epoch_start_time:
-                    next_epoch_start_time += epoch_time
-                    epoch += 1
-                    result_per_epoch.append({'commit': 0, 'abort': 0})
-                    
                 # normal mode
                 if current_time < next_check:
-                    result = doRSAB()
-                    if result == True:
-                        commit_num += 1
-                    elif result == False:
-                        abort_num += 1
-                    elif result == "miss":
-                        miss_num += 1
+                    doRSAB()
 
                 # check mode
                 # before
@@ -124,12 +73,8 @@ class RSABAlliance(object):
                     result = doRSAB()
                     if result == True:
                         temp_commit['before']['commit'] += 1
-                        commit_num += 1
                     elif result == False:
                         temp_commit['before']['abort'] += 1
-                        abort_num += 1
-                    elif result == "miss":
-                        miss_num += 1
                 # after
                 elif current_time < next_check + check_time * 2:
                     # change method if this is first time
@@ -145,12 +90,8 @@ class RSABAlliance(object):
                     result = doRSAB()
                     if result == True:
                         temp_commit['after']['commit'] += 1
-                        commit_num += 1
                     elif result == False:
                         temp_commit['after']['abort'] += 1
-                        abort_num += 1
-                    elif result == "miss":
-                        miss_num += 1
 
                 # return to normal, don't execute Tx
                 else:
@@ -173,13 +114,21 @@ class RSABAlliance(object):
                     temp_changed_mode_flag = False
                     temp_commit = {'before': {'commit': 0, 'abort': 0}, 'after': {'commit': 0, 'abort': 0}}
                     continue
-
-                if result == True:
-                    result_per_epoch[epoch]['commit'] += 1
-                elif result == False:
-                    result_per_epoch[epoch]['abort'] += 1
-                elif result == "miss":
-                    miss_time += time.time() - start_time - current_time
+            
+            if bench_time != 0:
+                current_time = time.time() - start_time
+                bench_start_time = test_time + 5
+                time.sleep(bench_start_time - current_time)
+                
+                config.timestamp_management = config.TimestampManagement()
+                config.time_measurement = config.TimeMeasurement()
+                config.result_measurement = config.ResultMeasurement()
+                
+                start_time = time.time()
+                current_time = time.time() - start_time
+                while (current_time < bench_time):
+                    current_time = time.time() - start_time
+                    doRSAB()
 
         # invalid method
         else:

@@ -121,8 +121,8 @@ function bench_rsab(){
 
 alliance_num=2
 provider_num=5
-tx_t=120
-test_time=90
+tx_t=1200
+test_time=600
 
 default_zipf=-1     # zipf
 default_rate=0      # read-write率
@@ -184,7 +184,7 @@ fi
 # read_write_rateの変更 - 3
 function batch_bench3(){
     settings
-    for ((rate = 0; rate <= 100; rate += 20)); do
+    for ((rate = 20; rate <= 100; rate += 20)); do
         echo -e "\n"
         set_read_write_rate $rate
         bench_rsab "2pl" $tx_t
