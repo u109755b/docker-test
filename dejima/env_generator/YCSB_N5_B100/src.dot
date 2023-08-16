@@ -1,0 +1,12 @@
+graph {
+	graph [rankdir=BT]
+	1
+	2
+	2 -- 1 [color="#CC6677" style=bold]
+	3
+	3 -- 2 [color="#DDDDDD" style=bold]
+	4
+	4 -- 1 [color="#CC6677" style=bold]
+	5
+	5 -- 4 [color="#882255" style=bold]
+}

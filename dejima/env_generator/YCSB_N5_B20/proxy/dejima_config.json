@@ -1,0 +1,44 @@
+{
+  "dejima_table": {
+    "d1_2": [
+      "Peer2",
+      "Peer1"
+    ],
+    "d2_3": [
+      "Peer3",
+      "Peer2"
+    ],
+    "d3_4": [
+      "Peer4",
+      "Peer3"
+    ],
+    "d4_5": [
+      "Peer5",
+      "Peer4"
+    ]
+  },
+  "base_table": {
+    "Peer1": [
+      "bt"
+    ],
+    "Peer2": [
+      "bt"
+    ],
+    "Peer3": [
+      "bt"
+    ],
+    "Peer4": [
+      "bt"
+    ],
+    "Peer5": [
+      "bt"
+    ]
+  },
+  "peer_address": {
+    "Peer1": "Peer1-proxy:8000",
+    "Peer2": "Peer2-proxy:8000",
+    "Peer3": "Peer3-proxy:8000",
+    "Peer4": "Peer4-proxy:8000",
+    "Peer5": "Peer5-proxy:8000"
+  }
+}

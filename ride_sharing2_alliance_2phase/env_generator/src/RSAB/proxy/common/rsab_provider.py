@@ -51,8 +51,8 @@ class RSABProvider(object):
         elif METHOD == "hybrid":
             current_method = "2pl"
             doRSAB = doRSAB_PROVIDER_2pl
-            check_time = 3
-            check_interval = 30
+            check_time = 30
+            check_interval = 300
             test_time = int(params.get('test_time', 0))
             # determine first check timing
             next_check = random.randint(0,check_interval - check_time * 2 - 2)
