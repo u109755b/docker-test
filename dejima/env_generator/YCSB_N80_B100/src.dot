@@ -1,0 +1,162 @@
+graph {
+	graph [rankdir=BT]
+	1
+	2
+	2 -- 1 [color="#AA4499" style=bold]
+	3
+	3 -- 2 [color="#332288" style=bold]
+	4
+	4 -- 2 [color="#88CCEE" style=bold]
+	5
+	5 -- 3 [color="#44AA99" style=bold]
+	6
+	6 -- 1 [color="#332288" style=bold]
+	7
+	7 -- 4 [color="#88CCEE" style=bold]
+	8
+	8 -- 2 [color="#44AA99" style=bold]
+	9
+	9 -- 6 [color="#44AA99" style=bold]
+	10
+	10 -- 6 [color="#332288" style=bold]
+	11
+	11 -- 9 [color="#332288" style=bold]
+	12
+	12 -- 4 [color="#999933" style=bold]
+	13
+	13 -- 12 [color="#DDDDDD" style=bold]
+	14
+	14 -- 2 [color="#44AA99" style=bold]
+	15
+	15 -- 2 [color="#999933" style=bold]
+	16
+	16 -- 4 [color="#AA4499" style=bold]
+	17
+	17 -- 6 [color="#DDCC77" style=bold]
+	18
+	18 -- 3 [color="#882255" style=bold]
+	19
+	19 -- 1 [color="#882255" style=bold]
+	20
+	20 -- 17 [color="#332288" style=bold]
+	21
+	21 -- 20 [color="#DDCC77" style=bold]
+	22
+	22 -- 14 [color="#999933" style=bold]
+	23
+	23 -- 10 [color="#999933" style=bold]
+	24
+	24 -- 10 [color="#88CCEE" style=bold]
+	25
+	25 -- 15 [color="#117733" style=bold]
+	26
+	26 -- 18 [color="#DDCC77" style=bold]
+	27
+	27 -- 19 [color="#AA4499" style=bold]
+	28
+	28 -- 21 [color="#88CCEE" style=bold]
+	29
+	29 -- 12 [color="#999933" style=bold]
+	30
+	30 -- 12 [color="#332288" style=bold]
+	31
+	31 -- 29 [color="#88CCEE" style=bold]
+	32
+	32 -- 3 [color="#AA4499" style=bold]
+	33
+	33 -- 26 [color="#44AA99" style=bold]
+	34
+	34 -- 3 [color="#999933" style=bold]
+	35
+	35 -- 13 [color="#117733" style=bold]
+	36
+	36 -- 9 [color="#DDDDDD" style=bold]
+	37
+	37 -- 13 [color="#AA4499" style=bold]
+	38
+	38 -- 1 [color="#999933" style=bold]
+	39
+	39 -- 18 [color="#DDCC77" style=bold]
+	40
+	40 -- 18 [color="#999933" style=bold]
+	41
+	41 -- 29 [color="#88CCEE" style=bold]
+	42
+	42 -- 13 [color="#88CCEE" style=bold]
+	43
+	43 -- 31 [color="#332288" style=bold]
+	44
+	44 -- 15 [color="#DDCC77" style=bold]
+	45
+	45 -- 28 [color="#88CCEE" style=bold]
+	46
+	46 -- 15 [color="#44AA99" style=bold]
+	47
+	47 -- 27 [color="#CC6677" style=bold]
+	48
+	48 -- 4 [color="#DDDDDD" style=bold]
+	49
+	49 -- 48 [color="#AA4499" style=bold]
+	50
+	50 -- 26 [color="#332288" style=bold]
+	51
+	51 -- 48 [color="#AA4499" style=bold]
+	52
+	52 -- 37 [color="#88CCEE" style=bold]
+	53
+	53 -- 30 [color="#AA4499" style=bold]
+	54
+	54 -- 13 [color="#999933" style=bold]
+	55
+	55 -- 23 [color="#882255" style=bold]
+	56
+	56 -- 43 [color="#DDDDDD" style=bold]
+	57
+	57 -- 35 [color="#CC6677" style=bold]
+	58
+	58 -- 48 [color="#AA4499" style=bold]
+	59
+	59 -- 40 [color="#999933" style=bold]
+	60
+	60 -- 59 [color="#88CCEE" style=bold]
+	61
+	61 -- 39 [color="#44AA99" style=bold]
+	62
+	62 -- 31 [color="#88CCEE" style=bold]
+	63
+	63 -- 40 [color="#999933" style=bold]
+	64
+	64 -- 45 [color="#332288" style=bold]
+	65
+	65 -- 11 [color="#999933" style=bold]
+	66
+	66 -- 47 [color="#44AA99" style=bold]
+	67
+	67 -- 32 [color="#AA4499" style=bold]
+	68
+	68 -- 3 [color="#44AA99" style=bold]
+	69
+	69 -- 9 [color="#CC6677" style=bold]
+	70
+	70 -- 25 [color="#DDDDDD" style=bold]
+	71
+	71 -- 27 [color="#AA4499" style=bold]
+	72
+	72 -- 4 [color="#332288" style=bold]
+	73
+	73 -- 65 [color="#44AA99" style=bold]
+	74
+	74 -- 37 [color="#117733" style=bold]
+	75
+	75 -- 7 [color="#882255" style=bold]
+	76
+	76 -- 21 [color="#CC6677" style=bold]
+	77
+	77 -- 3 [color="#DDDDDD" style=bold]
+	78
+	78 -- 28 [color="#44AA99" style=bold]
+	79
+	79 -- 75 [color="#44AA99" style=bold]
+	80
+	80 -- 36 [color="#999933" style=bold]
+}

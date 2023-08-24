@@ -42,7 +42,7 @@ function set_zipf(){
 
     for i in `seq 1 $peer_num`
     do
-        curl -s "localhost:$((i+8000))/zipf?theta=${skew}&record_num=${record_num}" >/dev/null
+        curl -s "localhost:$((i+8000))/zipf?theta=${skew}&record_num=$((record_num*peer_num))" >/dev/null
     done
 
     echo "finished"
