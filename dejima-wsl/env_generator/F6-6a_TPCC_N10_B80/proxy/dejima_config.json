@@ -1,0 +1,84 @@
+{
+  "dejima_table": {
+    "d1_2": [
+      "Peer2",
+      "Peer1"
+    ],
+    "d2_3": [
+      "Peer3",
+      "Peer2"
+    ],
+    "d3_4": [
+      "Peer4",
+      "Peer3"
+    ],
+    "d3_5": [
+      "Peer5",
+      "Peer3"
+    ],
+    "d3_6": [
+      "Peer6",
+      "Peer3"
+    ],
+    "d4_7": [
+      "Peer7",
+      "Peer4"
+    ],
+    "d2_8": [
+      "Peer8",
+      "Peer2"
+    ],
+    "d6_9": [
+      "Peer9",
+      "Peer6"
+    ],
+    "d2_10": [
+      "Peer10",
+      "Peer2"
+    ]
+  },
+  "base_table": {
+    "Peer1": [
+      "customer"
+    ],
+    "Peer2": [
+      "customer"
+    ],
+    "Peer3": [
+      "customer"
+    ],
+    "Peer4": [
+      "customer"
+    ],
+    "Peer5": [
+      "customer"
+    ],
+    "Peer6": [
+      "customer"
+    ],
+    "Peer7": [
+      "customer"
+    ],
+    "Peer8": [
+      "customer"
+    ],
+    "Peer9": [
+      "customer"
+    ],
+    "Peer10": [
+      "customer"
+    ]
+  },
+  "peer_address": {
+    "Peer1": "Peer1-proxy:8000",
+    "Peer2": "Peer2-proxy:8000",
+    "Peer3": "Peer3-proxy:8000",
+    "Peer4": "Peer4-proxy:8000",
+    "Peer5": "Peer5-proxy:8000",
+    "Peer6": "Peer6-proxy:8000",
+    "Peer7": "Peer7-proxy:8000",
+    "Peer8": "Peer8-proxy:8000",
+    "Peer9": "Peer9-proxy:8000",
+    "Peer10": "Peer10-proxy:8000"
+  }
+}

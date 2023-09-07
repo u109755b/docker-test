@@ -25,11 +25,11 @@ def get_sample_data(file_name, parameter_name):
 
 
 
-t = 120
-sample_num=5
-file_name_k = 'tx_order_on_hybrid/4records_tx sample{k}.txt'
+t = 600
+sample_num=2
+file_name_k = 'hybrid_600/4records_tx sample{k}.txt'
 parameter_name = 'set_rate'
-output_mode = 4    # 1:全データ出力,  2:平均値だけ出力,  3:1秒あたりの平均値を出力,  4:倍率を出力,  5: ChatGPT用に出力
+output_mode = 5    # 1:全データ出力,  2:平均値だけ出力,  3:1秒あたりの平均値を出力,  4:倍率を出力,  5:最終結果用出力,  6: ChatGPT用に出力
 
 file_names = []
 results = []    # results[k_sample][parameter_key][method]
@@ -46,24 +46,28 @@ if output_mode == 1: print('parameter - method: [avg_commit, avg_abort]   (raw_d
 if output_mode == 2: print('parameter - method: avg_commit (avg_abort)')
 if output_mode == 3: print('parameter - method: avg_commit/s (avg_abort/s)')
 if output_mode == 4: print('parameter - method: relative_avg_commit (relative_avg_abort)')
-if output_mode == 5: print('throughput (abort_rate)')
+if output_mode == 5: print('parameter - method: avg_commit/s (relative_avg_commit)')
+if output_mode == 6: print('throughput (abort_rate)')
 
 averages_list = defaultdict(lambda: [])
-for parameter_key in results[0]:
+parameter_key_list = sorted(results[0].keys())
+for parameter_key in parameter_key_list:
     averages_for_output = {}
     raws_for_output = {}
     # 結果を計算する
-    for method in results[0][parameter_key]:
+    method_list = results[0][parameter_key].keys()
+    for method in method_list:
         raws = []
         for i in range(sample_num):
             raws.append(results[i][parameter_key][method])
         raws = sorted(raws, key=lambda x: x[0])   # ソート
-        average = [round(sum(x)/len(x)) for x in zip(*raws[1:-1])]    # 最大値・最小値を省いた平均を取る
+        average = [round(sum(x)/len(x)) for x in zip(*raws[0:])]    # 最大値・最小値を省いた平均を取る
         raws_for_output[method] = raws
         averages_for_output[method] = average
         averages_list[method].append(average)
     # 結果を表示する
-    for method in results[0][parameter_key]:
+    if output_mode == 5: method_list = ['frs', 'hybrid', '2pl']
+    for method in method_list:
         raws = raws_for_output[method]
         average = averages_for_output[method]
         np_average = np.array(averages_for_output[method])
@@ -76,8 +80,9 @@ for parameter_key in results[0]:
         if output_mode == 2: print('{} - {}: {} ({})'.format(parameter_key, method, average[0], average[1]))
         if output_mode == 3: print('{} - {}: {:.2f} ({:.2f})'.format(parameter_key, method, average[0]/t, average[1]/t))
         if output_mode == 4: print('{} - {}: {} ({})'.format(parameter_key, method, relative_avg[0], relative_avg[1]))
-    if output_mode != 5: print('')
-if output_mode == 5:
+        if output_mode == 5: print('{} - {}: {:.2f} ({})'.format(parameter_key, method, average[0]/t, relative_avg[0]))
+    if output_mode != 6: print('')
+if output_mode == 6:
     for method, avg_list in averages_list.items():
         output_list = ['{:.2f} ({:.2f})'.format(item[0]/t, item[1]/t) for item in reversed(avg_list)]
         print('{}: {}'.format(method, ',  '.join(output_list)))

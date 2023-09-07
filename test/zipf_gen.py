@@ -29,9 +29,13 @@ class zipfGenerator:
         for i in range(1,n+1):
             sum += 1 / pow(i, theta)
         return sum
-zipf_gen = zipfGenerator(100, 0)    # [0, 100]
-m = 0
+zipf_gen = zipfGenerator(10000, 0.8)    # [0, 100]
+mi = 10000000
+ma = -1
 for i in range(500):
     v = next(zipf_gen)
-    m = min(m, v)
-print(m)
+    print(v)
+    mi = min(mi, v)
+    ma = max(ma, v)
+print(mi)
+print(ma)

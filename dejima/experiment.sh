@@ -7,21 +7,26 @@ function load_ycsb(){
     do
         curl -s "localhost:$((i+8000))/load?start_id=${start_id}&record_num=${record_num}&step=${peer_num}" >/dev/null
         start_id=$((start_id+1))
+        echo "peer ${i} finished"
     done
 }
 
 
 function load_tpcc(){
     echo "load_tpcc ${peer_num}"
-
+    
+    echo "local load"
     for i in `seq 1 $peer_num`
     do
-            curl -s "localhost:$((i+8000))/localload_TPCC?peer_num=${peer_num}" >/dev/null
+        curl -s "localhost:$((i+8000))/localload_TPCC?peer_num=${peer_num}" >/dev/null
+        echo "peer ${i} finished"
     done
-
+    
+    echo "customer load"
     for i in `seq 1 $peer_num`
     do
-            curl -s "localhost:$((i+8000))/customerload_TPCC?peer_num=${peer_num}" >/dev/null
+        curl -s "localhost:$((i+8000))/customerload_TPCC?peer_num=${peer_num}" >/dev/null
+        echo "peer ${i} finished"
     done
 }
 
@@ -96,12 +101,12 @@ function bench(){
 
 
 
-peer_num=5
+peer_num=40
 record_num=100
-tx_t=10
+tx_t=100
 test_time=600
 
-default_zipf=0.8     # zipf
+default_zipf=0.2     # zipf
 
 bench_type=$1
 command_name=$2

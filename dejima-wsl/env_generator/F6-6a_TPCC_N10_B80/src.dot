@@ -1,0 +1,22 @@
+graph {
+	graph [rankdir=BT]
+	1
+	2
+	2 -- 1 [color="#DDCC77" style=bold]
+	3
+	3 -- 2 [color="#CC6677" style=bold]
+	4
+	4 -- 3 [color="#CC6677" style=bold]
+	5
+	5 -- 3 [color="#DDCC77" style=bold]
+	6
+	6 -- 3 [color="#332288" style=bold]
+	7
+	7 -- 4 [color="#117733" style=bold]
+	8
+	8 -- 2 [color="#DDDDDD" style=bold]
+	9
+	9 -- 6 [color="#AA4499" style=bold]
+	10
+	10 -- 2 [color="#882255" style=bold]
+}

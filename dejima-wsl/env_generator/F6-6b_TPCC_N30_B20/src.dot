@@ -1,0 +1,62 @@
+graph {
+	graph [rankdir=BT]
+	1
+	2
+	2 -- 1 [color="#88CCEE" style=bold]
+	3
+	3 -- 1 [color="#88CCEE" style=bold]
+	4
+	4 -- 1 [color="#117733" style=bold]
+	5
+	5 -- 2 [color="#117733" style=bold]
+	6
+	6 -- 2 [color="#DDDDDD" style=bold]
+	7
+	7 -- 5 [color="#DDCC77" style=bold]
+	8
+	8 -- 1 [color="#DDDDDD" style=bold]
+	9
+	9 -- 1 [color="#999933" style=bold]
+	10
+	10 -- 9 [color="#DDDDDD" style=bold]
+	11
+	11 -- 10 [color="#44AA99" style=bold]
+	12
+	12 -- 9 [color="#88CCEE" style=bold]
+	13
+	13 -- 8 [color="#332288" style=bold]
+	14
+	14 -- 9 [color="#332288" style=bold]
+	15
+	15 -- 5 [color="#88CCEE" style=bold]
+	16
+	16 -- 9 [color="#DDDDDD" style=bold]
+	17
+	17 -- 16 [color="#CC6677" style=bold]
+	18
+	18 -- 11 [color="#44AA99" style=bold]
+	19
+	19 -- 7 [color="#332288" style=bold]
+	20
+	20 -- 8 [color="#DDDDDD" style=bold]
+	21
+	21 -- 1 [color="#DDCC77" style=bold]
+	22
+	22 -- 1 [color="#DDCC77" style=bold]
+	23
+	23 -- 20 [color="#332288" style=bold]
+	24
+	24 -- 15 [color="#88CCEE" style=bold]
+	25
+	25 -- 9 [color="#AA4499" style=bold]
+	26
+	26 -- 17 [color="#999933" style=bold]
+	27
+	27 -- 20 [color="#DDCC77" style=bold]
+	28
+	28 -- 26 [color="#999933" style=bold]
+	29
+	29 -- 4 [color="#88CCEE" style=bold]
+	30
+	30 -- 4 [color="#332288" style=bold]
+}
