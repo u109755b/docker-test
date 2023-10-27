@@ -66,7 +66,7 @@ function set_zipf(){
 function bench(){
     method=${1:-"2pl"}
     t=${2:-10}    # time (s)
-    threads=1   # num of threads for each peer
+    # threads=1   # num of threads for each peer
     result_file="result_file"
 
     YmdHMS=`TZ=JST-9 date +%m%d-%H%M%S`
@@ -93,6 +93,8 @@ function bench(){
     # awk '{commit+=$2} END {print commit}' ${output_file} | tee -a ${output_file}
 
     n=$((peer_num))
+    th=$((threads))
+    n=$((n*threads))
     sed 's/[()|, ]/ /g; s/\[s\]//g' ${output_file} | awk -v n="$n" '{cn+=$3; cn1+=$4; cn2+=$5; ct+=$6; ct1+=$7; ct2+=$8} 
         END {printf "commit:  %d (%d %d)   %.2f (%.2f %.2f)[s]\n", cn, cn1, cn2, ct/n, ct1/n, ct2/n}'
     sed 's/[()|, ]/ /g; s/\[s\]//g' ${output_file} | awk -v n="$n" '{an+=$10; an1+=$11; an2+=$12; at+=$13; at1+=$14; at2+=$15} 
@@ -100,8 +102,8 @@ function bench(){
 }
 
 
-
-peer_num=40
+threads=1   # num of threads for each peer
+peer_num=20
 record_num=100
 tx_t=100
 test_time=600
