@@ -23,13 +23,16 @@ function update(){
     # peer_dirs=$(find ./env_generator/RSAB* -maxdepth 0)
     cp -r "./proxy" "./env_generator/src/YCSB/"
     cp -r "./proxy" "./env_generator/src/TPCC/"
+    cp -r "./db/postgresql.conf" "./env_generator/src/YCSB/db/postgresql.conf"
+    cp -r "./db/postgresql.conf" "./env_generator/src/TPCC/db/postgresql.conf"
     ycsb_peer_dirs=$(find ./env_generator/YCSB* -maxdepth 0)
     tpcc_peer_dirs=$(find ./env_generator/TPCC* -maxdepth 0)
     peer_dirs="$ycsb_peer_dirs $tpcc_peer_dirs"
     for peer_dir in $peer_dirs; do
         cp "${peer_dir}/proxy/dejima_config.json" "${peer_dir}/dejima_config.json"
-        cp -r "./proxy" $peer_dir
+        cp -r "./proxy" "${peer_dir}"
         mv "${peer_dir}/dejima_config.json" "${peer_dir}/proxy/dejima_config.json"
+        cp -r "./db/postgresql.conf" "${peer_dir}/db/postgresql.conf"
     done
     echo "updated YCSB and TPCC files"
 }
