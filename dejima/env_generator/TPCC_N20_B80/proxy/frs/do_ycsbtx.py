@@ -129,6 +129,7 @@ def doYCSB_frs():
     else:
         tx.abort()
         dejimautils.termination_request("abort", global_xid, "frs")
+        config.result_measurement.abort_tx('global')
     del config.tx_dict[global_xid]
 
     return commit

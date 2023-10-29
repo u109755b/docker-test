@@ -94,7 +94,7 @@ class CustomedThreadedConnectionPool(CustomedAbstractConnectionPool):
 
 while True:
     try: 
-        pool = CustomedThreadedConnectionPool(max_txn_cnt=30, minconn=10, maxconn=100, host="{}-db".format(config.peer_name), port="5432", dbname="postgres", user="dejima", password="barfoo")
+        pool = CustomedThreadedConnectionPool(max_txn_cnt=30, minconn=10, maxconn=1000, host="{}-db".format(config.peer_name), port="5432", dbname="postgres", user="dejima", password="barfoo")
         break
     except Exception as e:
         time.sleep(2)

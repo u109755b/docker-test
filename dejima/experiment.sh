@@ -47,20 +47,21 @@ function set_zipf(){
 
     for i in `seq 1 $peer_num`
     do
-        curl -s "localhost:$((i+8000))/zipf?theta=${skew}&record_num=$((record_num*peer_num))" >/dev/null
+        # curl -s "localhost:$((i+8000))/zipf?theta=${skew}&record_num=$((record_num*peer_num))" >/dev/null
+        curl -s "localhost:$((i+8000))/change_val?about=zipf&theta=${skew}&record_num=$((record_num*peer_num))" >/dev/null
     done
 
     echo "finished"
 }
 
 
-# function show_lock(){
-#     echo "show_lock"
-#     for i in `seq 0 $((alliance_num+provider_num))`
-#     do
-#         curl -s "localhost:$((i+8000))/change_val?about=show_lock" >/dev/null
-#     done
-# }
+function show_lock(){
+    echo "show_lock"
+    for i in `seq 1 $peer_num`
+    do
+        curl -s "localhost:$((i+8000))/change_val?about=show_lock" >/dev/null
+    done
+}
 
 
 function bench(){
@@ -133,8 +134,8 @@ function batch_bench1(){
     bench "2pl" $tx_t
     echo ""
     bench "frs" $tx_t
-    echo ""
-    bench "hybrid" $tx_t
+    # echo ""
+    # bench "hybrid" $tx_t
     # show_lock
 }
 if [ $command_name == "1" ]; then
@@ -152,7 +153,7 @@ function batch_bench2(){
         echo ""
         bench_rsab "frs" $tx_t
         echo ""
-    bench_rsab "hybrid" $tx_t
+        bench_rsab "hybrid" $tx_t
     done
     show_lock
 }

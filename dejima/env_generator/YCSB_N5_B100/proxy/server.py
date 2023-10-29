@@ -46,6 +46,9 @@ app.add_route("/customerload_TPCC", TPCCLoadCustomer())
 from common.tpcc import TPCC
 app.add_route("/tpcc", TPCC())
 
+from common.valchange import ValChange
+app.add_route("/change_val", ValChange())
+
 if __name__ == "__main__":
     from wsgiref.simple_server import *
     from socketserver import *

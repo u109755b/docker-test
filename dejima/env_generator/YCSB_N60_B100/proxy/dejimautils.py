@@ -116,20 +116,20 @@ def base_request(url, data, results, lock):
         headers = {"Content-Type": "application/json"}
         res = requests.post(url, json.dumps(data), headers=headers)
         
-        # セッションオブジェクトを作成
-        session = requests.Session()
-        # リトライ条件を設定
-        retry = Retry(
-            total=5,  # 最大リトライ回数
-            backoff_factor=0.05,  # 0.05秒後にリトライ、その後は指数関数的に遅延
-            status_forcelist=[500, 502, 503, 504]  # ステータスコードがこれらの場合にリトライ
-        )
-        # HTTPAdapterにリトライ条件を設定してマウント
-        adapter = HTTPAdapter(max_retries=retry)
-        session.mount('http://', adapter)
-        session.mount('https://', adapter)
-        # POSTリクエストを送信
-        res = session.post(url, json.dumps(data), headers=headers)
+        # # セッションオブジェクトを作成
+        # session = requests.Session()
+        # # リトライ条件を設定
+        # retry = Retry(
+        #     total=5,  # 最大リトライ回数
+        #     backoff_factor=0.05,  # 0.05秒後にリトライ、その後は指数関数的に遅延
+        #     status_forcelist=[500, 502, 503, 504]  # ステータスコードがこれらの場合にリトライ
+        # )
+        # # HTTPAdapterにリトライ条件を設定してマウント
+        # adapter = HTTPAdapter(max_retries=retry)
+        # session.mount('http://', adapter)
+        # session.mount('https://', adapter)
+        # # POSTリクエストを送信
+        # res = session.post(url, json.dumps(data), headers=headers)
         
         with lock:
             if res.json()['result'] == "Ack":
