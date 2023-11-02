@@ -24,12 +24,14 @@ def doTPCC_PAY_frs():
     else:
         c_d_id = random.randint(1, 10)
         c_w_id = random.randint(1, config.warehouse_num)
-    if random.randint(1, 100) <= 40:
-        c_id = tpccutils.nurand(1023, 1, 3000, tpccutils.C_FOR_C_ID)
-        select_with_c_id_flag = True
-    else:
-        c_last = tpccutils.get_last(tpccutils.nurand(255,0,999,tpccutils.C_FOR_C_LAST))
-        select_with_c_id_flag = False
+    # if random.randint(1, 100) <= 40:
+    #     c_id = tpccutils.nurand(1023, 1, 3000, tpccutils.C_FOR_C_ID)
+    #     select_with_c_id_flag = True
+    # else:
+    #     c_last = tpccutils.get_last(tpccutils.nurand(255,0,999,tpccutils.C_FOR_C_LAST))
+    #     select_with_c_id_flag = False
+    c_id = next(tpccutils.zipf_gen)
+    select_with_c_id_flag = True
 
     # h_amount is defined as string
     h_amount = '{:.2f}'.format(random.random() * 4999 + 1)
