@@ -104,12 +104,12 @@ function bench(){
 
 
 threads=1   # num of threads for each peer
-peer_num=20
+peer_num=40
 record_num=100
 tx_t=100
 test_time=600
 
-default_zipf=0.2     # zipf
+default_zipf=0.7     # zipf
 
 bench_type=$1
 command_name=$2
@@ -132,11 +132,12 @@ function batch_bench1(){
     settings
     echo -e "\n"
     bench "2pl" $tx_t
+    show_lock
     echo ""
     bench "frs" $tx_t
     # echo ""
     # bench "hybrid" $tx_t
-    # show_lock
+    show_lock
 }
 if [ $command_name == "1" ]; then
     batch_bench1

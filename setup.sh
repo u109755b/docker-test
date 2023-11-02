@@ -1,7 +1,7 @@
 # how to use in AWS EC2
 # sudo yum install git -y
 # git clone https://github.com/u109755b/docker-test.git
-# bash docker-test/ride_sharing2_alliance_2phase/setup.sh
+# bash docker-test/setup.sh
 
 
 # git install
