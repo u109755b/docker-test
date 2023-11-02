@@ -1,5 +1,6 @@
 import config
 import ycsbutils
+import tpccutils
 import random
 
 class ValChange(object):
@@ -24,6 +25,7 @@ class ValChange(object):
                 record_num = 100000
                 
             ycsbutils.zipf_gen = ycsbutils.zipfGenerator(record_num, theta)
+            tpccutils.zipf_gen = tpccutils.zipfGenerator(3000, theta)
             
             print('set zipf {}'.format(theta))
             # # Visualization of output

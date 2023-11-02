@@ -16,7 +16,8 @@ def doTPCC_NO_2pl():
     # prepare parameters
     w_id = random.randint(1, config.warehouse_num)
     d_id = random.randint(1, 10)
-    c_id = tpccutils.nurand(1023, 1, 3000, tpccutils.C_FOR_C_ID)
+    # c_id = tpccutils.nurand(1023, 1, 3000, tpccutils.C_FOR_C_ID)
+    c_id = next(tpccutils.zipf_gen)
     ol_cnt = random.randint(5, 15)
     rbk = random.randint(1, 100)
     o_entry_d = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -116,7 +117,7 @@ def doTPCC_NO_2pl():
         return False
 
     tx.commit()
-    config.result_measurement.commit_tx('update')
+    config.result_measurement.commit_tx('read')
     del config.tx_dict[global_xid]
 
     return True
