@@ -34,8 +34,7 @@ class CustomedAbstractConnectionPool(psycopg2.pool.AbstractConnectionPool):
             # it back into the pool
             if not conn.closed:
                 status = conn.info.transaction_status
-                # if status == _ext.TRANSACTION_STATUS_UNKNOWN or self.txn_cnt[id(conn)] > self.max_txn_cnt:
-                if status == _ext.TRANSACTION_STATUS_UNKNOWN:
+                if status == _ext.TRANSACTION_STATUS_UNKNOWN or self.txn_cnt[id(conn)] > self.max_txn_cnt:
                     # server connection lost
                     conn.close()
                     del self.txn_cnt[id(conn)]
