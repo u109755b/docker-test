@@ -76,12 +76,12 @@ def doTPCC_PAY_frs():
         return "miss"
 
     # lock request
-    # config.time_measurement.start_timer("global_lock", global_xid)
+    config.time_measurement.start_timer("global_lock", global_xid)
     if not lineages == []:
         result = dejimautils.lock_request(lineages, global_xid)
     else:
         result = "Ack"
-    # config.time_measurement.stop_timer("global_lock", global_xid)
+    config.time_measurement.stop_timer("global_lock", global_xid)
 
     if result != "Ack":
         # abort during global lock, release lock
