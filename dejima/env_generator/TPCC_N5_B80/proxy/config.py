@@ -33,6 +33,53 @@ target_peers.remove(peer_name)
 
 
 import time
+class TimeMeasurement:
+    def __init__(self):
+        self.start_time = {}
+        self.total_duration_time = {}
+        self.data_num = {}
+        self.status = 0     # 0: inited, 1: started, 2: ended
+
+    def start(self):
+        if self.status != 1:
+            self.__init__()
+            self.status = 1
+
+    def finish(self):
+        self.status = 2
+
+    def start_timer(self, time_type, global_xid, s_time=None):
+        if time_type not in self.start_time:
+            self.start_time[time_type] = {}
+        if global_xid not in self.start_time[time_type]:
+            self.start_time[time_type][global_xid] = []
+        if s_time is None:
+            s_time = time.perf_counter()
+        self.start_time[time_type][global_xid].append(s_time)
+
+    def stop_timer(self, time_type, global_xid, save=True):
+        s_time = self.start_time[time_type][global_xid].pop()
+        e_time = time.perf_counter()
+        if not self.start_time[time_type][global_xid]:
+            del self.start_time[time_type][global_xid]
+        if save is False:
+            return
+        if time_type not in self.data_num:
+            self.total_duration_time[time_type] = 0
+            self.data_num[time_type] = 0
+        self.total_duration_time[time_type] += e_time - s_time
+        self.data_num[time_type] += 1
+
+    def print_time(self):
+        duration_time = []
+        for time_type, td_time in self.total_duration_time.items():
+            num = self.data_num[time_type]
+            duration_time.append('{}: {:.2f}'.format(time_type, 1000*td_time/num))
+            # duration_time[time_type] = td_time / self.data_num[time_type]
+        print(', '.join(duration_time))
+time_measurement = TimeMeasurement()
+
+
 class ResultMeasurement:
     def __init__(self):
         # コミット数 (Updateコミット数+Readコミット数)  コミットの合計時間 (Updateコミットの合計時間+Readコミットの合計時間)

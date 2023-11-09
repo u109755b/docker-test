@@ -36,6 +36,7 @@ class TPCC(object):
         random.seed()
 
         config.result_measurement = config.ResultMeasurement()
+        config.time_measurement.start()
 
         # frs & 2pl
         if METHOD == "frs" or METHOD == "2pl":
@@ -55,7 +56,7 @@ class TPCC(object):
                     epoch += 1
                     result_per_epoch.append({'commit': 0, 'abort': 0})
 
-                if random.randint(1,100) < 50:
+                if random.randint(1,100) < 0:
                     doTPCC = doTPCC_NO
                 else:
                     doTPCC = doTPCC_PAY
@@ -178,6 +179,8 @@ class TPCC(object):
             resp.text = "invalid method"
             return
 
+        config.time_measurement.print_time()
+        config.time_measurement.finish()
         msg = config.result_measurement.get_result(display=True)
         msg += "\n"
 

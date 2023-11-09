@@ -48,7 +48,11 @@ function set_zipf(){
     for i in `seq 1 $peer_num`
     do
         # curl -s "localhost:$((i+8000))/zipf?theta=${skew}&record_num=$((record_num*peer_num))" >/dev/null
-        curl -s "localhost:$((i+8000))/change_val?about=zipf&theta=${skew}&record_num=$((record_num*peer_num))" >/dev/null
+        if [ $bench_type == "ycsb" ]; then
+            curl -s "localhost:$((i+8000))/change_val?about=zipf&theta=${skew}&record_num=$((record_num*peer_num))" >/dev/null
+        elif [ $bench_type == "tpcc" ]; then
+            curl -s "localhost:$((i+8000))/change_val?about=zipf&theta=${skew}&record_num=$((10))" >/dev/null
+        fi
     done
 
     echo "finished"
@@ -104,12 +108,12 @@ function bench(){
 
 
 threads=1   # num of threads for each peer
-peer_num=40
+peer_num=20
 record_num=100
 tx_t=100
 test_time=600
 
-default_zipf=0.7     # zipf
+default_zipf=0.99     # zipf
 
 bench_type=$1
 command_name=$2
