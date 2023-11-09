@@ -1,0 +1,42 @@
+graph {
+	graph [rankdir=BT]
+	1
+	2
+	2 -- 1 [color="#332288" style=bold]
+	3
+	3 -- 2 [color="#CC6677" style=bold]
+	4
+	4 -- 1 [color="#DDDDDD" style=bold]
+	5
+	5 -- 4 [color="#332288" style=bold]
+	6
+	6 -- 3 [color="#44AA99" style=bold]
+	7
+	7 -- 6 [color="#DDDDDD" style=bold]
+	8
+	8 -- 1 [color="#DDDDDD" style=bold]
+	9
+	9 -- 6 [color="#CC6677" style=bold]
+	10
+	10 -- 4 [color="#CC6677" style=bold]
+	11
+	11 -- 9 [color="#332288" style=bold]
+	12
+	12 -- 8 [color="#44AA99" style=bold]
+	13
+	13 -- 10 [color="#999933" style=bold]
+	14
+	14 -- 10 [color="#DDDDDD" style=bold]
+	15
+	15 -- 13 [color="#117733" style=bold]
+	16
+	16 -- 11 [color="#88CCEE" style=bold]
+	17
+	17 -- 14 [color="#999933" style=bold]
+	18
+	18 -- 12 [color="#999933" style=bold]
+	19
+	19 -- 4 [color="#332288" style=bold]
+	20
+	20 -- 17 [color="#DDDDDD" style=bold]
+}
