@@ -1,0 +1,804 @@
+{
+  "dejima_table": {
+    "d1_2": [
+      "Peer2",
+      "Peer1"
+    ],
+    "d1_3": [
+      "Peer3",
+      "Peer1"
+    ],
+    "d1_4": [
+      "Peer4",
+      "Peer1"
+    ],
+    "d2_5": [
+      "Peer5",
+      "Peer2"
+    ],
+    "d3_6": [
+      "Peer6",
+      "Peer3"
+    ],
+    "d3_7": [
+      "Peer7",
+      "Peer3"
+    ],
+    "d2_8": [
+      "Peer8",
+      "Peer2"
+    ],
+    "d5_9": [
+      "Peer9",
+      "Peer5"
+    ],
+    "d6_10": [
+      "Peer10",
+      "Peer6"
+    ],
+    "d1_11": [
+      "Peer11",
+      "Peer1"
+    ],
+    "d11_12": [
+      "Peer12",
+      "Peer11"
+    ],
+    "d4_13": [
+      "Peer13",
+      "Peer4"
+    ],
+    "d13_14": [
+      "Peer14",
+      "Peer13"
+    ],
+    "d7_15": [
+      "Peer15",
+      "Peer7"
+    ],
+    "d9_16": [
+      "Peer16",
+      "Peer9"
+    ],
+    "d6_17": [
+      "Peer17",
+      "Peer6"
+    ],
+    "d2_18": [
+      "Peer18",
+      "Peer2"
+    ],
+    "d12_19": [
+      "Peer19",
+      "Peer12"
+    ],
+    "d2_20": [
+      "Peer20",
+      "Peer2"
+    ],
+    "d14_21": [
+      "Peer21",
+      "Peer14"
+    ],
+    "d8_22": [
+      "Peer22",
+      "Peer8"
+    ],
+    "d4_23": [
+      "Peer23",
+      "Peer4"
+    ],
+    "d13_24": [
+      "Peer24",
+      "Peer13"
+    ],
+    "d24_25": [
+      "Peer25",
+      "Peer24"
+    ],
+    "d3_26": [
+      "Peer26",
+      "Peer3"
+    ],
+    "d15_27": [
+      "Peer27",
+      "Peer15"
+    ],
+    "d14_28": [
+      "Peer28",
+      "Peer14"
+    ],
+    "d6_29": [
+      "Peer29",
+      "Peer6"
+    ],
+    "d8_30": [
+      "Peer30",
+      "Peer8"
+    ],
+    "d25_31": [
+      "Peer31",
+      "Peer25"
+    ],
+    "d22_32": [
+      "Peer32",
+      "Peer22"
+    ],
+    "d31_33": [
+      "Peer33",
+      "Peer31"
+    ],
+    "d28_34": [
+      "Peer34",
+      "Peer28"
+    ],
+    "d7_35": [
+      "Peer35",
+      "Peer7"
+    ],
+    "d7_36": [
+      "Peer36",
+      "Peer7"
+    ],
+    "d25_37": [
+      "Peer37",
+      "Peer25"
+    ],
+    "d3_38": [
+      "Peer38",
+      "Peer3"
+    ],
+    "d2_39": [
+      "Peer39",
+      "Peer2"
+    ],
+    "d5_40": [
+      "Peer40",
+      "Peer5"
+    ],
+    "d26_41": [
+      "Peer41",
+      "Peer26"
+    ],
+    "d35_42": [
+      "Peer42",
+      "Peer35"
+    ],
+    "d41_43": [
+      "Peer43",
+      "Peer41"
+    ],
+    "d9_44": [
+      "Peer44",
+      "Peer9"
+    ],
+    "d25_45": [
+      "Peer45",
+      "Peer25"
+    ],
+    "d44_46": [
+      "Peer46",
+      "Peer44"
+    ],
+    "d9_47": [
+      "Peer47",
+      "Peer9"
+    ],
+    "d18_48": [
+      "Peer48",
+      "Peer18"
+    ],
+    "d40_49": [
+      "Peer49",
+      "Peer40"
+    ],
+    "d13_50": [
+      "Peer50",
+      "Peer13"
+    ],
+    "d21_51": [
+      "Peer51",
+      "Peer21"
+    ],
+    "d21_52": [
+      "Peer52",
+      "Peer21"
+    ],
+    "d26_53": [
+      "Peer53",
+      "Peer26"
+    ],
+    "d48_54": [
+      "Peer54",
+      "Peer48"
+    ],
+    "d28_55": [
+      "Peer55",
+      "Peer28"
+    ],
+    "d9_56": [
+      "Peer56",
+      "Peer9"
+    ],
+    "d54_57": [
+      "Peer57",
+      "Peer54"
+    ],
+    "d52_58": [
+      "Peer58",
+      "Peer52"
+    ],
+    "d33_59": [
+      "Peer59",
+      "Peer33"
+    ],
+    "d43_60": [
+      "Peer60",
+      "Peer43"
+    ],
+    "d42_61": [
+      "Peer61",
+      "Peer42"
+    ],
+    "d33_62": [
+      "Peer62",
+      "Peer33"
+    ],
+    "d48_63": [
+      "Peer63",
+      "Peer48"
+    ],
+    "d20_64": [
+      "Peer64",
+      "Peer20"
+    ],
+    "d7_65": [
+      "Peer65",
+      "Peer7"
+    ],
+    "d58_66": [
+      "Peer66",
+      "Peer58"
+    ],
+    "d6_67": [
+      "Peer67",
+      "Peer6"
+    ],
+    "d37_68": [
+      "Peer68",
+      "Peer37"
+    ],
+    "d63_69": [
+      "Peer69",
+      "Peer63"
+    ],
+    "d47_70": [
+      "Peer70",
+      "Peer47"
+    ],
+    "d56_71": [
+      "Peer71",
+      "Peer56"
+    ],
+    "d26_72": [
+      "Peer72",
+      "Peer26"
+    ],
+    "d9_73": [
+      "Peer73",
+      "Peer9"
+    ],
+    "d2_74": [
+      "Peer74",
+      "Peer2"
+    ],
+    "d42_75": [
+      "Peer75",
+      "Peer42"
+    ],
+    "d56_76": [
+      "Peer76",
+      "Peer56"
+    ],
+    "d54_77": [
+      "Peer77",
+      "Peer54"
+    ],
+    "d66_78": [
+      "Peer78",
+      "Peer66"
+    ],
+    "d63_79": [
+      "Peer79",
+      "Peer63"
+    ],
+    "d67_80": [
+      "Peer80",
+      "Peer67"
+    ],
+    "d76_81": [
+      "Peer81",
+      "Peer76"
+    ],
+    "d79_82": [
+      "Peer82",
+      "Peer79"
+    ],
+    "d47_83": [
+      "Peer83",
+      "Peer47"
+    ],
+    "d47_84": [
+      "Peer84",
+      "Peer47"
+    ],
+    "d27_85": [
+      "Peer85",
+      "Peer27"
+    ],
+    "d32_86": [
+      "Peer86",
+      "Peer32"
+    ],
+    "d14_87": [
+      "Peer87",
+      "Peer14"
+    ],
+    "d1_88": [
+      "Peer88",
+      "Peer1"
+    ],
+    "d8_89": [
+      "Peer89",
+      "Peer8"
+    ],
+    "d30_90": [
+      "Peer90",
+      "Peer30"
+    ],
+    "d38_91": [
+      "Peer91",
+      "Peer38"
+    ],
+    "d41_92": [
+      "Peer92",
+      "Peer41"
+    ],
+    "d82_93": [
+      "Peer93",
+      "Peer82"
+    ],
+    "d61_94": [
+      "Peer94",
+      "Peer61"
+    ],
+    "d77_95": [
+      "Peer95",
+      "Peer77"
+    ],
+    "d95_96": [
+      "Peer96",
+      "Peer95"
+    ],
+    "d53_97": [
+      "Peer97",
+      "Peer53"
+    ],
+    "d40_98": [
+      "Peer98",
+      "Peer40"
+    ],
+    "d74_99": [
+      "Peer99",
+      "Peer74"
+    ],
+    "d68_100": [
+      "Peer100",
+      "Peer68"
+    ]
+  },
+  "base_table": {
+    "Peer1": [
+      "customer"
+    ],
+    "Peer2": [
+      "customer"
+    ],
+    "Peer3": [
+      "customer"
+    ],
+    "Peer4": [
+      "customer"
+    ],
+    "Peer5": [
+      "customer"
+    ],
+    "Peer6": [
+      "customer"
+    ],
+    "Peer7": [
+      "customer"
+    ],
+    "Peer8": [
+      "customer"
+    ],
+    "Peer9": [
+      "customer"
+    ],
+    "Peer10": [
+      "customer"
+    ],
+    "Peer11": [
+      "customer"
+    ],
+    "Peer12": [
+      "customer"
+    ],
+    "Peer13": [
+      "customer"
+    ],
+    "Peer14": [
+      "customer"
+    ],
+    "Peer15": [
+      "customer"
+    ],
+    "Peer16": [
+      "customer"
+    ],
+    "Peer17": [
+      "customer"
+    ],
+    "Peer18": [
+      "customer"
+    ],
+    "Peer19": [
+      "customer"
+    ],
+    "Peer20": [
+      "customer"
+    ],
+    "Peer21": [
+      "customer"
+    ],
+    "Peer22": [
+      "customer"
+    ],
+    "Peer23": [
+      "customer"
+    ],
+    "Peer24": [
+      "customer"
+    ],
+    "Peer25": [
+      "customer"
+    ],
+    "Peer26": [
+      "customer"
+    ],
+    "Peer27": [
+      "customer"
+    ],
+    "Peer28": [
+      "customer"
+    ],
+    "Peer29": [
+      "customer"
+    ],
+    "Peer30": [
+      "customer"
+    ],
+    "Peer31": [
+      "customer"
+    ],
+    "Peer32": [
+      "customer"
+    ],
+    "Peer33": [
+      "customer"
+    ],
+    "Peer34": [
+      "customer"
+    ],
+    "Peer35": [
+      "customer"
+    ],
+    "Peer36": [
+      "customer"
+    ],
+    "Peer37": [
+      "customer"
+    ],
+    "Peer38": [
+      "customer"
+    ],
+    "Peer39": [
+      "customer"
+    ],
+    "Peer40": [
+      "customer"
+    ],
+    "Peer41": [
+      "customer"
+    ],
+    "Peer42": [
+      "customer"
+    ],
+    "Peer43": [
+      "customer"
+    ],
+    "Peer44": [
+      "customer"
+    ],
+    "Peer45": [
+      "customer"
+    ],
+    "Peer46": [
+      "customer"
+    ],
+    "Peer47": [
+      "customer"
+    ],
+    "Peer48": [
+      "customer"
+    ],
+    "Peer49": [
+      "customer"
+    ],
+    "Peer50": [
+      "customer"
+    ],
+    "Peer51": [
+      "customer"
+    ],
+    "Peer52": [
+      "customer"
+    ],
+    "Peer53": [
+      "customer"
+    ],
+    "Peer54": [
+      "customer"
+    ],
+    "Peer55": [
+      "customer"
+    ],
+    "Peer56": [
+      "customer"
+    ],
+    "Peer57": [
+      "customer"
+    ],
+    "Peer58": [
+      "customer"
+    ],
+    "Peer59": [
+      "customer"
+    ],
+    "Peer60": [
+      "customer"
+    ],
+    "Peer61": [
+      "customer"
+    ],
+    "Peer62": [
+      "customer"
+    ],
+    "Peer63": [
+      "customer"
+    ],
+    "Peer64": [
+      "customer"
+    ],
+    "Peer65": [
+      "customer"
+    ],
+    "Peer66": [
+      "customer"
+    ],
+    "Peer67": [
+      "customer"
+    ],
+    "Peer68": [
+      "customer"
+    ],
+    "Peer69": [
+      "customer"
+    ],
+    "Peer70": [
+      "customer"
+    ],
+    "Peer71": [
+      "customer"
+    ],
+    "Peer72": [
+      "customer"
+    ],
+    "Peer73": [
+      "customer"
+    ],
+    "Peer74": [
+      "customer"
+    ],
+    "Peer75": [
+      "customer"
+    ],
+    "Peer76": [
+      "customer"
+    ],
+    "Peer77": [
+      "customer"
+    ],
+    "Peer78": [
+      "customer"
+    ],
+    "Peer79": [
+      "customer"
+    ],
+    "Peer80": [
+      "customer"
+    ],
+    "Peer81": [
+      "customer"
+    ],
+    "Peer82": [
+      "customer"
+    ],
+    "Peer83": [
+      "customer"
+    ],
+    "Peer84": [
+      "customer"
+    ],
+    "Peer85": [
+      "customer"
+    ],
+    "Peer86": [
+      "customer"
+    ],
+    "Peer87": [
+      "customer"
+    ],
+    "Peer88": [
+      "customer"
+    ],
+    "Peer89": [
+      "customer"
+    ],
+    "Peer90": [
+      "customer"
+    ],
+    "Peer91": [
+      "customer"
+    ],
+    "Peer92": [
+      "customer"
+    ],
+    "Peer93": [
+      "customer"
+    ],
+    "Peer94": [
+      "customer"
+    ],
+    "Peer95": [
+      "customer"
+    ],
+    "Peer96": [
+      "customer"
+    ],
+    "Peer97": [
+      "customer"
+    ],
+    "Peer98": [
+      "customer"
+    ],
+    "Peer99": [
+      "customer"
+    ],
+    "Peer100": [
+      "customer"
+    ]
+  },
+  "peer_address": {
+    "Peer1": "Peer1-proxy:8000",
+    "Peer2": "Peer2-proxy:8000",
+    "Peer3": "Peer3-proxy:8000",
+    "Peer4": "Peer4-proxy:8000",
+    "Peer5": "Peer5-proxy:8000",
+    "Peer6": "Peer6-proxy:8000",
+    "Peer7": "Peer7-proxy:8000",
+    "Peer8": "Peer8-proxy:8000",
+    "Peer9": "Peer9-proxy:8000",
+    "Peer10": "Peer10-proxy:8000",
+    "Peer11": "Peer11-proxy:8000",
+    "Peer12": "Peer12-proxy:8000",
+    "Peer13": "Peer13-proxy:8000",
+    "Peer14": "Peer14-proxy:8000",
+    "Peer15": "Peer15-proxy:8000",
+    "Peer16": "Peer16-proxy:8000",
+    "Peer17": "Peer17-proxy:8000",
+    "Peer18": "Peer18-proxy:8000",
+    "Peer19": "Peer19-proxy:8000",
+    "Peer20": "Peer20-proxy:8000",
+    "Peer21": "Peer21-proxy:8000",
+    "Peer22": "Peer22-proxy:8000",
+    "Peer23": "Peer23-proxy:8000",
+    "Peer24": "Peer24-proxy:8000",
+    "Peer25": "Peer25-proxy:8000",
+    "Peer26": "Peer26-proxy:8000",
+    "Peer27": "Peer27-proxy:8000",
+    "Peer28": "Peer28-proxy:8000",
+    "Peer29": "Peer29-proxy:8000",
+    "Peer30": "Peer30-proxy:8000",
+    "Peer31": "Peer31-proxy:8000",
+    "Peer32": "Peer32-proxy:8000",
+    "Peer33": "Peer33-proxy:8000",
+    "Peer34": "Peer34-proxy:8000",
+    "Peer35": "Peer35-proxy:8000",
+    "Peer36": "Peer36-proxy:8000",
+    "Peer37": "Peer37-proxy:8000",
+    "Peer38": "Peer38-proxy:8000",
+    "Peer39": "Peer39-proxy:8000",
+    "Peer40": "Peer40-proxy:8000",
+    "Peer41": "Peer41-proxy:8000",
+    "Peer42": "Peer42-proxy:8000",
+    "Peer43": "Peer43-proxy:8000",
+    "Peer44": "Peer44-proxy:8000",
+    "Peer45": "Peer45-proxy:8000",
+    "Peer46": "Peer46-proxy:8000",
+    "Peer47": "Peer47-proxy:8000",
+    "Peer48": "Peer48-proxy:8000",
+    "Peer49": "Peer49-proxy:8000",
+    "Peer50": "Peer50-proxy:8000",
+    "Peer51": "Peer51-proxy:8000",
+    "Peer52": "Peer52-proxy:8000",
+    "Peer53": "Peer53-proxy:8000",
+    "Peer54": "Peer54-proxy:8000",
+    "Peer55": "Peer55-proxy:8000",
+    "Peer56": "Peer56-proxy:8000",
+    "Peer57": "Peer57-proxy:8000",
+    "Peer58": "Peer58-proxy:8000",
+    "Peer59": "Peer59-proxy:8000",
+    "Peer60": "Peer60-proxy:8000",
+    "Peer61": "Peer61-proxy:8000",
+    "Peer62": "Peer62-proxy:8000",
+    "Peer63": "Peer63-proxy:8000",
+    "Peer64": "Peer64-proxy:8000",
+    "Peer65": "Peer65-proxy:8000",
+    "Peer66": "Peer66-proxy:8000",
+    "Peer67": "Peer67-proxy:8000",
+    "Peer68": "Peer68-proxy:8000",
+    "Peer69": "Peer69-proxy:8000",
+    "Peer70": "Peer70-proxy:8000",
+    "Peer71": "Peer71-proxy:8000",
+    "Peer72": "Peer72-proxy:8000",
+    "Peer73": "Peer73-proxy:8000",
+    "Peer74": "Peer74-proxy:8000",
+    "Peer75": "Peer75-proxy:8000",
+    "Peer76": "Peer76-proxy:8000",
+    "Peer77": "Peer77-proxy:8000",
+    "Peer78": "Peer78-proxy:8000",
+    "Peer79": "Peer79-proxy:8000",
+    "Peer80": "Peer80-proxy:8000",
+    "Peer81": "Peer81-proxy:8000",
+    "Peer82": "Peer82-proxy:8000",
+    "Peer83": "Peer83-proxy:8000",
+    "Peer84": "Peer84-proxy:8000",
+    "Peer85": "Peer85-proxy:8000",
+    "Peer86": "Peer86-proxy:8000",
+    "Peer87": "Peer87-proxy:8000",
+    "Peer88": "Peer88-proxy:8000",
+    "Peer89": "Peer89-proxy:8000",
+    "Peer90": "Peer90-proxy:8000",
+    "Peer91": "Peer91-proxy:8000",
+    "Peer92": "Peer92-proxy:8000",
+    "Peer93": "Peer93-proxy:8000",
+    "Peer94": "Peer94-proxy:8000",
+    "Peer95": "Peer95-proxy:8000",
+    "Peer96": "Peer96-proxy:8000",
+    "Peer97": "Peer97-proxy:8000",
+    "Peer98": "Peer98-proxy:8000",
+    "Peer99": "Peer99-proxy:8000",
+    "Peer100": "Peer100-proxy:8000"
+  }
+}
