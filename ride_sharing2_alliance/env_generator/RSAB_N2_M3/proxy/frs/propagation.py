@@ -90,9 +90,10 @@ class FRSPropagation(object):
 
                 for bt in config.bt_list:
                     tx.cur.execute("SELECT {}_propagate_updates_to_{}()".format(bt, dt))
-                num_of_rec = tx.cur.execute("SELECT public.{}_get_detected_update_data({})".format(dt, local_xid))
-                if num_of_rec == None: continue
-                delta, *_ = tx.cur.fetchone()
+                tx.cur.execute("SELECT public.{}_get_detected_update_data({})".format(dt, local_xid))
+                try:
+                    delta, *_ = tx.cur.fetchone()
+                except: continue
 
                 if delta == None: continue
                 delta = json.loads(delta)
