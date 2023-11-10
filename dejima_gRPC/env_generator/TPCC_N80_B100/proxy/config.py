@@ -52,6 +52,7 @@ target_peers.remove(peer_name)
 
 
 import time
+import threading
 class TimeMeasurement:
     def __init__(self):
         self.start_time = {}
@@ -61,8 +62,8 @@ class TimeMeasurement:
 
     def start(self):
         if self.status != 1:
-            self.status = 1
             self.__init__()
+            self.status = 1
 
     def finish(self):
         self.status = 2

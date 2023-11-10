@@ -12,7 +12,7 @@ import re
 class Experiment():
     def __init__(self):
         self.threads=1   # num of threads for each peer
-        self.peer_num=10
+        self.peer_num=20
         self.record_num=100
         self.tx_t=100
         self.test_time=600

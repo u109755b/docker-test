@@ -15,7 +15,7 @@ def doTPCC_PAY_frs():
     tx = Tx(global_xid)
     config.tx_dict[global_xid] = tx
 
-    config.time_measurement.start_timer("update_tx", global_xid)
+    # config.time_measurement.start_timer("update_tx", global_xid)
 
     # prepare parameters
     w_id = random.randint(1, config.warehouse_num)
@@ -189,6 +189,6 @@ def doTPCC_PAY_frs():
         dejimautils.termination_request("abort", global_xid, "frs")
         config.result_measurement.abort_tx('global')
     del config.tx_dict[global_xid]
-    config.time_measurement.stop_timer("update_tx", global_xid)
+    # config.time_measurement.stop_timer("update_tx", global_xid)
 
     return commit
