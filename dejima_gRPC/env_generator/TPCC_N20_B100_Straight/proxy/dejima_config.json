@@ -1,0 +1,164 @@
+{
+  "dejima_table": {
+    "d1_2": [
+      "Peer2",
+      "Peer1"
+    ],
+    "d2_3": [
+      "Peer3",
+      "Peer2"
+    ],
+    "d3_4": [
+      "Peer4",
+      "Peer3"
+    ],
+    "d4_5": [
+      "Peer5",
+      "Peer4"
+    ],
+    "d5_6": [
+      "Peer6",
+      "Peer5"
+    ],
+    "d6_7": [
+      "Peer7",
+      "Peer6"
+    ],
+    "d7_8": [
+      "Peer8",
+      "Peer7"
+    ],
+    "d8_9": [
+      "Peer9",
+      "Peer8"
+    ],
+    "d9_10": [
+      "Peer10",
+      "Peer9"
+    ],
+    "d10_11": [
+      "Peer11",
+      "Peer10"
+    ],
+    "d11_12": [
+      "Peer12",
+      "Peer11"
+    ],
+    "d12_13": [
+      "Peer13",
+      "Peer12"
+    ],
+    "d13_14": [
+      "Peer14",
+      "Peer13"
+    ],
+    "d14_15": [
+      "Peer15",
+      "Peer14"
+    ],
+    "d15_16": [
+      "Peer16",
+      "Peer15"
+    ],
+    "d16_17": [
+      "Peer17",
+      "Peer16"
+    ],
+    "d17_18": [
+      "Peer18",
+      "Peer17"
+    ],
+    "d18_19": [
+      "Peer19",
+      "Peer18"
+    ],
+    "d19_20": [
+      "Peer20",
+      "Peer19"
+    ]
+  },
+  "base_table": {
+    "Peer1": [
+      "customer"
+    ],
+    "Peer2": [
+      "customer"
+    ],
+    "Peer3": [
+      "customer"
+    ],
+    "Peer4": [
+      "customer"
+    ],
+    "Peer5": [
+      "customer"
+    ],
+    "Peer6": [
+      "customer"
+    ],
+    "Peer7": [
+      "customer"
+    ],
+    "Peer8": [
+      "customer"
+    ],
+    "Peer9": [
+      "customer"
+    ],
+    "Peer10": [
+      "customer"
+    ],
+    "Peer11": [
+      "customer"
+    ],
+    "Peer12": [
+      "customer"
+    ],
+    "Peer13": [
+      "customer"
+    ],
+    "Peer14": [
+      "customer"
+    ],
+    "Peer15": [
+      "customer"
+    ],
+    "Peer16": [
+      "customer"
+    ],
+    "Peer17": [
+      "customer"
+    ],
+    "Peer18": [
+      "customer"
+    ],
+    "Peer19": [
+      "customer"
+    ],
+    "Peer20": [
+      "customer"
+    ]
+  },
+  "peer_address": {
+    "Peer1": "Peer1-proxy:8000",
+    "Peer2": "Peer2-proxy:8000",
+    "Peer3": "Peer3-proxy:8000",
+    "Peer4": "Peer4-proxy:8000",
+    "Peer5": "Peer5-proxy:8000",
+    "Peer6": "Peer6-proxy:8000",
+    "Peer7": "Peer7-proxy:8000",
+    "Peer8": "Peer8-proxy:8000",
+    "Peer9": "Peer9-proxy:8000",
+    "Peer10": "Peer10-proxy:8000",
+    "Peer11": "Peer11-proxy:8000",
+    "Peer12": "Peer12-proxy:8000",
+    "Peer13": "Peer13-proxy:8000",
+    "Peer14": "Peer14-proxy:8000",
+    "Peer15": "Peer15-proxy:8000",
+    "Peer16": "Peer16-proxy:8000",
+    "Peer17": "Peer17-proxy:8000",
+    "Peer18": "Peer18-proxy:8000",
+    "Peer19": "Peer19-proxy:8000",
+    "Peer20": "Peer20-proxy:8000"
+  }
+}

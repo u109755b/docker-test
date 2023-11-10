@@ -64,7 +64,7 @@ for j in range(1,cond_n+1):
 for i in range(1,N+1):
     shutil.copytree('src/{}/Peer'.format(benchmark), '{}/db/setup_files/Peer{}'.format(output_dir_path, i))
     # os.mkdir(output_dir_path + "/Peer{}".format(i))
-    
+
     with open("src/{}/sql/00_init.sql".format(benchmark)) as f:
         with open("{}/db/setup_files/Peer{}/00_init.sql".format(output_dir_path, i), mode="w") as new_f:
         # with open(output_dir_path + "/Peer{}".format(i) + "/00_init.sql", mode="w") as new_f:
