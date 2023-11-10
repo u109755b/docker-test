@@ -5,8 +5,13 @@ import ycsbutils
 import json
 import sqlparse
 
-def doYCSB_frs():
-    config.result_measurement.start_tx()
+def doYCSB_frs(params):
+    if "result_measurement" in params:
+        result_measurement = params["result_measurement"]
+    if "time_measurement" in params:
+        time_measurement = params["time_measurement"]
+
+    result_measurement.start_tx()
 
     # create new tx
     global_xid = dejimautils.get_unique_id()
@@ -45,7 +50,7 @@ def doYCSB_frs():
         # abort during local lock
         tx.abort()
         del config.tx_dict[global_xid]
-        config.result_measurement.abort_tx('local')
+        result_measurement.abort_tx('local')
         return False
 
     if miss_flag:
@@ -64,7 +69,7 @@ def doYCSB_frs():
         dejimautils.release_lock_request(global_xid) 
         tx.abort()
         del config.tx_dict[global_xid]
-        config.result_measurement.abort_tx('global')
+        result_measurement.abort_tx('global')
         return False
 
     # execution
@@ -76,7 +81,7 @@ def doYCSB_frs():
         dejimautils.release_lock_request(global_xid) 
         tx.abort()
         del config.tx_dict[global_xid]
-        config.result_measurement.abort_tx('local')
+        result_measurement.abort_tx('local')
         return False
 
     # propagation
@@ -125,11 +130,11 @@ def doYCSB_frs():
     if commit:
         tx.commit()
         dejimautils.termination_request("commit", global_xid, "frs")
-        config.result_measurement.commit_tx('update')
+        result_measurement.commit_tx('update')
     else:
         tx.abort()
         dejimautils.termination_request("abort", global_xid, "frs")
-        config.result_measurement.abort_tx('global')
+        result_measurement.abort_tx('global')
     del config.tx_dict[global_xid]
 
     return commit

@@ -58,15 +58,6 @@ class TimeMeasurement:
         self.start_time = {}
         self.total_duration_time = {}
         self.data_num = {}
-        self.status = 0     # 0: inited, 1: started, 2: ended
-
-    def start(self):
-        if self.status != 1:
-            self.__init__()
-            self.status = 1
-
-    def finish(self):
-        self.status = 2
 
     def start_timer(self, time_type, global_xid, s_time=None):
         if time_type not in self.start_time:

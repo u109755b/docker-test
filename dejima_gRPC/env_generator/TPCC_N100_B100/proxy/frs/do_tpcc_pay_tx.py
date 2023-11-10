@@ -7,15 +7,20 @@ import json
 import math
 from datetime import datetime
 
-def doTPCC_PAY_frs():
-    config.result_measurement.start_tx()
+def doTPCC_PAY_frs(params):
+    if "result_measurement" in params:
+        result_measurement = params["result_measurement"]
+    if "time_measurement" in params:
+        time_measurement = params["time_measurement"]
+
+    result_measurement.start_tx()
 
     # create new tx
     global_xid = dejimautils.get_unique_id()
     tx = Tx(global_xid)
     config.tx_dict[global_xid] = tx
 
-    # config.time_measurement.start_timer("update_tx", global_xid)
+    # time_measurement.start_timer("update_tx", global_xid)
 
     # prepare parameters
     w_id = random.randint(1, config.warehouse_num)
@@ -67,7 +72,7 @@ def doTPCC_PAY_frs():
         # abort during local lock
         tx.abort()
         del config.tx_dict[global_xid]
-        config.result_measurement.abort_tx('local')
+        result_measurement.abort_tx('local')
         return False
 
     if miss_flag:
@@ -76,19 +81,19 @@ def doTPCC_PAY_frs():
         return "miss"
 
     # lock request
-    config.time_measurement.start_timer("global_lock", global_xid)
+    time_measurement.start_timer("global_lock", global_xid)
     if not lineages == []:
         result = dejimautils.lock_request(lineages, global_xid)
     else:
         result = "Ack"
-    config.time_measurement.stop_timer("global_lock", global_xid)
+    time_measurement.stop_timer("global_lock", global_xid)
 
     if result != "Ack":
         # abort during global lock, release lock
         dejimautils.release_lock_request(global_xid) 
         tx.abort()
         del config.tx_dict[global_xid]
-        config.result_measurement.abort_tx('global')
+        result_measurement.abort_tx('global')
         return False
 
     # execution
@@ -134,7 +139,7 @@ def doTPCC_PAY_frs():
         dejimautils.release_lock_request(global_xid) 
         tx.abort()
         del config.tx_dict[global_xid]
-        config.result_measurement.abort_tx('local')
+        result_measurement.abort_tx('local')
         return False
 
     # propagation
@@ -183,12 +188,12 @@ def doTPCC_PAY_frs():
     if commit:
         tx.commit()
         dejimautils.termination_request("commit", global_xid, "frs")
-        config.result_measurement.commit_tx('update')
+        result_measurement.commit_tx('update')
     else:
         tx.abort()
         dejimautils.termination_request("abort", global_xid, "frs")
-        config.result_measurement.abort_tx('global')
+        result_measurement.abort_tx('global')
     del config.tx_dict[global_xid]
-    # config.time_measurement.stop_timer("update_tx", global_xid)
+    # time_measurement.stop_timer("update_tx", global_xid)
 
     return commit

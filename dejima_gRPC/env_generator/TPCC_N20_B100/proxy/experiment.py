@@ -12,7 +12,7 @@ import re
 class Experiment():
     def __init__(self):
         self.threads=1   # num of threads for each peer
-        self.peer_num=20
+        self.peer_num=10
         self.record_num=100
         self.tx_t=100
         self.test_time=600
@@ -111,6 +111,7 @@ class Experiment():
             abort_result[i] /= self.peer_num * self.threads
         commit_result = [int(item) if item.is_integer() else round(item, 2) for item in commit_result]
         abort_result = [int(item) if item.is_integer() else round(item, 2) for item in abort_result]
+        print("throughput: {:.2f}".format(commit_result[0] / (commit_result[3]+abort_result[3])))
         print("commit:  {} ({} {})  {} ({} {})[s]".format(*commit_result))
         print("abort:  {} ({} {})  {} ({} {})[s]".format(*abort_result))
 

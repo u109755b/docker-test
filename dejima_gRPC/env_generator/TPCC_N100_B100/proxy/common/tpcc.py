@@ -33,6 +33,13 @@ class TPCC(data_pb2_grpc.TPCCServicer):
         #     channel.close()
         # config.channels.clear()
 
+        result_measurement = config.ResultMeasurement()
+        time_measurement = config.TimeMeasurement()
+        params = {
+            "result_measurement": result_measurement,
+            "time_measurement": time_measurement,
+        }
+
         # benchmark
         commit_num = 0
         abort_num = 0
@@ -45,9 +52,6 @@ class TPCC(data_pb2_grpc.TPCCServicer):
         start_time = time.time()
         print("benchmark start")
         random.seed()
-
-        config.result_measurement = config.ResultMeasurement()
-        config.time_measurement.start()
 
         # frs & 2pl
         if METHOD == "frs" or METHOD == "2pl":
@@ -71,7 +75,7 @@ class TPCC(data_pb2_grpc.TPCCServicer):
                     doTPCC = doTPCC_NO
                 else:
                     doTPCC = doTPCC_PAY
-                result = doTPCC()
+                result = doTPCC(params)
                 if result == True:
                     commit_num += 1
                     result_per_epoch[epoch]['commit'] += 1
@@ -112,7 +116,7 @@ class TPCC(data_pb2_grpc.TPCCServicer):
 
                 # normal mode
                 if current_time < next_check:
-                    result = doTPCC()
+                    result = doTPCC(params)
                     if result == True:
                         commit_num += 1
                     elif result == False:
@@ -123,7 +127,7 @@ class TPCC(data_pb2_grpc.TPCCServicer):
                 # check mode
                 # before
                 elif current_time < next_check + check_time:
-                    result = doTPCC()
+                    result = doTPCC(params)
                     if result == True:
                         temp_commit['before']['commit'] += 1
                         commit_num += 1
@@ -146,7 +150,7 @@ class TPCC(data_pb2_grpc.TPCCServicer):
                             doTPCC_NO = doTPCC_NO_2pl
                             doTPCC_PAY = doTPCC_PAY_2pl
 
-                    result = doTPCC()
+                    result = doTPCC(params)
                     if result == True:
                         temp_commit['after']['commit'] += 1
                         commit_num += 1
@@ -192,9 +196,9 @@ class TPCC(data_pb2_grpc.TPCCServicer):
             res_dic = {"result": "invalid method"}
             return data_pb2.Response(json_str=json.dumps(res_dic))
 
-        config.time_measurement.print_time()
-        config.time_measurement.finish()
-        msg = config.result_measurement.get_result(display=True)
+        time_measurement.print_time()
+        # config.time_measurement.finish()
+        msg = result_measurement.get_result(display=True)
         # msg += "\n"
 
         # msg = " ".join([config.peer_name, str(commit_num), str(abort_num), str(miss_num), str(bench_time-miss_time)])
