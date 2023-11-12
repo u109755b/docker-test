@@ -70,10 +70,11 @@ def release_lock_request(global_xid):
     else:
         return "Nak"
 
-def prop_request(arg_dict, global_xid, method, max_hop=-1, measure_time=False):
+def prop_request(arg_dict, global_xid, method, global_params={}):
     thread_list = []
     results = []
-    timestamps_list = []
+    params = {}
+    if "max_hop" in global_params: params["max_hop"] = []
     lock = threading.Lock()
     for dt in arg_dict.keys():
         for peer in arg_dict[dt]['peers']:
@@ -88,12 +89,11 @@ def prop_request(arg_dict, global_xid, method, max_hop=-1, measure_time=False):
                 "dejima_table": dt,
                 "delta": arg_dict[dt]['delta'],
                 "parent_peer": config.peer_name,
-                "measure_time": measure_time
+                "global_params": global_params,
             }
-            data["max_hop"] = max_hop
             req = data_pb2.Request(json_str=json.dumps(data))
             # thread = threading.Thread(target=base_request, args=([url, data, results, lock]))
-            args = ([peer_address, service_stub, req, results, lock, timestamps_list])
+            args = ([peer_address, service_stub, req, results, lock, params])
             thread = threading.Thread(target=base_request, args=args)
             thread_list.append(thread)
     
@@ -103,9 +103,9 @@ def prop_request(arg_dict, global_xid, method, max_hop=-1, measure_time=False):
     for thread in thread_list:
         thread.join()
     
+    if "max_hop" in global_params:
+        global_params["max_hop"] = max(params["max_hop"]) + 1
     if all(results):
-        if len(timestamps_list) != 0 and measure_time == True:
-            return timestamps_list[-1]
         return "Ack"
     else:
         return "Nak"
@@ -143,7 +143,7 @@ def termination_request(result, current_xid, method):
     else:
         return "Nak"
 
-def base_request(peer_address, service_stub, req, results, lock, timestamps_list=[]):
+def base_request(peer_address, service_stub, req, results, lock, params={}):
     try:
         # with grpc.insecure_channel(peer_address) as channel:
         #     stub = service_stub(channel)
@@ -159,10 +159,13 @@ def base_request(peer_address, service_stub, req, results, lock, timestamps_list
                 results.append(True)
             else:
                 results.append(False)
-            if 'timestamps' in res_dic:
-                timestamps_list.append(res_dic['timestamps'])
+        if "max_hop" in params:
+            if "max_hop" not in res_dic:
+                params["max_hop"].append(0)
+            else:
+                params["max_hop"].append(res_dic["max_hop"])
     except Exception as e:
-        print(e)
+        print("base_request:", e)
         results.append(False)
 
 def convert_to_sql_from_json(json_data):

@@ -51,7 +51,8 @@ class FRSPropagation(data_pb2_grpc.FRSPropagationServicer):
                             tx.cur.execute("SELECT * FROM bt WHERE id={} FOR UPDATE NOWAIT".format(delete['id']))
             tx.cur.execute(stmt)
         except Exception as e:
-            print(e)
+            # print("failed to acuire global lock during propagating update")
+            # print(e)
             # resp.text = json.dumps({"result": "Nak", "info": e.__class__.__name__})
             # return
             res_dic = {"result": "Nak", "info": e.__class__.__name__}
@@ -97,7 +98,7 @@ class FRSPropagation(data_pb2_grpc.FRSPropagationServicer):
             return data_pb2.Response(json_str=json.dumps(res_dic))
 
         if prop_dict != {}:
-            result = dejimautils.prop_request(prop_dict, global_xid, "frs")
+            result = dejimautils.prop_request(prop_dict, global_xid, "frs", params['global_params'])
         else:
             result = "Ack"
 
@@ -106,6 +107,8 @@ class FRSPropagation(data_pb2_grpc.FRSPropagationServicer):
         else:
             res_dic = {"result": "Ack"}
 
+        if "max_hop" in params["global_params"]:
+            res_dic["max_hop"] = params["global_params"]["max_hop"]
         # resp.text = json.dumps(msg)
         # return
         return data_pb2.Response(json_str=json.dumps(res_dic))

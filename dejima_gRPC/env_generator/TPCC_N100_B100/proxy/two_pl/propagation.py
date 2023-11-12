@@ -94,7 +94,7 @@ class TPLPropagation(data_pb2_grpc.TPLPropagationServicer):
             return data_pb2.Response(json_str=json.dumps(res_dic))
 
         if prop_dict != {}:
-            result = dejimautils.prop_request(prop_dict, global_xid, "2pl")
+            result = dejimautils.prop_request(prop_dict, global_xid, "2pl", params['global_params'])
         else:
             result = "Ack"
 
@@ -103,6 +103,8 @@ class TPLPropagation(data_pb2_grpc.TPLPropagationServicer):
         else:
             res_dic = {"result": "Ack"}
 
+        if "max_hop" in params["global_params"]:
+            res_dic["max_hop"] = params["global_params"]["max_hop"]
         # resp.text = json.dumps(msg)
         # return
         return data_pb2.Response(json_str=json.dumps(res_dic))

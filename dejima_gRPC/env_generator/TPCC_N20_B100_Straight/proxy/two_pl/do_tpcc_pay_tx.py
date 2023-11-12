@@ -153,8 +153,11 @@ def doTPCC_PAY_2pl(params):
         del config.tx_dict[global_xid]
         return False
     
+    global_params = {
+        "max_hop": 0,
+    }
     if prop_dict != {}:
-        result = dejimautils.prop_request(prop_dict, global_xid, "2pl")
+        result = dejimautils.prop_request(prop_dict, global_xid, "2pl", global_params)
     else:
         result = "Ack"
 
@@ -167,11 +170,11 @@ def doTPCC_PAY_2pl(params):
     if commit:
         tx.commit()
         dejimautils.termination_request("commit", global_xid, "2pl")
-        result_measurement.commit_tx('update')
+        result_measurement.commit_tx('update', global_params["max_hop"])
     else:
         tx.abort()
         dejimautils.termination_request("abort", global_xid, "2pl")
-        result_measurement.abort_tx('global')
+        result_measurement.abort_tx('global', global_params["max_hop"])
     del config.tx_dict[global_xid]
 
     return commit

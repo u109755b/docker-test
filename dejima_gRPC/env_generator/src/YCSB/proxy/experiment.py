@@ -96,24 +96,62 @@ class Experiment():
         for thread in thread_list:
             thread.join()
         
-        # 結果の計算
+        # 結果の処理
         commit_result_list = []
         abort_result_list = []
+        custom_commit_result_list = []
+        custom_abort_result_list = []
+        global_lock_time = 0
         for res in self.res_list:
+            # commit & abort
             pattern = r'([\d.]+) \(([\d.]+) ([\d.]+)\)  ([\d.]+) \(([\d.]+) ([\d.]+)\)'
             matches = re.findall(pattern, res)
             commit_result_list.append(matches[0])
             abort_result_list.append(matches[1])
-        commit_result = [sum(map(float, x)) for x in zip(*commit_result_list)]
-        abort_result = [sum(map(float, x)) for x in zip(*abort_result_list)]
+            # custom commit & custom abort
+            pattern = r'([\d.]+) = ([\d.]+) \* ([\d.]+)  \(([\d.]+)\)'
+            matches = re.findall(pattern, res)
+            custom_commit_result_list.append(matches[0])
+            custom_abort_result_list.append(matches[1])
+            # global lock time
+            pattern = r'\[([\d.]+)\]'
+            matches = re.findall(pattern, res)
+            global_lock_time += float(matches[0])
+        # それぞれのピアの結果値を足し合わせる
+        sum_result = lambda arg: [sum(map(float, x)) for x in zip(*arg)]
+        commit_result = sum_result(commit_result_list)
+        abort_result = sum_result(abort_result_list)
+        custom_commit_result = sum_result(custom_commit_result_list)
+        custom_abort_result = sum_result(custom_abort_result_list)
+        # 時間はピア数×スレッド数で割る等他の計算をする
         for i in range(3, 6):
-            commit_result[i] /= self.peer_num * self.threads
-            abort_result[i] /= self.peer_num * self.threads
-        commit_result = [int(item) if item.is_integer() else round(item, 2) for item in commit_result]
-        abort_result = [int(item) if item.is_integer() else round(item, 2) for item in abort_result]
-        print("throughput: {:.2f}".format(commit_result[0] / (commit_result[3]+abort_result[3])))
-        print("commit:  {} ({} {})  {} ({} {})[s]".format(*commit_result))
-        print("abort:  {} ({} {})  {} ({} {})[s]".format(*abort_result))
+            commit_result[i] /=  self.peer_num * self.threads
+            abort_result[i] /=  self.peer_num * self.threads
+            if 3 < i: continue
+            custom_commit_result[i] /=  self.peer_num * self.threads
+            custom_abort_result[i] /=  self.peer_num * self.threads
+        custom_commit_result[2] = custom_commit_result[0] / custom_commit_result[1]
+        custom_abort_result[2] = custom_abort_result[0] / custom_abort_result[1]
+        global_lock_time /= self.peer_num * self.threads
+        # 小数第2位までにする
+        round_result = lambda arg: [int(item) if item.is_integer() else round(item, 2) for item in arg]
+        commit_result = round_result(commit_result)
+        abort_result = round_result(abort_result)
+        custom_commit_result = round_result(custom_commit_result)
+        custom_abort_result = round_result(custom_abort_result)
+        global_lock_time = round_result([global_lock_time])[0]
+        # 結果の表示
+        tx_time = commit_result[3] + abort_result[3]
+        throughput = commit_result[0] / tx_time
+        custom_throughput = custom_commit_result[0] / tx_time
+        commit_time = commit_result[3]
+        commit_per_thread = commit_result[0] / (self.peer_num * self.threads)
+        commit_time_per_commit = (commit_time / commit_per_thread) * 1000
+        global_lock_time_per_commit = (global_lock_time / commit_per_thread) * 1000
+        overall_result = [throughput, custom_throughput, commit_time, global_lock_time, commit_time_per_commit, global_lock_time_per_commit]
+        print("throughput: {:.2f} {:.2f},  ({:.2f} {:.2f})[s],  ({:.2f} {:.2f})[ms]".format(*overall_result))
+        print("commit:  {} ({} {})  {} ({} {})[s],   {} = {} * {}  ({})[s]".format(*commit_result, *custom_commit_result))
+        print("abort:  {} ({} {})  {} ({} {})[s],   {} = {} * {}  ({})[s]".format(*abort_result, *custom_abort_result))
 
 
 

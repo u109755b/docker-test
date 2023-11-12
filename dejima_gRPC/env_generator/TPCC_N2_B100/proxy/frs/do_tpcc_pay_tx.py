@@ -82,11 +82,13 @@ def doTPCC_PAY_frs(params):
 
     # lock request
     time_measurement.start_timer("global_lock", global_xid)
+    result_measurement.start_global_lock()
     if not lineages == []:
         result = dejimautils.lock_request(lineages, global_xid)
     else:
         result = "Ack"
     time_measurement.stop_timer("global_lock", global_xid)
+    result_measurement.finish_global_lock()
 
     if result != "Ack":
         # abort during global lock, release lock
@@ -174,8 +176,11 @@ def doTPCC_PAY_frs(params):
         del config.tx_dict[global_xid]
         return False
     
+    global_params = {
+        "max_hop": 0,
+    }
     if prop_dict != {}:
-        result = dejimautils.prop_request(prop_dict, global_xid, "frs")
+        result = dejimautils.prop_request(prop_dict, global_xid, "frs", global_params)
     else:
         result = "Ack"
 
@@ -188,11 +193,11 @@ def doTPCC_PAY_frs(params):
     if commit:
         tx.commit()
         dejimautils.termination_request("commit", global_xid, "frs")
-        result_measurement.commit_tx('update')
+        result_measurement.commit_tx('update', global_params["max_hop"])
     else:
         tx.abort()
         dejimautils.termination_request("abort", global_xid, "frs")
-        result_measurement.abort_tx('global')
+        result_measurement.abort_tx('global', global_params["max_hop"])
     del config.tx_dict[global_xid]
     # time_measurement.stop_timer("update_tx", global_xid)
 
