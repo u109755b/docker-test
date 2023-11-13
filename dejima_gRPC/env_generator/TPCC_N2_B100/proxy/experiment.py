@@ -12,7 +12,7 @@ import re
 class Experiment():
     def __init__(self):
         self.threads=1   # num of threads for each peer
-        self.peer_num=10
+        self.peer_num=2
         self.record_num=100
         self.tx_t=100
         self.test_time=600
@@ -102,6 +102,7 @@ class Experiment():
         custom_commit_result_list = []
         custom_abort_result_list = []
         global_lock_time = 0
+        process_time = {}
         for res in self.res_list:
             # commit & abort
             pattern = r'([\d.]+) \(([\d.]+) ([\d.]+)\)  ([\d.]+) \(([\d.]+) ([\d.]+)\)'
@@ -117,6 +118,15 @@ class Experiment():
             pattern = r'\[([\d.]+)\]'
             matches = re.findall(pattern, res)
             global_lock_time += float(matches[0])
+            # process time
+            pattern = r'(\w+); ([\d\.]+)'
+            matches = re.findall(pattern, res)
+            for match in matches:
+                key = match[0]
+                value = match[1]
+                if key not in process_time:
+                    process_time[key] = 0
+                process_time[key] += float(value)
         # それぞれのピアの結果値を足し合わせる
         sum_result = lambda arg: [sum(map(float, x)) for x in zip(*arg)]
         commit_result = sum_result(commit_result_list)
@@ -124,15 +134,18 @@ class Experiment():
         custom_commit_result = sum_result(custom_commit_result_list)
         custom_abort_result = sum_result(custom_abort_result_list)
         # 時間はピア数×スレッド数で割る等他の計算をする
+        divide = lambda x, y, d=0: x/y if y != 0 else 0
         for i in range(3, 6):
             commit_result[i] /=  self.peer_num * self.threads
             abort_result[i] /=  self.peer_num * self.threads
             if 3 < i: continue
             custom_commit_result[i] /=  self.peer_num * self.threads
             custom_abort_result[i] /=  self.peer_num * self.threads
-        custom_commit_result[2] = custom_commit_result[0] / custom_commit_result[1]
-        custom_abort_result[2] = custom_abort_result[0] / custom_abort_result[1]
+        custom_commit_result[2] = divide(custom_commit_result[0], custom_commit_result[1])
+        custom_abort_result[2] = divide(custom_abort_result[0], custom_abort_result[1])
         global_lock_time /= self.peer_num * self.threads
+        for key, value in process_time.items():
+            process_time[key] = divide(value, self.peer_num*self.threads)
         # 小数第2位までにする
         round_result = lambda arg: [int(item) if item.is_integer() else round(item, 2) for item in arg]
         commit_result = round_result(commit_result)
@@ -140,16 +153,19 @@ class Experiment():
         custom_commit_result = round_result(custom_commit_result)
         custom_abort_result = round_result(custom_abort_result)
         global_lock_time = round_result([global_lock_time])[0]
+        for key, value in process_time.items():
+            process_time[key] = round_result([value])[0]
         # 結果の表示
         tx_time = commit_result[3] + abort_result[3]
         throughput = commit_result[0] / tx_time
         custom_throughput = custom_commit_result[0] / tx_time
         commit_time = commit_result[3]
-        commit_per_thread = commit_result[0] / (self.peer_num * self.threads)
-        commit_time_per_commit = (commit_time / commit_per_thread) * 1000
-        global_lock_time_per_commit = (global_lock_time / commit_per_thread) * 1000
+        commit_per_peer = commit_result[0] / self.peer_num
+        commit_time_per_commit = divide(commit_time, commit_per_peer) * 1000
+        global_lock_time_per_commit = divide(global_lock_time, commit_per_peer) * 1000
         overall_result = [throughput, custom_throughput, commit_time, global_lock_time, commit_time_per_commit, global_lock_time_per_commit]
         print("throughput: {:.2f} {:.2f},  ({:.2f} {:.2f})[s],  ({:.2f} {:.2f})[ms]".format(*overall_result))
+        print(process_time)
         print("commit:  {} ({} {})  {} ({} {})[s],   {} = {} * {}  ({})[s]".format(*commit_result, *custom_commit_result))
         print("abort:  {} ({} {})  {} ({} {})[s],   {} = {} * {}  ({})[s]".format(*abort_result, *custom_abort_result))
 

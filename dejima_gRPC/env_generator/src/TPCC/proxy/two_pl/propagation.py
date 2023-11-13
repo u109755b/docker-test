@@ -12,6 +12,9 @@ class TPLPropagation(data_pb2_grpc.TPLPropagationServicer):
         pass
 
     def on_post(self, req, resp):
+        timestamp = []
+        timestamp.append(time.perf_counter())   # 0
+        
         time.sleep(config.SLEEP_MS * 0.001)
 
         # if req.content_length:
@@ -47,7 +50,9 @@ class TPLPropagation(data_pb2_grpc.TPLPropagationServicer):
         try:
             for lock_stmt in lock_stmts:
                 tx.cur.execute(lock_stmt)
+            timestamp.append(time.perf_counter())   # 1
             tx.cur.execute(stmt)
+            timestamp.append(time.perf_counter())   # 2
         except Exception as e:
             # resp.text = json.dumps({"result": "Nak", "info": e.__class__.__name__})
             # return
@@ -93,10 +98,12 @@ class TPLPropagation(data_pb2_grpc.TPLPropagationServicer):
             res_dic = {"result": "Nak"}
             return data_pb2.Response(json_str=json.dumps(res_dic))
 
+        timestamp.append(time.perf_counter())   # 3
         if prop_dict != {}:
             result = dejimautils.prop_request(prop_dict, global_xid, "2pl", params['global_params'])
         else:
             result = "Ack"
+        timestamp.append(time.perf_counter())   # 4
 
         if result != "Ack":
             res_dic = {"result": "Nak"}
@@ -105,6 +112,9 @@ class TPLPropagation(data_pb2_grpc.TPLPropagationServicer):
 
         if "max_hop" in params["global_params"]:
             res_dic["max_hop"] = params["global_params"]["max_hop"]
+        if "timestamps" in params["global_params"] and result == "Ack":
+            res_dic["timestamps"] = params["global_params"]["timestamps"]
+            res_dic["timestamps"].append(timestamp)
         # resp.text = json.dumps(msg)
         # return
         return data_pb2.Response(json_str=json.dumps(res_dic))

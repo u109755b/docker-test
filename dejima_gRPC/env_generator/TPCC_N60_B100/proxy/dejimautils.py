@@ -75,6 +75,7 @@ def prop_request(arg_dict, global_xid, method, global_params={}):
     results = []
     params = {}
     if "max_hop" in global_params: params["max_hop"] = []
+    if "timestamps" in global_params: params["timestamps"] = []
     lock = threading.Lock()
     for dt in arg_dict.keys():
         for peer in arg_dict[dt]['peers']:
@@ -105,6 +106,8 @@ def prop_request(arg_dict, global_xid, method, global_params={}):
     
     if "max_hop" in global_params:
         global_params["max_hop"] = max(params["max_hop"]) + 1
+    if "timestamps" in global_params:
+        global_params["timestamps"] = params["timestamps"]
     if all(results):
         return "Ack"
     else:
@@ -160,10 +163,16 @@ def base_request(peer_address, service_stub, req, results, lock, params={}):
             else:
                 results.append(False)
         if "max_hop" in params:
-            if "max_hop" not in res_dic:
+            if "max_hop" not in res_dic:    # when Nak returned
                 params["max_hop"].append(0)
-            else:
+            else:   #when Ack returned
                 params["max_hop"].append(res_dic["max_hop"])
+        if "timestamps" in params:
+            if "timestamps" not in res_dic:
+                params["timestamps"] = []
+            else:
+                if len(params["timestamps"]) < len(res_dic["timestamps"]):
+                    params["timestamps"] = res_dic["timestamps"]
     except Exception as e:
         print("base_request:", e)
         results.append(False)

@@ -5,6 +5,7 @@ import random
 import tpccutils
 import json
 import math
+import time
 from datetime import datetime
 
 def doTPCC_PAY_frs(params):
@@ -12,8 +13,13 @@ def doTPCC_PAY_frs(params):
         result_measurement = params["result_measurement"]
     if "time_measurement" in params:
         time_measurement = params["time_measurement"]
+    if "timestamp_management" in params:
+        timestamp_management = params["timestamp_management"]
 
     result_measurement.start_tx()
+
+    timestamp = []
+    timestamp.append(time.perf_counter())   # 0
 
     # create new tx
     global_xid = dejimautils.get_unique_id()
@@ -99,6 +105,7 @@ def doTPCC_PAY_frs(params):
         return False
 
     # execution
+    timestamp.append(time.perf_counter())   # 1
     try:
         tx.cur.execute("SELECT w_name, w_street_1, w_street_2, w_city, w_state, w_zip FROM warehouse WHERE w_id = {} FOR UPDATE".format(w_id))
         w_name, w_street_1, w_street_2, w_city, w_state, w_zip = tx.cur.fetchone()
@@ -145,6 +152,7 @@ def doTPCC_PAY_frs(params):
         return False
 
     # propagation
+    timestamp.append(time.perf_counter())   # 2
     try:
         tx.cur.execute("SELECT txid_current()")
         local_xid, *_ = tx.cur.fetchone()
@@ -178,7 +186,10 @@ def doTPCC_PAY_frs(params):
     
     global_params = {
         "max_hop": 0,
+        "timestamps": [],
     }
+    
+    timestamp.append(time.perf_counter())   # 3
     if prop_dict != {}:
         result = dejimautils.prop_request(prop_dict, global_xid, "frs", global_params)
     else:
@@ -188,17 +199,37 @@ def doTPCC_PAY_frs(params):
         commit = False
     else:
         commit = True
+    timestamp.append(time.perf_counter())   # 4
 
     # termination
     if commit:
+        time_measurement.start_timer("local_commit", global_xid)
         tx.commit()
+        time_measurement.stop_timer("local_commit", global_xid)
+        
+        time_measurement.start_timer("global_commit", global_xid)
         dejimautils.termination_request("commit", global_xid, "frs")
+        time_measurement.stop_timer("global_commit", global_xid)
+        
+        # tx.abort()
+        # dejimautils.termination_request("abort", global_xid, "frs")
         result_measurement.commit_tx('update', global_params["max_hop"])
     else:
+        time_measurement.start_timer("local_abort", global_xid)
         tx.abort()
+        time_measurement.stop_timer("local_abort", global_xid)
+        
+        time_measurement.start_timer("global_abort", global_xid)
         dejimautils.termination_request("abort", global_xid, "frs")
+        time_measurement.stop_timer("global_abort", global_xid)
+        
         result_measurement.abort_tx('global', global_params["max_hop"])
     del config.tx_dict[global_xid]
     # time_measurement.stop_timer("update_tx", global_xid)
+    
+    timestamp.append(time.perf_counter())   # 5
+    if commit:
+        global_params["timestamps"].append(timestamp)
+        timestamp_management.add_timestamps(global_params["timestamps"])
 
     return commit

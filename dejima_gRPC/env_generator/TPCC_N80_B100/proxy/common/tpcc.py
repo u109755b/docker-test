@@ -35,9 +35,11 @@ class TPCC(data_pb2_grpc.TPCCServicer):
 
         result_measurement = config.ResultMeasurement()
         time_measurement = config.TimeMeasurement()
+        timestamp_management = config.TimestampManagement()
         params = {
             "result_measurement": result_measurement,
             "time_measurement": time_measurement,
+            "timestamp_management": timestamp_management
         }
 
         # benchmark
@@ -196,9 +198,10 @@ class TPCC(data_pb2_grpc.TPCCServicer):
             res_dic = {"result": "invalid method"}
             return data_pb2.Response(json_str=json.dumps(res_dic))
 
-        time_measurement.print_time()
+        time_measurement.get_result()
+        timestamp_result = timestamp_management.get_result()
         # config.time_measurement.finish()
-        msg = result_measurement.get_result(display=True)
+        msg = result_measurement.get_result(display=True, add_result=timestamp_result.replace(':', ';'))
         # msg += "\n"
 
         # msg = " ".join([config.peer_name, str(commit_num), str(abort_num), str(miss_num), str(bench_time-miss_time)])

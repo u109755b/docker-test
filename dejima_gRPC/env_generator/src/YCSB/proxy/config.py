@@ -53,6 +53,35 @@ target_peers.remove(peer_name)
 
 import time
 import threading
+class TimestampManagement:
+    def __init__(self):
+        self.duration_time = {'lock': 0, 'base_update': 0, 'prop_view_0': 0, 'view_update': 0, 'prop_view_k': 0, 'communication': 0, 'commit': 0}
+
+    def add_timestamps(self, timestamps):
+        timestamps = list(reversed(timestamps))
+        self.duration_time["commit"] += timestamps[0][-1] - timestamps[0][-2]
+        timestamps[0].pop()
+        for i, timestamp in enumerate(timestamps):
+            self.duration_time["lock"] += timestamp[1] - timestamp[0]
+            if i == 0:
+                self.duration_time["base_update"] += timestamp[2] - timestamp[1]
+                self.duration_time["prop_view_0"] += timestamp[3] - timestamp[2]
+            else:
+                self.duration_time["view_update"] += timestamp[2] - timestamp[1]
+                self.duration_time["prop_view_k"] += timestamp[3] - timestamp[2]
+            if i != len(timestamps)-1:
+                duration_time = (timestamps[i+1][0]-timestamps[i][-2]) + timestamps[i][-1]-timestamps[i+1][-1]
+                self.duration_time["communication"] += duration_time
+
+    def get_result(self, display=False):
+        result = []
+        for key, value in self.duration_time.items():
+            result.append("{}: {:.2f}".format(key, value))
+        result = ',  '.join(result)
+        if display == True: print(result)
+        return result
+
+
 class TimeMeasurement:
     def __init__(self):
         self.start_time = {}
@@ -81,13 +110,16 @@ class TimeMeasurement:
         self.total_duration_time[time_type] += e_time - s_time
         self.data_num[time_type] += 1
 
-    def print_time(self):
+    def get_result(self, display=False):
         duration_time = []
         for time_type, td_time in self.total_duration_time.items():
             num = self.data_num[time_type]
             duration_time.append('{}: {:.2f}'.format(time_type, 1000*td_time/num))
             # duration_time[time_type] = td_time / self.data_num[time_type]
-        print(', '.join(duration_time))
+        if not duration_time: return
+        result = ', '.join(duration_time)
+        if display == True: print(result)
+        return result
 time_measurement = TimeMeasurement()
 
 
@@ -113,7 +145,7 @@ class ResultMeasurement:
         self.global_lock_time = 0
         self.total_global_lock_time = 0
         
-    def get_result(self, display=False):
+    def get_result(self, display=False, add_result=""):
         # provider3 |  commit: 8 (2 6)  6.20 (4.10 2.10)[s],   abort: 8 (4 4)  6.20 (4.07 2.13)[s]
         # commit
         commit_num = self.update_commit_num + self.read_commit_num
@@ -141,12 +173,11 @@ class ResultMeasurement:
         custom_abort_info = 'custom abort: {}  ({})[s]'.format(custom_abort_num_info, custom_abort_time_info)
         
         if display:
-            print(commit_info)
-            print(abort_info)
-            print(custom_commit_info)
-            print(custom_abort_info)
+            print("{},  {}".format(commit_info, custom_commit_info))
+            print("{},  {}".format(abort_info, custom_abort_info))
         ret = '{} |  {},   {},  {},  {}'.format(peer_name, commit_info, abort_info, custom_commit_info, custom_abort_info)
         ret += ',  [{:.2f}]'.format(self.total_global_lock_time)
+        ret += add_result
         return ret
         
     def start_tx(self):
