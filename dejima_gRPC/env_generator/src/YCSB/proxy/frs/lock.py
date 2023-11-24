@@ -23,6 +23,7 @@ class Lock(data_pb2_grpc.LockServicer):
         config.tx_dict[global_xid] = tx
 
         # lock with lineages
+        config.time_measurement.start_timer("lock_process", global_xid)
         bt_list = config.dejima_config_dict['base_table'][config.peer_name]
         # hardcode (lineage name)
         for bt in bt_list:
@@ -44,6 +45,7 @@ class Lock(data_pb2_grpc.LockServicer):
             # return
             res_dic = {"result": "Nak"}
             return data_pb2.Response(json_str=json.dumps(res_dic))
+        config.time_measurement.stop_timer("lock_process", global_xid)
         
         # resp.text = json.dumps({"result": "Ack"})
         # return

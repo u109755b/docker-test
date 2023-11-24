@@ -35,7 +35,9 @@ class TPCC(data_pb2_grpc.TPCCServicer):
 
         result_measurement = config.ResultMeasurement()
         time_measurement = config.TimeMeasurement()
+        config.time_measurement.start()
         timestamp_management = config.TimestampManagement()
+        # config.time_measurement = config.TimeMeasurement()
         params = {
             "result_measurement": result_measurement,
             "time_measurement": time_measurement,
@@ -198,10 +200,15 @@ class TPCC(data_pb2_grpc.TPCCServicer):
             res_dic = {"result": "invalid method"}
             return data_pb2.Response(json_str=json.dumps(res_dic))
 
-        time_measurement.get_result()
-        timestamp_result = timestamp_management.get_result()
-        # config.time_measurement.finish()
-        msg = result_measurement.get_result(display=True, add_result=timestamp_result.replace(':', ';'))
+        time_measurement.get_result(display=True)
+        timemeasurement_result = config.time_measurement.get_result(display=True)
+        config.time_measurement.stop()
+        timestamp_result = timestamp_management.get_result(display=True)
+        add_result = ""
+        if timemeasurement_result == None: timemeasurement_result = 'lock_process: 0'
+        add_result += "${}$".format(timemeasurement_result.split(': ')[1])
+        add_result += timestamp_result.replace(':', ';')
+        msg = result_measurement.get_result(display=True, add_result=add_result)
         # msg += "\n"
 
         # msg = " ".join([config.peer_name, str(commit_num), str(abort_num), str(miss_num), str(bench_time-miss_time)])

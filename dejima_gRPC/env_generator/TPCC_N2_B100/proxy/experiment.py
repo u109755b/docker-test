@@ -11,16 +11,23 @@ import re
 
 class Experiment():
     def __init__(self):
+        self.peer_num=10
         self.threads=1   # num of threads for each peer
-        self.peer_num=2
         self.record_num=100
         self.tx_t=100
         self.test_time=600
         self.default_zipf=0.99     # zipf
+        self.tpcc_record_num=10
         
         self.res_list = []
     
     
+    def show_parameter(self):
+        # print('peer_num: {}'.format(self.peer_num))
+        # print('threads: {}'.format(self.threads))
+        print('tpcc_record_num: {}'.format(self.tpcc_record_num))
+
+
     def base_request(self, i, data, service_stub, show_result=True):
         req = data_pb2.Request(json_str=json.dumps(data))
         peer_address = "Peer{}-proxy:8000".format(i+1)
@@ -60,7 +67,7 @@ class Experiment():
                 "about": "zipf",
                 "theta": skew,
                 # "record_num": self.record_num*self.peer_num,
-                "record_num": 10,
+                "record_num": self.tpcc_record_num,
             }
             service_stub = data_pb2_grpc.ValChangeStub
             self.base_request(i, data, service_stub, show_result=False)
@@ -80,7 +87,7 @@ class Experiment():
             "bench_time": self.tx_t,
             "method": method,
         }
-        print("bench {} {}".format(method, self.tx_t))
+        print("bench {} {} {} {}".format(method, self.peer_num, self.threads, self.tx_t))
         for i in range(self.peer_num):
             for _ in range(self.threads):
                 # peer_address = "localhost:{}".format(8001+i)
@@ -102,6 +109,7 @@ class Experiment():
         custom_commit_result_list = []
         custom_abort_result_list = []
         global_lock_time = 0
+        lock_process_time = 0
         process_time = {}
         for res in self.res_list:
             # commit & abort
@@ -118,6 +126,10 @@ class Experiment():
             pattern = r'\[([\d.]+)\]'
             matches = re.findall(pattern, res)
             global_lock_time += float(matches[0])
+            # lock process time
+            pattern = r'\$([\d.]+)\$'
+            matches = re.findall(pattern, res)
+            lock_process_time += float(matches[0])
             # process time
             pattern = r'(\w+); ([\d\.]+)'
             matches = re.findall(pattern, res)
@@ -144,6 +156,7 @@ class Experiment():
         custom_commit_result[2] = divide(custom_commit_result[0], custom_commit_result[1])
         custom_abort_result[2] = divide(custom_abort_result[0], custom_abort_result[1])
         global_lock_time /= self.peer_num * self.threads
+        lock_process_time /= self.peer_num * self.threads
         for key, value in process_time.items():
             process_time[key] = divide(value, self.peer_num*self.threads)
         # 小数第2位までにする
@@ -153,6 +166,7 @@ class Experiment():
         custom_commit_result = round_result(custom_commit_result)
         custom_abort_result = round_result(custom_abort_result)
         global_lock_time = round_result([global_lock_time])[0]
+        lock_process_time = round_result([lock_process_time])[0]
         for key, value in process_time.items():
             process_time[key] = round_result([value])[0]
         # 結果の表示
@@ -165,9 +179,9 @@ class Experiment():
         global_lock_time_per_commit = divide(global_lock_time, commit_per_peer) * 1000
         overall_result = [throughput, custom_throughput, commit_time, global_lock_time, commit_time_per_commit, global_lock_time_per_commit]
         print("throughput: {:.2f} {:.2f},  ({:.2f} {:.2f})[s],  ({:.2f} {:.2f})[ms]".format(*overall_result))
-        print(process_time)
         print("commit:  {} ({} {})  {} ({} {})[s],   {} = {} * {}  ({})[s]".format(*commit_result, *custom_commit_result))
         print("abort:  {} ({} {})  {} ({} {})[s],   {} = {} * {}  ({})[s]".format(*abort_result, *custom_abort_result))
+        print("{}, {}[ms]".format(process_time, lock_process_time))
 
 
 
@@ -180,6 +194,7 @@ if command_name == 0:
     experiment.load_tpcc()
 if command_name == 1:
     experiment.set_zipf()
+    experiment.show_parameter()
     print("")
     experiment.tpcc("2pl")
     print("")

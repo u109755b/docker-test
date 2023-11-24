@@ -56,37 +56,56 @@ import threading
 class TimestampManagement:
     def __init__(self):
         self.duration_time = {'lock': 0, 'base_update': 0, 'prop_view_0': 0, 'view_update': 0, 'prop_view_k': 0, 'communication': 0, 'commit': 0}
+        self.data_num = {'lock': 0, 'base_update': 0, 'prop_view_0': 0, 'view_update': 0, 'prop_view_k': 0, 'communication': 0, 'commit': 0}
+
+    def add_duration_time(self, time_name, duration_time):
+        self.duration_time[time_name] += duration_time
+        self.data_num[time_name] += 1
 
     def add_timestamps(self, timestamps):
         timestamps = list(reversed(timestamps))
-        self.duration_time["commit"] += timestamps[0][-1] - timestamps[0][-2]
+        self.add_duration_time("commit", timestamps[0][-1]-timestamps[0][-2])
         timestamps[0].pop()
         for i, timestamp in enumerate(timestamps):
-            self.duration_time["lock"] += timestamp[1] - timestamp[0]
+            self.add_duration_time("lock", timestamp[1]-timestamp[0])
             if i == 0:
-                self.duration_time["base_update"] += timestamp[2] - timestamp[1]
-                self.duration_time["prop_view_0"] += timestamp[3] - timestamp[2]
+                self.add_duration_time('base_update', timestamp[2]-timestamp[1])
+                self.add_duration_time('prop_view_0', timestamp[3]-timestamp[2])
             else:
-                self.duration_time["view_update"] += timestamp[2] - timestamp[1]
-                self.duration_time["prop_view_k"] += timestamp[3] - timestamp[2]
+                self.add_duration_time('view_update', timestamp[2]-timestamp[1])
+                self.add_duration_time('prop_view_k', timestamp[3]-timestamp[2])
             if i != len(timestamps)-1:
-                duration_time = (timestamps[i+1][0]-timestamps[i][-2]) + timestamps[i][-1]-timestamps[i+1][-1]
-                self.duration_time["communication"] += duration_time
+                duration_time = (timestamps[i+1][0]-timestamps[i][-2]) + (timestamps[i][-1]-timestamps[i+1][-1])
+                self.add_duration_time('communication', duration_time)
 
     def get_result(self, display=False):
         result = []
         for key, value in self.duration_time.items():
-            result.append("{}: {:.2f}".format(key, value))
+            divide = lambda x, y, d=0: x/y if y != 0 else 0
+            time = divide(1000*self.duration_time[key], self.data_num[key])
+            result.append("{}: {:.2f}".format(key, time))
         result = ',  '.join(result)
         if display == True: print(result)
         return result
 
 
 class TimeMeasurement:
-    def __init__(self):
+    def init(self):
         self.start_time = {}
         self.total_duration_time = {}
         self.data_num = {}
+
+    def __init__(self):
+        self.state = 0
+        self.init()
+
+    def start(self):
+        if self.state != 1:
+            self.state = 1
+            self.init()
+
+    def stop(self):
+        self.state = 2
 
     def start_timer(self, time_type, global_xid, s_time=None):
         if time_type not in self.start_time:
@@ -114,9 +133,11 @@ class TimeMeasurement:
         duration_time = []
         for time_type, td_time in self.total_duration_time.items():
             num = self.data_num[time_type]
-            duration_time.append('{}: {:.2f}'.format(time_type, 1000*td_time/num))
-            # duration_time[time_type] = td_time / self.data_num[time_type]
-        if not duration_time: return
+            if time_type == 'lock_process':
+                duration_time.append('{}: {:.2f}'.format(time_type, 1000*td_time))
+            else:
+                duration_time.append('{}: {:.2f}'.format(time_type, 1000*td_time/num))
+        if not duration_time: return None
         result = ', '.join(duration_time)
         if display == True: print(result)
         return result
