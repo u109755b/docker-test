@@ -37,10 +37,13 @@ class TPLPropagation(data_pb2_grpc.TPLPropagationServicer):
 
         # prepare lock stmts
         stmt = dejimautils.convert_to_sql_from_json(params['delta'])
+        lineages = []
         lock_stmts = []
         for bt in config.bt_list:
             if bt == "customer":
                 for delete in params['delta']["deletions"]:
+                    lineage = config.lock_management.get_tpcc_lineage('customer', delete['c_w_id'], delete['c_d_id'], delete['c_id'])
+                    lineages.append(lineage)
                     lock_stmts.append("SELECT * FROM customer WHERE c_w_id={} AND c_d_id={} AND c_id={} FOR UPDATE NOWAIT".format(delete['c_w_id'], delete['c_d_id'], delete['c_id']))
             else:
                 for delete in params['delta']["deletions"]:
@@ -48,7 +51,8 @@ class TPLPropagation(data_pb2_grpc.TPLPropagationServicer):
 
         # update dejima table and propagate to base tables
         try:
-            for lock_stmt in lock_stmts:
+            for lineage, lock_stmt in zip(lineages, lock_stmts):
+                if config.plock_mode: config.lock_management.lock(global_xid, lineage)
                 tx.cur.execute(lock_stmt)
             timestamp.append(time.perf_counter())   # 1
             tx.cur.execute(stmt)

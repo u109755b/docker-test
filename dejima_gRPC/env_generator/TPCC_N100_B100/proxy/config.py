@@ -3,6 +3,7 @@ peer_name = os.environ['PEER_NAME'] # peer_name must be calculated at first
 import sys
 sys.dont_write_bytecode = True
 import json
+import time
 import threading
 
 # key: global_xid, value: Tx type object
@@ -25,6 +26,8 @@ channels = {}
 #         if channels_state != 2:
 #             channels_state = 2
 #             clear_channels()
+
+prelock_valid = False
 
 # sleep time
 SLEEP_MS = 0
@@ -51,8 +54,53 @@ target_peers.remove(peer_name)
 
 
 
-import time
-import threading
+plock_mode = True
+class LockManagement:
+    def init(self):
+        self.plock = threading.Lock()
+        self.lock_list = {}
+        self.tx_lock_list = {}
+
+    def __init__(self):
+        self.state = 0
+        self.init()
+
+    def start(self):
+        if self.state != 1:
+            self.state = 1
+            self.init()
+
+    def stop(self):
+        self.state = 2
+
+    def get_tpcc_lineage(self, bt, c_w_id, c_d_id, c_id):
+        peer_name = 'Peer{}'.format(10*(c_w_id-1) + c_d_id)
+        record_id = '({})'.format(','.join([str(c_w_id), str(c_d_id), str(c_id)]))
+        lineage = '{}-{}-{}'.format(peer_name, bt, record_id)
+        return lineage
+
+    def lock(self, global_xid, lineage):
+        if global_xid not in self.tx_lock_list:
+            self.tx_lock_list[global_xid] = []
+        with self.plock:
+            if lineage in self.lock_list:
+                if lineage in self.tx_lock_list[global_xid]:
+                    return
+                else:
+                    raise Exception('LockManagement: failed to lock a record')
+            self.lock_list[lineage] = 1
+        self.tx_lock_list[global_xid].append(lineage)
+
+    def unlock(self, global_xid):
+        if global_xid not in self.tx_lock_list:
+            return
+        with self.plock:
+            for lineage in self.tx_lock_list[global_xid]:
+                del self.lock_list[lineage]
+        del self.tx_lock_list[global_xid]
+lock_management = LockManagement()
+
+
 class TimestampManagement:
     def __init__(self):
         self.duration_time = {'lock': 0, 'base_update': 0, 'prop_view_0': 0, 'view_update': 0, 'prop_view_k': 0, 'communication': 0, 'commit': 0}

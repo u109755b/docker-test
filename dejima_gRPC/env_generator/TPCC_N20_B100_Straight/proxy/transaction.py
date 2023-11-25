@@ -1,5 +1,6 @@
 from pool import pool
 from psycopg2.extras import DictCursor
+import config
 
 class Tx:
     def __init__(self, global_xid):
@@ -13,11 +14,13 @@ class Tx:
         self.cur.close()
         self.db_conn.commit()
         pool.putconn(self.db_conn)
+        if config.plock_mode: config.lock_management.unlock(self.global_xid)
 
     def abort(self):
         self.cur.close()
         self.db_conn.rollback()
         pool.putconn(self.db_conn)
+        if config.plock_mode: config.lock_management.unlock(self.global_xid)
 
     def extend_childs(self, target_peers):
         self.child_peers.extend(target_peers)
