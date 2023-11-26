@@ -57,19 +57,19 @@ class ValChange(data_pb2_grpc.ValChangeServicer):
 
         elif about == 'prelock_valid':
             if "prelock_valid" in params.keys():
-                if params['prelock_valid'] == 'True':
+                if params['prelock_valid'] == True:
                     config.prelock_valid = True
                 else:
                     config.prelock_valid = False
-            print('set prelock_valid {}'.format(params['prelock_valid']))
+            print('set prelock_valid {}'.format(config.prelock_valid))
 
         elif about == 'plock_mode':
             if "plock_mode" in params.keys():
-                if params['plock_mode'] == 'True':
+                if params['plock_mode'] == True:
                     config.plock_mode = True
                 else:
                     config.plock_mode = False
-            print('set plock_mode {}'.format(params['plock_mode']))
+            print('set plock_mode {}'.format(config.plock_mode))
 
         # msg = "finished"
         # resp.text = msg
