@@ -10,24 +10,8 @@ import threading
 tx_dict = {}
 
 channels = {}
-# channels_state = 0  # 0: initialized, 1: used, 2: finished
-# channels_lock = threading.Lock()
-# def clear_channels():
-#     for channel in channels.values():
-#         channel.close()
-#     channels.clear()
-# def channels_start():
-#     with channels_state:
-#         if channels_state != 1:
-#             channels_state = 1
-#             clear_channels()
-# def channels_finish():
-#     with channels_state:
-#         if channels_state != 2:
-#             channels_state = 2
-#             clear_channels()
 
-prelock_valid = False
+prelock_invalid = False
 
 # sleep time
 SLEEP_MS = 0
@@ -54,20 +38,29 @@ target_peers.remove(peer_name)
 
 
 
+from itertools import product
 plock_mode = True
 class LockManagement:
     def init(self):
         self.plock = threading.Lock()
-        self.lock_list = {}
         self.tx_lock_list = {}
+
+        self.locked = {}
+        self.record_lock = {}
+        for c_w_id, c_d_id, c_id in product(range(1, 101), range(1, 11), range(1, 101)):
+            lineage = self.get_tpcc_lineage('customer', c_w_id, c_d_id, c_id)
+            self.locked[lineage] = False
+            self.record_lock[lineage] = threading.Lock()
 
     def __init__(self):
         self.state = 0
         self.init()
 
     def start(self):
+        self.plock.acquire()
         if self.state != 1:
             self.state = 1
+            self.plock.release()
             self.init()
 
     def stop(self):
@@ -82,21 +75,21 @@ class LockManagement:
     def lock(self, global_xid, lineage):
         if global_xid not in self.tx_lock_list:
             self.tx_lock_list[global_xid] = []
-        with self.plock:
-            if lineage in self.lock_list:
+        with self.record_lock[lineage]:
+            if self.locked[lineage]:
                 if lineage in self.tx_lock_list[global_xid]:
                     return
                 else:
                     raise Exception('LockManagement: failed to lock a record')
-            self.lock_list[lineage] = 1
+            self.locked[lineage] = True
         self.tx_lock_list[global_xid].append(lineage)
 
     def unlock(self, global_xid):
         if global_xid not in self.tx_lock_list:
             return
-        with self.plock:
-            for lineage in self.tx_lock_list[global_xid]:
-                del self.lock_list[lineage]
+        for lineage in self.tx_lock_list[global_xid]:
+            with self.record_lock[lineage]:
+                self.locked[lineage] = False
         del self.tx_lock_list[global_xid]
 lock_management = LockManagement()
 
@@ -278,4 +271,3 @@ class ResultMeasurement:
         if abort_type == 'local':
             self.local_abort_num += 1
             self.local_abort_time += abort_time
-result_measurement = ResultMeasurement()

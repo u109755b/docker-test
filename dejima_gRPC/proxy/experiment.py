@@ -19,7 +19,7 @@ class Experiment():
         self.tpcc_record_num=10
         
         self.default_zipf=0.99     # zipf
-        self.prelock_valid=False
+        self.prelock_invalid=False
         self.plock_mode=True
         
         self.res_list = []
@@ -76,12 +76,12 @@ class Experiment():
             self.base_request(i, data, service_stub, show_result=False)
 
 
-    def set_prelock_valid(self):
-        print("set_prelock_valid {}".format(self.prelock_valid))
+    def set_prelock_invalid(self):
+        print("set_prelock_invalid {}".format(self.prelock_invalid))
         for i in range(self.peer_num):
             data = {
-                "about": "prelock_valid",
-                "prelock_valid": self.prelock_valid,
+                "about": "prelock_invalid",
+                "prelock_invalid": self.prelock_invalid,
             }
             service_stub = data_pb2_grpc.ValChangeStub
             self.base_request(i, data, service_stub, show_result=False)
@@ -218,7 +218,7 @@ if command_name == 0:
     experiment.load_tpcc()
 if command_name == 1:
     experiment.set_zipf()
-    experiment.set_prelock_valid()
+    experiment.set_prelock_invalid()
     experiment.set_plock_mode()
     experiment.show_parameter()
     print("")

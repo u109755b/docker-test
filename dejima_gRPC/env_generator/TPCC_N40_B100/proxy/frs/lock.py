@@ -12,7 +12,7 @@ class Lock(data_pb2_grpc.LockServicer):
 
     def on_post(self, req, resp):
         time.sleep(config.SLEEP_MS * 0.001)
-        if config.prelock_valid:
+        if config.prelock_invalid == True:
             res_dic = {"result": "Ack"}
             return data_pb2.Response(json_str=json.dumps(res_dic))
 
