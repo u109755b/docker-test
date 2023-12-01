@@ -57,11 +57,10 @@ class LockManagement:
         self.init()
 
     def start(self):
-        self.plock.acquire()
-        if self.state != 1:
-            self.state = 1
-            self.plock.release()
-            self.init()
+        with self.plock:
+            if self.state != 1:
+                self.state = 1
+                self.init()
 
     def stop(self):
         self.state = 2
