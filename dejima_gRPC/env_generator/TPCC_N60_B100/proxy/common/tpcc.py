@@ -201,6 +201,7 @@ class TPCC(data_pb2_grpc.TPCCServicer):
             res_dic = {"result": "invalid method"}
             return data_pb2.Response(json_str=json.dumps(res_dic))
 
+        config.lock_management.get_result(display=True)
         config.lock_management.stop()
         time_measurement.get_result(display=True)
         timemeasurement_result = config.time_measurement.get_result(display=True)

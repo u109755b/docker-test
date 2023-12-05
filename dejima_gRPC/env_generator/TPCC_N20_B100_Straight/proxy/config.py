@@ -38,6 +38,25 @@ target_peers.remove(peer_name)
 
 
 
+
+class TimingLock:
+    def __init__(self):
+        self.lock = threading.Lock()
+        self.wait_time_lock = threading.Lock()
+        self.wait_time = 0
+
+    def __enter__(self):
+        start_time = time.perf_counter()
+        self.lock.acquire()
+        end_time = time.perf_counter()
+        with self.wait_time_lock:
+            self.wait_time += end_time - start_time
+        # print(end_time-start_time)
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.lock.release()
+
+
 from itertools import product
 plock_mode = True
 class LockManagement:
@@ -50,7 +69,7 @@ class LockManagement:
         for c_w_id, c_d_id, c_id in product(range(1, 101), range(1, 11), range(1, 101)):
             lineage = self.get_tpcc_lineage('customer', c_w_id, c_d_id, c_id)
             self.locked[lineage] = False
-            self.record_lock[lineage] = threading.Lock()
+            self.record_lock[lineage] = TimingLock()
 
     def __init__(self):
         self.state = 0
@@ -90,6 +109,13 @@ class LockManagement:
             with self.record_lock[lineage]:
                 self.locked[lineage] = False
         del self.tx_lock_list[global_xid]
+
+    def get_result(self, display=False):
+        total_wait_time = 0
+        for tx_lock in self.record_lock.values():
+            total_wait_time += tx_lock.wait_time
+        if display: print(total_wait_time)
+        return total_wait_time
 lock_management = LockManagement()
 
 

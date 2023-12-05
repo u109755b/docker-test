@@ -11,7 +11,7 @@ import re
 
 class Experiment():
     def __init__(self):
-        self.peer_num=10
+        self.peer_num=2
         self.threads=1   # num of threads for each peer
         self.record_num=100
         self.tx_t=100
