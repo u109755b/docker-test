@@ -2,19 +2,21 @@
 import grpc
 import data_pb2
 import data_pb2_grpc
+import utils
 
 import time
 import json
 import threading
 import sys
 import re
+import numpy as np
 
 class Experiment():
     def __init__(self):
-        self.peer_num=10
+        self.peer_num=2
         self.threads=1   # num of threads for each peer
         self.record_num=100
-        self.tx_t=100
+        self.tx_t=10
         self.test_time=600
         self.tpcc_record_num=10
         
@@ -127,6 +129,78 @@ class Experiment():
         for thread in thread_list:
             thread.join()
         
+        # 結果の統合
+        process_time_keys = ['lock', 'base_update', 'prop_view_0', 'view_update', 'prop_view_k', 'communication', 'commit']
+        thread_num = self.peer_num * self.threads
+        
+        all_data = {
+            "basic_res": {
+                "commit": [0, 0, 0],
+                "abort": [0, 0, 0],
+                "commit_time": [0, 0, 0],
+                "abort_time": [0, 0, 0],
+                "custom_commit": [0, 0, 0],
+                "custom_abort": [0, 0, 0],
+            },
+            "process_time": {k: [0] for k in process_time_keys},
+            "global_lock": [0],
+            "lock_process": [0],
+        }
+        
+        divive_data = {
+            "basic_res": {
+                "commit": [1, 1, 1],
+                "abort": [1, 1, 1],
+                "commit_time": [thread_num, thread_num, thread_num],
+                "abort_time": [thread_num, thread_num, thread_num],
+                "custom_commit": [1, 1, 1],
+                "custom_abort": [1, 1, 1],
+            },
+            "process_time": {k: [thread_num] for k in process_time_keys},
+            "global_lock": [thread_num],
+            "lock_process": [thread_num],
+        }
+        
+        basic_res = all_data["basic_res"]
+        process_time = all_data["process_time"]
+        global_lock = all_data["global_lock"]
+        lock_process = all_data["lock_process"]
+        
+        # 結果の合計
+        for res in self.res_list:
+            res = json.loads(res)
+            plus = lambda x, y: x + y
+            utils.general_2obj_func(all_data, res, plus)
+        
+        # 結果の割り算
+        divide = lambda x, y: x/y if y != 0 else x
+        utils.general_2obj_func(all_data, divive_data, divide)
+        basic_res["custom_commit"][2] = divide(basic_res["custom_commit"][0], basic_res["custom_commit"][1])
+        basic_res["custom_abort"][2] = divide(basic_res["custom_abort"][0], basic_res["custom_abort"][1])
+        
+        # 小数第2位に丸める
+        round2 = lambda x: int(x) if round(x, 2)%1==0 else round(x, 2)
+        utils.general_1obj_func(all_data, round2)
+        
+        # その他の計算
+        tx_time = basic_res["commit_time"][0] + basic_res["abort_time"][0]
+        throughput = basic_res["commit"][0] / tx_time
+        custom_throughput = basic_res["custom_commit"][0] / tx_time
+        commit_time = basic_res["commit_time"][0]
+        commit_per_peer = basic_res["commit"][0] / self.peer_num
+        commit_time_per_commit = divide(commit_time, commit_per_peer) * 1000
+        global_lock_time_per_commit = divide(global_lock[0], commit_per_peer) * 1000
+        overall_result = [throughput, custom_throughput, commit_time, global_lock[0], commit_time_per_commit, global_lock_time_per_commit]
+        utils.general_1obj_func(overall_result, round2)
+        process_time = {k: v[0] for k, v in process_time.items()}
+        
+        # 結果表示
+        print("throughput: {} {},  ({} {})[s],  ({} {})[ms]".format(*overall_result))
+        print("commit:  {} ({} {})  {} ({} {})[s],   {} = {} * {}".format(*basic_res["commit"], *basic_res["commit_time"], *basic_res["custom_commit"]))
+        print("abort:  {} ({} {})  {} ({} {})[s],   {} = {} * {}".format(*basic_res["abort"], *basic_res["abort_time"], *basic_res["custom_abort"]))
+        print("{}, {}[s]".format(process_time, round2(lock_process[0])))
+        return
+        
         # 結果の処理
         commit_result_list = []
         abort_result_list = []
@@ -141,7 +215,7 @@ class Experiment():
             matches = re.findall(pattern, res)
             commit_result_list.append(matches[0])
             abort_result_list.append(matches[1])
-            # custom commit & custom abort
+            # custom_commit & custom_abort
             pattern = r'([\d.]+) = ([\d.]+) \* ([\d.]+)  \(([\d.]+)\)'
             matches = re.findall(pattern, res)
             custom_commit_result_list.append(matches[0])

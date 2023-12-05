@@ -5,6 +5,7 @@ sys.dont_write_bytecode = True
 import json
 import time
 import threading
+import utils
 
 # key: global_xid, value: Tx type object
 tx_dict = {}
@@ -145,13 +146,14 @@ class TimestampManagement:
                 self.add_duration_time('communication', duration_time)
 
     def get_result(self, display=False):
-        result = []
+        result = {}
         for key, value in self.duration_time.items():
             divide = lambda x, y, d=0: x/y if y != 0 else 0
-            time = divide(1000*self.duration_time[key], self.data_num[key])
-            result.append("{}: {:.2f}".format(key, time))
-        result = ',  '.join(result)
-        if display == True: print(result)
+            result[key] = divide(1000*self.duration_time[key], self.data_num[key])
+            self.duration_time[key] = round(result[key], 2)
+            # result.append("{}: {:.2f}".format(key, time))
+        # result = ',  '.join(result)
+        if display == True: print(self.duration_time)
         return result
 
 
@@ -196,16 +198,17 @@ class TimeMeasurement:
         self.data_num[time_type] += 1
 
     def get_result(self, display=False):
-        duration_time = []
+        result = {}
         for time_type, td_time in self.total_duration_time.items():
             num = self.data_num[time_type]
             if time_type == 'lock_process':
-                duration_time.append('{}: {:.2f}'.format(time_type, 1000*td_time))
+                result[time_type] = 1000*td_time
+                # result.append('{}: {:.2f}'.format(time_type, 1000*td_time))
             else:
-                duration_time.append('{}: {:.2f}'.format(time_type, 1000*td_time/num))
-        if not duration_time: return None
-        result = ', '.join(duration_time)
-        if display == True: print(result)
+                result[time_type] = 1000*td_time/num
+                # result.append('{}: {:.2f}'.format(time_type, 1000*td_time/num))
+        if not result: return {}
+        if display == True: print(utils.general_round2(result))
         return result
 time_measurement = TimeMeasurement()
 
@@ -265,6 +268,15 @@ class ResultMeasurement:
         ret = '{} |  {},   {},  {},  {}'.format(peer_name, commit_info, abort_info, custom_commit_info, custom_abort_info)
         ret += ',  [{:.2f}]'.format(self.total_global_lock_time)
         ret += add_result
+        
+        ret = {
+            "commit": [commit_num, self.update_commit_num, self.read_commit_num],
+            "abort": [abort_num, self.global_abort_num, self.local_abort_num],
+            "commit_time": [commit_time, self.update_commit_time, self.read_commit_time],
+            "abort_time": [abort_time, self.global_abort_time, self.local_abort_time],
+            "custom_commit": [self.update_commit_num*commit_hop, self.update_commit_num, commit_hop],
+            "custom_abort": [self.global_abort_num*abort_hop, self.global_abort_num, abort_hop]
+        }
         return ret
         
     def start_tx(self):
