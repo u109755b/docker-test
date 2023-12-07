@@ -164,7 +164,7 @@ def doTPCC_PAY_2pl(params):
         return False
     
     global_params = {
-        "max_hop": 0,
+        "max_hop": 1,
         "timestamps": [],
         "source_peer": config.peer_name,
     }

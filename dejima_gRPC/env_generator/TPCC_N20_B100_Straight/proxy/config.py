@@ -15,6 +15,8 @@ channels = {}
 prelock_invalid = False
 plock_mode = True
 hop_mode = False
+include_getting_tx_time = True
+getting_tx = True
 
 # sleep time
 SLEEP_MS = 0
@@ -219,11 +221,11 @@ class ResultMeasurement:
         # commit
         commit_num = self.update_commit_num + self.read_commit_num
         commit_time = self.update_commit_time + self.read_commit_time
-        commit_hop = utils.divide(self.commit_hop, self.update_commit_num) + 1
+        commit_hop = utils.divide(self.commit_hop, self.update_commit_num)
         # abort
         abort_num = self.global_abort_num + self.local_abort_num
         abort_time = self.global_abort_time + self.local_abort_time
-        abort_hop = utils.divide(self.abort_hop, self.global_abort_num) + 1
+        abort_hop = utils.divide(self.abort_hop, self.global_abort_num)
         
         result = {
             "commit": [commit_num,  self.update_commit_num,  self.read_commit_num],

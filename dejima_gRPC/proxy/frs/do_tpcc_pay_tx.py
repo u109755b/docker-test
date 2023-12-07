@@ -103,7 +103,7 @@ def doTPCC_PAY_frs(params):
         dejimautils.release_lock_request(global_xid) 
         tx.abort()
         del config.tx_dict[global_xid]
-        result_measurement.abort_tx('global')
+        result_measurement.abort_tx('global', 2)
         return False
 
     # execution
@@ -187,7 +187,7 @@ def doTPCC_PAY_frs(params):
         return False
     
     global_params = {
-        "max_hop": 0,
+        "max_hop": 1,
         "timestamps": [],
         "source_peer": config.peer_name,
     }

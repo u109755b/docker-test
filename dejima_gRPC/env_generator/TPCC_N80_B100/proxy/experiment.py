@@ -24,10 +24,12 @@ class Experiment():
         self.prelock_invalid=False
         self.plock_mode=True
         self.hop_mode=False
+        self.include_getting_tx_time = True
+        self.getting_tx = True
 
         self.res_list = []
-    
-    
+
+
     def show_parameter(self):
         # print('peer_num: {}'.format(self.peer_num))
         # print('threads: {}'.format(self.threads))
@@ -43,9 +45,9 @@ class Experiment():
             params = json.loads(response.json_str)
             if show_result:
                 print("Peer{}: {}".format(i+1, params["result"]))
-    
 
-    def load_tpcc(self):    
+
+    def load_tpcc(self):
         print("load_tpcc {}".format(self.peer_num))
 
         print("local load")
@@ -65,51 +67,24 @@ class Experiment():
             self.base_request(i, data, service_stub)
 
 
-    def set_zipf(self):
-        skew=self.default_zipf
-        print("set_zipf {}".format(skew))
-        for i in range(self.peer_num):
-            data = {
-                "about": "zipf",
-                "theta": skew,
-                # "record_num": self.record_num*self.peer_num,
-                "record_num": self.tpcc_record_num,
-            }
-            service_stub = data_pb2_grpc.ValChangeStub
-            self.base_request(i, data, service_stub, show_result=False)
-
-
-    def set_prelock_invalid(self):
-        print("set_prelock_invalid {}".format(self.prelock_invalid))
-        for i in range(self.peer_num):
-            data = {
-                "about": "prelock_invalid",
-                "prelock_invalid": self.prelock_invalid,
-            }
-            service_stub = data_pb2_grpc.ValChangeStub
-            self.base_request(i, data, service_stub, show_result=False)
-
-
-    def set_plock_mode(self):
-        print("set_plock_mode {}".format(self.plock_mode))
-        for i in range(self.peer_num):
-            data = {
-                "about": "plock_mode",
-                "plock_mode": self.plock_mode,
-            }
-            service_stub = data_pb2_grpc.ValChangeStub
-            self.base_request(i, data, service_stub, show_result=False)
-
-
-    def set_hop_mode(self):
-        print("set_hop_mode {}".format(self.hop_mode))
-        for i in range(self.peer_num):
-            data = {
-                "about": "hop_mode",
-                "hop_mode": self.hop_mode,
-            }
-            service_stub = data_pb2_grpc.ValChangeStub
-            self.base_request(i, data, service_stub, show_result=False)
+    def set_parameters(self):
+        parameters = {
+            "zipf": {"theta": self.default_zipf, "record_num": self.tpcc_record_num},
+            "prelock_invalid": self.prelock_invalid,
+            "plock_mode": self.plock_mode,
+            "hop_mode": self.hop_mode,
+            "include_getting_tx_time": self.include_getting_tx_time,
+            "getting_tx": self.getting_tx,
+        }
+        for parameter_name, parameter in parameters.items():
+            print("set_{} {}".format(parameter_name, parameter))
+            for i in range(self.peer_num):
+                data = {
+                    "about": parameter_name,
+                    "parameter": parameter,
+                }
+                service_stub = data_pb2_grpc.ValChangeStub
+                self.base_request(i, data, service_stub, show_result=False)
 
 
     def initialize(self):
@@ -235,10 +210,11 @@ if command_name == 0:
     experiment.load_tpcc()
 
 if command_name == 1:
-    experiment.set_zipf()
-    experiment.set_prelock_invalid()
-    experiment.set_plock_mode()
-    experiment.set_hop_mode()
+    # experiment.set_zipf()
+    # experiment.set_prelock_invalid()
+    # experiment.set_plock_mode()
+    # experiment.set_hop_mode()
+    experiment.set_parameters()
     experiment.show_parameter()
 
     print("")
