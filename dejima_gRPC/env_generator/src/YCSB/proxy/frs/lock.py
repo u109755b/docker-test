@@ -22,11 +22,11 @@ class Lock(data_pb2_grpc.LockServicer):
         params = json.loads(req.json_str)
 
         global_xid = params['xid']
+        config.time_measurement.start_timer("lock_process", global_xid)
         tx = Tx(global_xid)
         config.tx_dict[global_xid] = tx
 
         # lock with lineages
-        config.time_measurement.start_timer("lock_process", global_xid)
         bt_list = config.dejima_config_dict['base_table'][config.peer_name]
         # hardcode (lineage name)
         for bt in bt_list:

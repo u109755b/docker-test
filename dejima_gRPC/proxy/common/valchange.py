@@ -33,23 +33,6 @@ class ValChange(data_pb2_grpc.ValChangeServicer):
             tpccutils.zipf_gen = tpccutils.zipfGenerator(record_num, theta)
             
             print('set zipf {}'.format(theta))
-            # # Visualization of output
-            # output_dict = {}
-            # for _ in range(100000):
-            #     index = next(rsabutils.zipf_gen)-1
-            #     if config.peer_name.startswith('alliance'):
-            #         n = rsabutils.RECORDS_PEER
-            #         lower_bound = index//n * n
-            #         upper_bound = lower_bound+n
-            #         index = random.randint(lower_bound, upper_bound-1)
-                
-            #     id = config.candidate_record_id_list[index]
-            #     if id not in output_dict:
-            #         output_dict[id] = 0
-            #     output_dict[id] += 1
-            # output_dict = dict(sorted(output_dict.items(), key=lambda x: x[0]))
-            # print(config.candidate_record_id_list)
-            # print(output_dict)
             
         elif about == 'show_lock':
             lock_list = list(config.tx_dict)
@@ -58,20 +41,17 @@ class ValChange(data_pb2_grpc.ValChangeServicer):
         elif about == 'prelock_invalid':
             if "prelock_invalid" in params.keys():
                 config.prelock_invalid = params['prelock_invalid']
-                # if params['prelock_invalid'] == True:
-                #     config.prelock_invalid = True
-                # else:
-                #     config.prelock_invalid = False
             print('set prelock_invalid {}'.format(config.prelock_invalid))
 
         elif about == 'plock_mode':
             if "plock_mode" in params.keys():
                 config.plock_mode = params['plock_mode']
-                # if params['plock_mode'] == True:
-                #     config.plock_mode = True
-                # else:
-                #     config.plock_mode = False
             print('set plock_mode {}'.format(config.plock_mode))
+        
+        elif about == 'initialize':
+            config.lock_management.init()
+            config.time_measurement.init()
+            print('initialized')
 
         # msg = "finished"
         # resp.text = msg

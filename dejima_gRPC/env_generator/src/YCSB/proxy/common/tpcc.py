@@ -33,12 +33,9 @@ class TPCC(data_pb2_grpc.TPCCServicer):
         #     channel.close()
         # config.channels.clear()
 
-        config.lock_management.start()
         result_measurement = config.ResultMeasurement()
         time_measurement = config.TimeMeasurement()
-        config.time_measurement.start()
         timestamp_management = config.TimestampManagement()
-        # config.time_measurement = config.TimeMeasurement()
         params = {
             "result_measurement": result_measurement,
             "time_measurement": time_measurement,
@@ -203,18 +200,11 @@ class TPCC(data_pb2_grpc.TPCCServicer):
 
         res_dic = {}
         config.lock_management.get_result(display=True)
-        config.lock_management.stop()
         res_dic1 = time_measurement.get_result(display=True)
         res_dic2 = config.time_measurement.get_result(display=True)
-        config.time_measurement.stop()
-        res_dic["process_time"] = timestamp_management.get_result(display=True)
-        add_result = ""
         res_dic.update(**res_dic1, **res_dic2)
-        # if timemeasurement_result == None: timemeasurement_result = 'lock_process: 0'
-        # add_result += "${}$".format(timemeasurement_result.split(': ')[1])
-        # add_result += timestamp_result.replace(':', ';')
-        res_dic["basic_res"] = result_measurement.get_result(display=True, add_result=add_result)
-        # msg += "\n"
+        res_dic["basic_res"] = result_measurement.get_result(display=True)
+        res_dic["process_time"] = timestamp_management.get_result(display=True)
 
         # msg = " ".join([config.peer_name, str(commit_num), str(abort_num), str(miss_num), str(bench_time-miss_time)])
         # for result in result_per_epoch:

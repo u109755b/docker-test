@@ -73,17 +73,7 @@ class LockManagement:
             self.record_lock[lineage] = TimingLock()
 
     def __init__(self):
-        self.state = 0
         self.init()
-
-    def start(self):
-        with self.plock:
-            if self.state != 1:
-                self.state = 1
-                self.init()
-
-    def stop(self):
-        self.state = 2
 
     def get_tpcc_lineage(self, bt, c_w_id, c_d_id, c_id):
         peer_name = 'Peer{}'.format(10*(c_w_id-1) + c_d_id)
@@ -113,9 +103,10 @@ class LockManagement:
 
     def get_result(self, display=False):
         total_wait_time = 0
-        for tx_lock in self.record_lock.values():
-            total_wait_time += tx_lock.wait_time
-        if display: print(total_wait_time)
+        with self.plock:
+            for tx_lock in self.record_lock.values():
+                total_wait_time += tx_lock.wait_time
+        if display: print('total_wait_time: {}[ms]'.format(utils.round2(1000*total_wait_time)))
         return total_wait_time
 lock_management = LockManagement()
 
@@ -146,14 +137,9 @@ class TimestampManagement:
                 self.add_duration_time('communication', duration_time)
 
     def get_result(self, display=False):
-        result = {}
-        for key, value in self.duration_time.items():
-            divide = lambda x, y, d=0: x/y if y != 0 else 0
-            result[key] = divide(1000*self.duration_time[key], self.data_num[key])
-            self.duration_time[key] = round(result[key], 2)
-            # result.append("{}: {:.2f}".format(key, time))
-        # result = ',  '.join(result)
-        if display == True: print(self.duration_time)
+        avg_ms = lambda x, y: utils.divide(1000*x, y)
+        result = utils.general_2obj_func(self.duration_time, self.data_num, avg_ms)
+        if display == True: print(utils.general_round2(result), end='[ms]\n')
         return result
 
 
@@ -162,18 +148,10 @@ class TimeMeasurement:
         self.start_time = {}
         self.total_duration_time = {}
         self.data_num = {}
+        self.plock = threading.Lock()
 
     def __init__(self):
-        self.state = 0
         self.init()
-
-    def start(self):
-        if self.state != 1:
-            self.state = 1
-            self.init()
-
-    def stop(self):
-        self.state = 2
 
     def start_timer(self, time_type, global_xid, s_time=None):
         if time_type not in self.start_time:
@@ -191,24 +169,24 @@ class TimeMeasurement:
             del self.start_time[time_type][global_xid]
         if save is False:
             return
-        if time_type not in self.data_num:
-            self.total_duration_time[time_type] = 0
-            self.data_num[time_type] = 0
-        self.total_duration_time[time_type] += e_time - s_time
-        self.data_num[time_type] += 1
+        if time_type not in self.total_duration_time:
+            self.total_duration_time[time_type] = []
+            self.data_num[time_type] = []
+        self.total_duration_time[time_type].append(e_time - s_time)
+        self.data_num[time_type].append(1)
 
     def get_result(self, display=False):
         result = {}
-        for time_type, td_time in self.total_duration_time.items():
-            num = self.data_num[time_type]
-            if time_type == 'lock_process':
-                result[time_type] = 1000*td_time
-                # result.append('{}: {:.2f}'.format(time_type, 1000*td_time))
-            else:
-                result[time_type] = 1000*td_time/num
-                # result.append('{}: {:.2f}'.format(time_type, 1000*td_time/num))
+        with self.plock:
+            for time_type, td_time in self.total_duration_time.items():
+                total_time = sum(self.total_duration_time[time_type])
+                total_num = sum(self.data_num[time_type])
+                self.total_duration_time[time_type] = [total_time]
+                self.data_num[time_type] = [total_num]
+                if time_type == 'lock_process': result[time_type] = 1000*total_time
+                else: result[time_type] = 1000*total_time / total_num
         if not result: return {}
-        if display == True: print(utils.general_round2(result))
+        if display == True: print(utils.general_round2(result), end='[ms]\n')
         return result
 time_measurement = TimeMeasurement()
 
@@ -235,49 +213,40 @@ class ResultMeasurement:
         self.global_lock_time = 0
         self.total_global_lock_time = 0
         
-    def get_result(self, display=False, add_result=""):
-        # provider3 |  commit: 8 (2 6)  6.20 (4.10 2.10)[s],   abort: 8 (4 4)  6.20 (4.07 2.13)[s]
+    def get_result(self, display=False):
+        # commit: 8 (2 6)  6.20 (4.10 2.10)[s],   abort: 8 (4 4)  6.20 (4.07 2.13)[s]
         # commit
         commit_num = self.update_commit_num + self.read_commit_num
-        commit_num_info = '{} ({} {})'.format(commit_num, self.update_commit_num, self.read_commit_num)
         commit_time = self.update_commit_time + self.read_commit_time
-        commit_time_info = '{:.2f} ({:.2f} {:.2f})'.format(commit_time, self.update_commit_time, self.read_commit_time)
-        commit_info = 'commit: {}  {}[s]'.format(commit_num_info, commit_time_info)
+        commit_hop = utils.divide(self.commit_hop, self.update_commit_num) + 1
         # abort
         abort_num = self.global_abort_num + self.local_abort_num
-        abort_num_info = '{} ({} {})'.format(abort_num, self.global_abort_num, self.local_abort_num)
         abort_time = self.global_abort_time + self.local_abort_time
-        abort_time_info = '{:.2f} ({:.2f} {:.2f})'.format(abort_time, self.global_abort_time, self.local_abort_time)
-        abort_info = 'abort: {}  {}[s]'.format(abort_num_info, abort_time_info)
-        # custom commit
-        if self.update_commit_num == 0: commit_hop = 1
-        else: commit_hop = self.commit_hop / self.update_commit_num + 1
-        custom_commit_num_info = '{} = {} * {}'.format(self.update_commit_num*commit_hop, self.update_commit_num, commit_hop)
-        custom_commit_time_info = '{:.2f}'.format(self.update_commit_time)
-        custom_commit_info = 'custom commit: {}  ({})[s]'.format(custom_commit_num_info, custom_commit_time_info)
-        # custom abort
-        if self.global_abort_num == 0: abort_hop = 1
-        else: abort_hop = self.abort_hop / self.global_abort_num + 1
-        custom_abort_num_info = '{:.2f} = {} * {:.2f}'.format(self.global_abort_num*abort_hop, self.global_abort_num, abort_hop)
-        custom_abort_time_info = '{:.2f}'.format(self.global_abort_time)
-        custom_abort_info = 'custom abort: {}  ({})[s]'.format(custom_abort_num_info, custom_abort_time_info)
+        abort_hop = utils.divide(self.abort_hop, self.global_abort_num) + 1
+        
+        result = {
+            "commit": [commit_num,  self.update_commit_num,  self.read_commit_num],
+            "abort": [abort_num,  self.global_abort_num,  self.local_abort_num],
+            "commit_time": [commit_time,  self.update_commit_time,  self.read_commit_time],
+            "abort_time": [abort_time,  self.global_abort_time,  self.local_abort_time],
+            "custom_commit": [self.update_commit_num*commit_hop,  self.update_commit_num,  commit_hop],
+            "custom_abort": [self.global_abort_num*abort_hop,  self.global_abort_num,  abort_hop],
+            "global_lock": [self.total_global_lock_time],
+        }
         
         if display:
-            print("{},  {}".format(commit_info, custom_commit_info))
-            print("{},  {}".format(abort_info, custom_abort_info))
-        ret = '{} |  {},   {},  {},  {}'.format(peer_name, commit_info, abort_info, custom_commit_info, custom_abort_info)
-        ret += ',  [{:.2f}]'.format(self.total_global_lock_time)
-        ret += add_result
-        
-        ret = {
-            "commit": [commit_num, self.update_commit_num, self.read_commit_num],
-            "abort": [abort_num, self.global_abort_num, self.local_abort_num],
-            "commit_time": [commit_time, self.update_commit_time, self.read_commit_time],
-            "abort_time": [abort_time, self.global_abort_time, self.local_abort_time],
-            "custom_commit": [self.update_commit_num*commit_hop, self.update_commit_num, commit_hop],
-            "custom_abort": [self.global_abort_num*abort_hop, self.global_abort_num, abort_hop]
-        }
-        return ret
+            rounded_result = utils.general_1obj_func(result, utils.round2)
+            # commit
+            print("commit: {} ({} {})".format(*rounded_result["commit"]), end="  ")
+            print("{} ({} {})[s]".format(*rounded_result["commit_time"]), end=",   ")
+            print("{} = {} * {}".format(*rounded_result["custom_commit"]))
+            # abort
+            print("abort: {} ({} {})".format(*rounded_result["abort"]), end="  ")
+            print("{} ({} {})[s]".format(*rounded_result["abort_time"]), end=",   ")
+            print("{} = {} * {}".format(*rounded_result["custom_abort"]))
+            # global lock
+            print("global lock: {}[s]".format(*rounded_result["global_lock"]))
+        return result
         
     def start_tx(self):
         self.start_time = time.perf_counter()
