@@ -13,6 +13,8 @@ tx_dict = {}
 channels = {}
 
 prelock_invalid = False
+plock_mode = True
+hop_mode = False
 
 # sleep time
 SLEEP_MS = 0
@@ -59,7 +61,6 @@ class TimingLock:
 
 
 from itertools import product
-plock_mode = True
 class LockManagement:
     def init(self):
         self.plock = threading.Lock()

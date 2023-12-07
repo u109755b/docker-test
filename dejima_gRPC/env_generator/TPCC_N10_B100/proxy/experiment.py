@@ -13,16 +13,17 @@ import numpy as np
 
 class Experiment():
     def __init__(self):
-        self.peer_num=2
+        self.peer_num=10
         self.threads=1   # num of threads for each peer
         self.record_num=100
-        self.tx_t=10
+        self.tx_t=100
         self.test_time=600
         self.tpcc_record_num=10
 
         self.default_zipf=0.99     # zipf
         self.prelock_invalid=False
         self.plock_mode=True
+        self.hop_mode=False
 
         self.res_list = []
     
@@ -100,6 +101,17 @@ class Experiment():
             self.base_request(i, data, service_stub, show_result=False)
 
 
+    def set_hop_mode(self):
+        print("set_hop_mode {}".format(self.hop_mode))
+        for i in range(self.peer_num):
+            data = {
+                "about": "hop_mode",
+                "hop_mode": self.hop_mode,
+            }
+            service_stub = data_pb2_grpc.ValChangeStub
+            self.base_request(i, data, service_stub, show_result=False)
+
+
     def initialize(self):
         print("initialize")
         for i in range(self.peer_num):
@@ -168,7 +180,7 @@ class Experiment():
                 "global_lock": [thread_num],
             },
             "process_time": {k: thread_num for k in process_time_keys},
-            "lock_process": [self.peer_num],
+            "lock_process": [thread_num],
         }
 
         basic_res = all_data["basic_res"]
@@ -226,6 +238,7 @@ if command_name == 1:
     experiment.set_zipf()
     experiment.set_prelock_invalid()
     experiment.set_plock_mode()
+    experiment.set_hop_mode()
     experiment.show_parameter()
 
     print("")

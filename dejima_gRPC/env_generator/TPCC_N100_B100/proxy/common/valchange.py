@@ -15,9 +15,9 @@ class ValChange(data_pb2_grpc.ValChangeServicer):
         # get params
         # params = req.params
         params = json.loads(req.json_str)
-        
+
         about = params['about']
-        
+
         if about == 'zipf':
             if "theta" in params.keys():
                 theta = float(params['theta'])
@@ -28,12 +28,12 @@ class ValChange(data_pb2_grpc.ValChangeServicer):
                 record_num = int(params['record_num'])
             else:
                 record_num = 100000
-                
+
             ycsbutils.zipf_gen = ycsbutils.zipfGenerator(record_num, theta)
             tpccutils.zipf_gen = tpccutils.zipfGenerator(record_num, theta)
-            
+
             print('set zipf {}'.format(theta))
-            
+
         elif about == 'show_lock':
             lock_list = list(config.tx_dict)
             print('remaining lock: {}'.format(lock_list))
@@ -47,7 +47,12 @@ class ValChange(data_pb2_grpc.ValChangeServicer):
             if "plock_mode" in params.keys():
                 config.plock_mode = params['plock_mode']
             print('set plock_mode {}'.format(config.plock_mode))
-        
+
+        elif about == 'hop_mode':
+            if "hop_mode" in params.keys():
+                config.hop_mode = params['hop_mode']
+            print('set hop_mode {}'.format(config.hop_mode))
+
         elif about == 'initialize':
             config.lock_management.init()
             config.time_measurement.init()
