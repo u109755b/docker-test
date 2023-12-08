@@ -13,17 +13,18 @@ import numpy as np
 
 class Experiment():
     def __init__(self):
-        self.peer_num=2
-        self.threads=1   # num of threads for each peer
-        self.record_num=100
-        self.tx_t=10
-        self.test_time=600
-        self.tpcc_record_num=10
+        self.peer_num = 2
+        self.threads = 1   # num of threads for each peer
+        self.record_num = 100
+        self.tx_t = 10
+        self.test_time = 600
+        self.tpcc_record_num = 10
 
         self.default_zipf=0.99     # zipf
-        self.prelock_invalid=False
-        self.plock_mode=True
-        self.hop_mode=False
+        self.prelock_request_invalid = False
+        self.prelock_invalid = False
+        self.plock_mode = True
+        self.hop_mode = False
         self.include_getting_tx_time = True
         self.getting_tx = True
 
@@ -70,6 +71,7 @@ class Experiment():
     def set_parameters(self):
         parameters = {
             "zipf": {"theta": self.default_zipf, "record_num": self.tpcc_record_num},
+            "prelock_request_invalid": self.prelock_request_invalid,
             "prelock_invalid": self.prelock_invalid,
             "plock_mode": self.plock_mode,
             "hop_mode": self.hop_mode,

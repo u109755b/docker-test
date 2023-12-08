@@ -12,6 +12,7 @@ tx_dict = {}
 
 channels = {}
 
+prelock_request_invalid = False
 prelock_invalid = False
 plock_mode = True
 hop_mode = False

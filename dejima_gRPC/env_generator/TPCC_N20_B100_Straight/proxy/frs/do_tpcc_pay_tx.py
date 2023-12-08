@@ -91,10 +91,12 @@ def doTPCC_PAY_frs(params):
     # lock request
     time_measurement.start_timer("global_lock", global_xid)
     result_measurement.start_global_lock()
-    if not lineages == []:
-        result = dejimautils.lock_request(lineages, global_xid)
-    else:
-        result = "Ack"
+    if config.prelock_request_invalid == False:
+        if not lineages == []:
+            result = dejimautils.lock_request(lineages, global_xid)
+        else:
+            result = "Ack"
+    else: result = "Ack"
     time_measurement.stop_timer("global_lock", global_xid)
     result_measurement.finish_global_lock()
 
@@ -103,7 +105,7 @@ def doTPCC_PAY_frs(params):
         dejimautils.release_lock_request(global_xid) 
         tx.abort()
         del config.tx_dict[global_xid]
-        result_measurement.abort_tx('global', 2)
+        result_measurement.abort_tx('global', 1)
         return False
 
     # execution

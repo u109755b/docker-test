@@ -8,8 +8,9 @@ def divide(x, y, d=None):
     if d: return d
     return x
 def round2(x):
-    if round(x, 2) % 1: return round(x, 2)
-    return int(x)
+    rounded_x = round(x, 2)
+    if rounded_x % 1: return rounded_x
+    return int(rounded_x)
 
 
 # 型判定の関数

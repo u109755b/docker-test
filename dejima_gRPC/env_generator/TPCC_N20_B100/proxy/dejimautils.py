@@ -74,7 +74,7 @@ def prop_request(arg_dict, global_xid, method, global_params={}):
     thread_list = []
     results = []
     params = {}
-    if "max_hop" in global_params: params["max_hop"] = []
+    if "max_hop" in global_params: params["max_hop"] = [0]
     if "timestamps" in global_params: params["timestamps"] = [[]]
     lock = threading.Lock()
     for dt in arg_dict.keys():
@@ -105,7 +105,6 @@ def prop_request(arg_dict, global_xid, method, global_params={}):
         thread.join()
     
     if "max_hop" in global_params:
-        if not params["max_hop"]: params["max_hop"].append(1)
         if config.hop_mode: global_params["max_hop"] = max(params["max_hop"]) + 1
         else: global_params["max_hop"] = sum(params["max_hop"]) + 1
     if "timestamps" in global_params:

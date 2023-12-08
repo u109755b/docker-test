@@ -39,6 +39,10 @@ class ValChange(data_pb2_grpc.ValChangeServicer):
             lock_list = list(config.tx_dict)
             print('remaining lock: {}'.format(lock_list))
 
+        elif about == 'prelock_request_invalid':
+            config.prelock_request_invalid = params['parameter']
+            print('set prelock_request_invalid {}'.format(config.prelock_request_invalid))
+
         elif about == 'prelock_invalid':
             config.prelock_invalid = params['parameter']
             print('set prelock_invalid {}'.format(config.prelock_invalid))
