@@ -8,8 +8,9 @@ def divide(x, y, d=None):
     if d: return d
     return x
 def round2(x):
-    if round(x, 2) % 1: return round(x, 2)
-    return int(x)
+    rounded_x = round(x, 2)
+    if rounded_x % 1: return rounded_x
+    return int(rounded_x)
 
 
 # 型判定の関数
@@ -71,3 +72,13 @@ def general_round2(obj, save=False):
     if isinstance(obj, numbers.Number): return round2(obj)
     if is_dict(obj) or is_list(obj): return general_1obj_func(obj, round2, save)
     raise TypeError("general_round2: {} is not supported".format(type(obj)))
+
+
+# 関数内の時間を計測するためのデコレータ
+# def trace_func(tracer, name):
+#     def decorator(func):
+#         def wrapper(*args, **kwargs):
+#             with tracer.start_as_current_span(name) as span:
+#                 return func(*args, **kwargs)
+#         return wrapper
+#     return decorator

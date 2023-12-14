@@ -7,7 +7,11 @@ import json
 import math
 import time
 from datetime import datetime
+from opentelemetry import trace
 
+tracer = trace.get_tracer(__name__)
+
+@tracer.start_as_current_span("do_tpcc_pay_tx")
 def doTPCC_PAY_frs(params):
     if "result_measurement" in params:
         result_measurement = params["result_measurement"]

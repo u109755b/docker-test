@@ -9,52 +9,57 @@ import config
 import grpc
 import data_pb2
 import data_pb2_grpc
+from opentelemetry import trace
+from opentelemetry.instrumentation.grpc import GrpcInstrumentorClient
+from opentelemetry.context import attach, detach, set_value
+
+GrpcInstrumentorClient().instrument()
+tracer = trace.get_tracer(__name__)
 
 def get_unique_id():
     return config.peer_name + '-' + str(uuid.uuid4())
 
 def lock_request(lineages, global_xid):
-    thread_list = []
-    results = []
-    lock = threading.Lock()
-    for peer in config.target_peers:
-        # url = "http://{}/_lock".format(config.dejima_config_dict['peer_address'][peer])
-        peer_address = config.dejima_config_dict['peer_address'][peer]
-        service_stub = data_pb2_grpc.LockStub
-        data = {
-            "xid": global_xid,
-            "lineages": lineages
-        }
-        req = data_pb2.Request(json_str=json.dumps(data))
-        # thread = threading.Thread(target=base_request, args=([url, data, results, lock]))
-        args = ([peer_address, service_stub, req, results, lock])
-        thread = threading.Thread(target=base_request, args=args)
-        thread_list.append(thread)
-    
-    for thread in thread_list:
-        thread.start()
-    
-    for thread in thread_list:
-        thread.join()
-    
-    if all(results):
-        return "Ack"
-    else:
-        return "Nak"
+    with tracer.start_as_current_span("lock_request") as span:
+        ctx = set_value("current_span", span)
+        thread_list = []
+        results = []
+        lock = threading.Lock()
+        for peer in config.target_peers:
+            peer_address = config.dejima_config_dict['peer_address'][peer]
+            service_stub = data_pb2_grpc.LockStub
+            data = {
+                "xid": global_xid,
+                "lineages": lineages
+            }
+            req = data_pb2.Request(json_str=json.dumps(data))
+            args = ([peer_address, service_stub, req, results, lock, ctx])
+            thread = threading.Thread(target=base_request, args=args)
+            thread_list.append(thread)
+        
+        for thread in thread_list:
+            thread.start()
+        
+        for thread in thread_list:
+            thread.join()
+        
+        if all(results):
+            return "Ack"
+        else:
+            return "Nak"
 
+@tracer.start_as_current_span("release_request")
 def release_lock_request(global_xid):
     thread_list = []
     results = []
     lock = threading.Lock()
     for peer in config.target_peers:
-        # url = "http://{}/_unlock".format(config.dejima_config_dict['peer_address'][peer])
         peer_address = config.dejima_config_dict['peer_address'][peer]
         service_stub = data_pb2_grpc.UnlockStub
         data = {
             "xid": global_xid
         }
         req = data_pb2.Request(json_str=json.dumps(data))
-        # thread = threading.Thread(target=base_request, args=([url, data, results, lock]))
         args = ([peer_address, service_stub, req, results, lock])
         thread = threading.Thread(target=base_request, args=args)
         thread_list.append(thread)
@@ -71,89 +76,90 @@ def release_lock_request(global_xid):
         return "Nak"
 
 def prop_request(arg_dict, global_xid, method, global_params={}):
-    thread_list = []
-    results = []
-    params = {}
-    if "max_hop" in global_params: params["max_hop"] = [0]
-    if "timestamps" in global_params: params["timestamps"] = [[]]
-    lock = threading.Lock()
-    for dt in arg_dict.keys():
-        for peer in arg_dict[dt]['peers']:
-            # url = "http://{}/{}/_propagate".format(config.dejima_config_dict['peer_address'][peer], method)
-            peer_address = config.dejima_config_dict['peer_address'][peer]
-            if method == "2pl":
-                service_stub = data_pb2_grpc.TPLPropagationStub
-            else:
-                service_stub = data_pb2_grpc.FRSPropagationStub
-            data = {
-                "xid": global_xid,
-                "dejima_table": dt,
-                "delta": arg_dict[dt]['delta'],
-                "parent_peer": config.peer_name,
-                "global_params": global_params,
-            }
-            req = data_pb2.Request(json_str=json.dumps(data))
-            # thread = threading.Thread(target=base_request, args=([url, data, results, lock]))
-            args = ([peer_address, service_stub, req, results, lock, params])
-            thread = threading.Thread(target=base_request, args=args)
-            thread_list.append(thread)
-    
-    for thread in thread_list:
-        thread.start()
-    
-    for thread in thread_list:
-        thread.join()
-    
-    if "max_hop" in global_params:
-        if config.hop_mode: global_params["max_hop"] = max(params["max_hop"]) + 1
-        else: global_params["max_hop"] = sum(params["max_hop"]) + 1
-    if "timestamps" in global_params:
-        # global_params["timestamps"] = params["timestamps"]
-        global_params["timestamps"] = max(params["timestamps"], key=len)
-    if all(results):
-        return "Ack"
-    else:
-        return "Nak"
+    with tracer.start_as_current_span("prop_request") as span:
+        ctx = set_value("current_span", span)
+        thread_list = []
+        results = []
+        params = {}
+        if "max_hop" in global_params: params["max_hop"] = [0]
+        if "timestamps" in global_params: params["timestamps"] = [[]]
+        lock = threading.Lock()
+        for dt in arg_dict.keys():
+            for peer in arg_dict[dt]['peers']:
+                peer_address = config.dejima_config_dict['peer_address'][peer]
+                if method == "2pl":
+                    service_stub = data_pb2_grpc.TPLPropagationStub
+                else:
+                    service_stub = data_pb2_grpc.FRSPropagationStub
+                data = {
+                    "xid": global_xid,
+                    "dejima_table": dt,
+                    "delta": arg_dict[dt]['delta'],
+                    "parent_peer": config.peer_name,
+                    "global_params": global_params,
+                }
+                req = data_pb2.Request(json_str=json.dumps(data))
+                args = ([peer_address, service_stub, req, results, lock, ctx, params])
+                thread = threading.Thread(target=base_request, args=args)
+                thread_list.append(thread)
+        
+        for thread in thread_list:
+            thread.start()
+        
+        for thread in thread_list:
+            thread.join()
+        
+        if "max_hop" in global_params:
+            if config.hop_mode: global_params["max_hop"] = max(params["max_hop"]) + 1
+            else: global_params["max_hop"] = sum(params["max_hop"]) + 1
+        if "timestamps" in global_params:
+            global_params["timestamps"] = max(params["timestamps"], key=len)
+        if all(results):
+            return "Ack"
+        else:
+            return "Nak"
 
 def termination_request(result, current_xid, method):
-    thread_list = []
-    results = []
-    lock = threading.Lock()
-    peers = config.tx_dict[current_xid].child_peers
-    for peer in peers:
-        # url = "http://{}/{}/_terminate".format(config.dejima_config_dict['peer_address'][peer], method)
-        peer_address = config.dejima_config_dict['peer_address'][peer]
-        if method == "2pl":
-            service_stub = data_pb2_grpc.TPLTerminationStub
+    with tracer.start_as_current_span("termination_request") as span:
+        ctx = set_value("current_span", span)
+        thread_list = []
+        results = []
+        lock = threading.Lock()
+        peers = config.tx_dict[current_xid].child_peers
+        for peer in peers:
+            peer_address = config.dejima_config_dict['peer_address'][peer]
+            if method == "2pl":
+                service_stub = data_pb2_grpc.TPLTerminationStub
+            else:
+                service_stub = data_pb2_grpc.FRSTerminationStub
+            data = {
+                "xid": current_xid,
+                "result": result
+            }
+            req = data_pb2.Request(json_str=json.dumps(data))
+            args = ([peer_address, service_stub, req, results, lock, ctx])
+            thread = threading.Thread(target=base_request, args=args)
+            thread_list.append(thread)
+        
+        for thread in thread_list:
+            thread.start()
+        
+        for thread in thread_list:
+            thread.join()
+        
+        if all(results):
+            return "Ack"
         else:
-            service_stub = data_pb2_grpc.FRSTerminationStub
-        data = {
-            "xid": current_xid,
-            "result": result
-        }
-        req = data_pb2.Request(json_str=json.dumps(data))
-        # thread = threading.Thread(target=base_request, args=([url, data, results, lock]))
-        args = ([peer_address, service_stub, req, results, lock])
-        thread = threading.Thread(target=base_request, args=args)
-        thread_list.append(thread)
-    
-    for thread in thread_list:
-        thread.start()
-    
-    for thread in thread_list:
-        thread.join()
-    
-    if all(results):
-        return "Ack"
-    else:
-        return "Nak"
+            return "Nak"
 
-def base_request(peer_address, service_stub, req, results, lock, params={}):
+def base_request(peer_address, service_stub, req, results, lock, ctx=None, params={}):
     try:
+        if ctx: token = attach(ctx)
         # with grpc.insecure_channel(peer_address) as channel:
         #     stub = service_stub(channel)
         #     res = stub.on_post(req)
         
+        # with tracer.start_as_current_span("base_request") as span:
         if peer_address not in config.channels:
             config.channels[peer_address] = grpc.insecure_channel(peer_address)
         stub = service_stub(config.channels[peer_address])
@@ -169,20 +175,11 @@ def base_request(peer_address, service_stub, req, results, lock, params={}):
         if "timestamps" in res_dic:
             params["timestamps"].append(res_dic["timestamps"])
 
-        # if "max_hop" in params:
-        #     if "max_hop" not in res_dic:    # when Nak returned
-        #         params["max_hop"].append(0)
-        #     else:   #when Ack returned
-        #         params["max_hop"].append(res_dic["max_hop"])
-        # if "timestamps" in params:
-        #     if "timestamps" not in res_dic:
-        #         params["timestamps"] = []
-        #     else:
-        #         if len(params["timestamps"]) < len(res_dic["timestamps"]):
-        #             params["timestamps"] = res_dic["timestamps"]
+        if ctx: detach(token)
     except Exception as e:
         print("base_request:", e)
         results.append(False)
+        if ctx: detach(token)
 
 def convert_to_sql_from_json(json_data):
     # arg : json_data from other peer

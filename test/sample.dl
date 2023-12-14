@@ -1,8 +1,0 @@
-source bt('ID':string, 'P':int, 'UID':string, 'T':int).
-view v('ID':string, 'UID':string, 'T':int).
-
-v(ID,UID,T) :- bt(V,P,UID,T).
-
--bt(V,P,UID,T) :- bt(V,P,UID,T) NOT v(ID,UID,T).
-+bt(V,P,UID,T) :- NOT bt(V,_,UID,T) v(ID,UID,T), bt(V,P,_,_).
-+bt(V,P,UID,T) :- NOT bt(V,_,UID,T) v(ID,UID,T), NOT bt(V,_,_,_), P=12590.

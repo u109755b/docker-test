@@ -1,3 +1,0 @@
-provider3 |  commit_num: 4 = 1 + 3  commit_time: 3 = 1 + 2,  abort_num: 4 = 1 + 3  abort_time: 3 = 1 + 2
-provider3 |  commit_num: 4 = 1 + 3  commit_time: 3 = 1 + 2,  abort_num: 4 = 1 + 3  abort_time: 3 = 1 + 2
-0 (0 + 8)  0[s] (2[s] + 0[s])

@@ -4,12 +4,16 @@ import time
 from transaction import Tx
 import data_pb2
 import data_pb2_grpc
+from opentelemetry import trace
+
+tracer = trace.get_tracer(__name__)
 
 # class Lock(object):
 class Lock(data_pb2_grpc.LockServicer):
     def __init__(self):
         pass
 
+    @tracer.start_as_current_span("pre_lock")
     def on_post(self, req, resp):
         time.sleep(config.SLEEP_MS * 0.001)
         if config.prelock_invalid == True:

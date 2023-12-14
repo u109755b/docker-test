@@ -11,6 +11,24 @@ import sys
 import re
 import numpy as np
 
+from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.instrumentation.grpc import GrpcInstrumentorClient
+from opentelemetry.context import attach, detach, set_value
+
+resource = Resource(attributes={"service.name": "dejima_client"})
+trace.set_tracer_provider(TracerProvider(resource=resource))
+otlp_exporter = OTLPSpanExporter(endpoint="http://host.docker.internal:4317", insecure=True)
+trace.get_tracer_provider().add_span_processor(
+    BatchSpanProcessor(otlp_exporter)
+)
+GrpcInstrumentorClient().instrument()
+
+tracer = trace.get_tracer(__name__)
+
 class Experiment():
     def __init__(self):
         self.peer_num = 2
@@ -21,7 +39,7 @@ class Experiment():
         self.tpcc_record_num = 10
 
         self.default_zipf=0.99     # zipf
-        self.prelock_request_invalid = True
+        self.prelock_request_invalid = False
         self.prelock_invalid = False
         self.plock_mode = True
         self.hop_mode = False
@@ -99,34 +117,38 @@ class Experiment():
             self.base_request(i, data, service_stub, show_result=False)
 
 
-    def tpcc_peer(self, peer_address, service_stub, req):
+    def tpcc_peer(self, peer_address, service_stub, req, ctx):
+        token = attach(ctx)
         self.res_list = []
         with grpc.insecure_channel(peer_address) as channel:
             stub = service_stub(channel)
             response = stub.on_get(req)
             self.res_list.append(response.json_str)
+        detach(token)
 
     def tpcc(self, method):
-        thread_list = []
-        data = {
-            "bench_time": self.tx_t,
-            "method": method,
-        }
-        print("bench {} {} {} {}".format(method, self.peer_num, self.threads, self.tx_t))
-        for i in range(self.peer_num):
-            for _ in range(self.threads):
-                # peer_address = "localhost:{}".format(8001+i)
-                peer_address = "Peer{}-proxy:8000".format(i+1)
-                service_stub = data_pb2_grpc.TPCCStub
-                req = data_pb2.Request(json_str=json.dumps(data))
-                args = [peer_address, service_stub, req]
-                thread = threading.Thread(target=self.tpcc_peer, args=args)
-                thread_list.append(thread)
+        with tracer.start_as_current_span("tpcc_client_main") as span:
+            ctx = set_value("current_span", span)
+            thread_list = []
+            data = {
+                "bench_time": self.tx_t,
+                "method": method,
+            }
+            print("bench {} {} {} {}".format(method, self.peer_num, self.threads, self.tx_t))
+            for i in range(self.peer_num):
+                for _ in range(self.threads):
+                    # peer_address = "localhost:{}".format(8001+i)
+                    peer_address = "Peer{}-proxy:8000".format(i+1)
+                    service_stub = data_pb2_grpc.TPCCStub
+                    req = data_pb2.Request(json_str=json.dumps(data))
+                    args = [peer_address, service_stub, req, ctx]
+                    thread = threading.Thread(target=self.tpcc_peer, args=args)
+                    thread_list.append(thread)
 
-        for thread in thread_list:
-            thread.start()
-        for thread in thread_list:
-            thread.join()
+            for thread in thread_list:
+                thread.start()
+            for thread in thread_list:
+                thread.join()
 
         # 結果の統合
         process_time_keys = ['lock', 'base_update', 'prop_view_0', 'view_update', 'prop_view_k', 'communication', 'commit']
