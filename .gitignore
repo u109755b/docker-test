@@ -1,0 +1,11 @@
+dejima/result/
+dejima-wsl/result/
+ride_sharing1_provider/result/
+ride_sharing1_provider_grpc/result/
+ride_sharing2_alliance/result/
+ride_sharing2_alliance_2phase/result/
+ride_sharing2_alliance_new/
+test/*
+!test/average_result/
+__pycache__/
+*.pyc

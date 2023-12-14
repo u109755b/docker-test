@@ -1,0 +1,2 @@
+env_generator/**/proxy/*
+!env_generator/**/proxy/dejima_config.json
