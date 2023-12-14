@@ -5,12 +5,17 @@ sys.dont_write_bytecode = True
 import json
 import time
 import threading
+import requests
 import utils
 
 # key: global_xid, value: Tx type object
 tx_dict = {}
 
 channels = {}
+
+trace_enabled = False
+host_name = 'host.docker.internal'   # ローカル環境のとき
+# host_name = requests.get('https://ifconfig.me').text   # AWS EC2など他の環境の時
 
 prelock_request_invalid = False
 prelock_invalid = False

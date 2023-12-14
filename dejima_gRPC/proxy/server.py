@@ -2,6 +2,11 @@ import falcon
 import sys
 sys.dont_write_bytecode = True
 
+from concurrent.futures import ThreadPoolExecutor
+import grpc
+import data_pb2
+import data_pb2_grpc
+
 import falcon
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
@@ -9,24 +14,21 @@ from opentelemetry.sdk.resources import Resource
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.instrumentation.falcon import FalconInstrumentor
-
-resource = Resource(attributes={"service.name": "dejima_server"})
-trace.set_tracer_provider(TracerProvider(resource=resource))
-otlp_exporter = OTLPSpanExporter(endpoint="http://host.docker.internal:4317", insecure=True)
-trace.get_tracer_provider().add_span_processor(
-    BatchSpanProcessor(otlp_exporter)
-)
-
-app = falcon.App()
-FalconInstrumentor().instrument()
-
-from concurrent.futures import ThreadPoolExecutor
-import grpc
-import data_pb2
-import data_pb2_grpc
 from opentelemetry.instrumentation.grpc import GrpcInstrumentorServer
 
-GrpcInstrumentorServer().instrument()
+import config
+
+if config.trace_enabled:
+    resource = Resource(attributes={"service.name": "dejima_server"})
+    trace.set_tracer_provider(TracerProvider(resource=resource))
+    otlp_exporter = OTLPSpanExporter(endpoint="http://{}:4317".format(config.host_name), insecure=True)
+    trace.get_tracer_provider().add_span_processor(
+        BatchSpanProcessor(otlp_exporter)
+    )
+    FalconInstrumentor().instrument()
+    GrpcInstrumentorServer().instrument()
+
+app = falcon.App()
 server = grpc.server(ThreadPoolExecutor(max_workers=2000))
 
 # FRS

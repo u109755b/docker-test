@@ -1,15 +1,10 @@
-# 「grpc」パッケージと、protocによって生成したパッケージをimportする
-import grpc
-import data_pb2
-import data_pb2_grpc
-import utils
-
-import time
 import json
 import threading
 import sys
-import re
-import numpy as np
+
+import grpc
+import data_pb2
+import data_pb2_grpc
 
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
@@ -19,13 +14,17 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.instrumentation.grpc import GrpcInstrumentorClient
 from opentelemetry.context import attach, detach, set_value
 
-resource = Resource(attributes={"service.name": "dejima_client"})
-trace.set_tracer_provider(TracerProvider(resource=resource))
-otlp_exporter = OTLPSpanExporter(endpoint="http://host.docker.internal:4317", insecure=True)
-trace.get_tracer_provider().add_span_processor(
-    BatchSpanProcessor(otlp_exporter)
-)
-GrpcInstrumentorClient().instrument()
+import config
+import utils
+
+if config.trace_enabled:
+    resource = Resource(attributes={"service.name": "dejima_client"})
+    trace.set_tracer_provider(TracerProvider(resource=resource))
+    otlp_exporter = OTLPSpanExporter(endpoint="http://{}:4317".format(config.host_name), insecure=True)
+    trace.get_tracer_provider().add_span_processor(
+        BatchSpanProcessor(otlp_exporter)
+    )
+    GrpcInstrumentorClient().instrument()
 
 tracer = trace.get_tracer(__name__)
 

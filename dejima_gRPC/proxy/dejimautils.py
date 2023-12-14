@@ -13,7 +13,8 @@ from opentelemetry import trace
 from opentelemetry.instrumentation.grpc import GrpcInstrumentorClient
 from opentelemetry.context import attach, detach, set_value
 
-GrpcInstrumentorClient().instrument()
+if config.trace_enabled:
+    GrpcInstrumentorClient().instrument()
 tracer = trace.get_tracer(__name__)
 
 def get_unique_id():
