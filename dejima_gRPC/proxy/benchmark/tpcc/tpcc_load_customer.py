@@ -1,33 +1,20 @@
 import json
-import dejimautils
-import ycsbutils
 import config
+import dejimautils
+from benchmark.tpcc import tpccutils
 from transaction import Tx
-import data_pb2
-import data_pb2_grpc
 
-# class YCSBLoad(object):
-class YCSBLoad(data_pb2_grpc.YCSBLoadServicer):
+class TPCCLoadCustomer():
     def __init__(self):
         pass
 
-    def on_get(self, req, resp):
-        # get params
-        # params = req.params
-        params = json.loads(req.json_str)
-        param_keys = ["start_id", "record_num", "step"]
+    def load(self, params):
+        param_keys = ["peer_num"]
         for key in param_keys:
             if not key in params.keys():
-                # msg = "Invalid parameters"
-                # resp.text = msg
-                # return
                 res_dic = {"result": "Invalid parameters"}
-                return data_pb2.Response(json_str=json.dumps(res_dic))
+                return res_dic
 
-        start_id = int(params['start_id'])
-        record_num = int(params['record_num'])
-        step = int(params['step'])
-            
         # load
         print("load start")
 
@@ -36,25 +23,28 @@ class YCSBLoad(data_pb2_grpc.YCSBLoadServicer):
         tx = Tx(global_xid)
         config.tx_dict[global_xid] = tx
 
-        # workload
-        stmt = ycsbutils.get_stmt_for_load(start_id, record_num, step)
-
         # lock all dbs
         result = dejimautils.lock_request(['dummy'], global_xid)
 
         # execution
         try:
-            tx.cur.execute(stmt)
+            w_id = (int(config.peer_name.strip("Peer")) - 1) // 10 + 1
+            d_id = (int(config.peer_name.strip("Peer")) - 1) % 10 + 1
+            c_stmt, h_stmt = tpccutils.get_loadstmt_for_customer_history(w_id, d_id)
+            tx.cur.execute(c_stmt)
+            tx.cur.execute(h_stmt)
+            o_stmt, ol_stmt, no_stmt = tpccutils.get_loadstmt_for_orders_neworders_orderline(w_id, d_id)
+            tx.cur.execute(o_stmt)
+            tx.cur.execute(ol_stmt)
+            tx.cur.execute(no_stmt)
         except Exception as e:
             # abort during local execution
             print(e)
             dejimautils.release_lock_request(global_xid) 
             tx.abort()
             del config.tx_dict[global_xid]
-            # resp.text = "local execution error"
-            # return
             res_dic = {"result": "local execution error"}
-            return data_pb2.Response(json_str=json.dumps(res_dic))
+            return res_dic
 
         # propagation
         try:
@@ -86,10 +76,8 @@ class YCSBLoad(data_pb2_grpc.YCSBLoadServicer):
             dejimautils.release_lock_request(global_xid) 
             tx.abort()
             del config.tx_dict[global_xid]
-            # resp.text = "BIRDS execution error"
-            # return
             res_dic = {"result": "BIRDS execution error"}
-            return data_pb2.Response(json_str=json.dumps(res_dic))
+            return res_dic
         
         if prop_dict != {}:
             result = dejimautils.prop_request(prop_dict, global_xid, "frs")
@@ -115,7 +103,5 @@ class YCSBLoad(data_pb2_grpc.YCSBLoadServicer):
             print("success")
         else:
             msg = "prop error"
-        # resp.text = msg
-        # return
         res_dic = {"result": msg}
-        return data_pb2.Response(json_str=json.dumps(res_dic))
+        return res_dic

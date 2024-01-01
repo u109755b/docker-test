@@ -1,27 +1,19 @@
 import json
-import dejimautils
-import tpccutils
 import config
+import dejimautils
+from benchmark.tpcc import tpccutils
 from transaction import Tx
-import data_pb2
-import data_pb2_grpc
 
-# class TPCCLoadLocal(object):
-class TPCCLoadLocal(data_pb2_grpc.TPCCLoadLocalServicer):
+class TPCCLoadLocal():
     def __init__(self):
         pass
 
-    def on_get(self, req, resp):
-        # params = req.params
-        params = json.loads(req.json_str)
+    def load(self, params):
         param_keys = ["peer_num"]
         for key in param_keys:
             if not key in params.keys():
-                # msg = "Invalid parameters"
-                # resp.text = msg
-                # return
                 res_dic = {"result": "Invalid parameters"}
-                return data_pb2.Response(json_str=json.dumps(res_dic))
+                return res_dic
 
         peer_num = int(params['peer_num'])
         if peer_num % 10 != 0:
@@ -53,16 +45,12 @@ class TPCCLoadLocal(data_pb2_grpc.TPCCLoadLocalServicer):
             print(e)
             tx.abort()
             del config.tx_dict[global_xid]
-            # resp.text = "local execution error"
-            # return
             res_dic = {"result": "local execution error"}
-            return data_pb2.Response(json_str=json.dumps(res_dic))
+            return res_dic
 
         # termination
         tx.commit()
         del config.tx_dict[global_xid]
 
-        # resp.text = "success"
-        # return
         res_dic = {"result": "success"}
-        return data_pb2.Response(json_str=json.dumps(res_dic))
+        return res_dic

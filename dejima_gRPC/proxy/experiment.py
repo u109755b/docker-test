@@ -67,41 +67,41 @@ class Experiment():
                 print("Peer{}: {}".format(i+1, params["result"]))
 
 
-    def load_tpcc(self, data):
+    def load_tpcc(self, data, service_stub):
         print("local load")
         for i in range(self.peer_num):
-            service_stub = data_pb2_grpc.TPCCLoadLocalStub
+            data["data_name"] = "local"
             self.base_request(i, data, service_stub)
-
         print("customer load")
         for i in range(self.peer_num):
-            service_stub = data_pb2_grpc.TPCCLoadCustomerStub
+            data["data_name"] = "customer"
             self.base_request(i, data, service_stub)
 
-
-    def load_ycsb(self, data):
+    def load_ycsb(self, data, service_stub):
         for i in range(self.peer_num):
-            service_stub = data_pb2_grpc.YCSBLoadStub
             data["start_id"] += 1
             self.base_request(i, data, service_stub)
 
 
-    def load_data(self, bench_type):
-        if bench_type == "tpcc":
+    def load_data(self, bench_name):
+        service_stub = data_pb2_grpc.LoadDataStub
+        if bench_name == "tpcc":
             print("load_tpcc {}".format(self.peer_num))
             data = {
+                "bench_name": bench_name,
                 "peer_num": self.peer_num,
             }
-            self.load_tpcc(data)
+            self.load_tpcc(data, service_stub)
 
-        if bench_type == "ycsb":
+        if bench_name == "ycsb":
             print("load_ycsb {} {} {}".format(self.yscb_start_id, self.ycsb_record_num, self.peer_num))
             data = {
+                "bench_name": bench_name,
                 "start_id": self.yscb_start_id,
                 "record_num": self.ycsb_record_num,
                 "step": self.peer_num,
             }
-            self.load_ycsb(data)
+            self.load_ycsb(data, service_stub)
 
 
     def set_parameters(self):
@@ -144,15 +144,13 @@ class Experiment():
             self.res_list.append(response.json_str)
         detach(token)
 
-    def execute_benchmark(self, bench_type, method):
+    def execute_benchmark(self, bench_name, method):
         data = {
             "bench_time": self.tx_t,
             "method": method,
         }
-        if bench_type == "tpcc":
-            service_stub = data_pb2_grpc.TPCCStub
-        if bench_type == "ycsb":
-            service_stub = data_pb2_grpc.YCSBStub
+        service_stub = data_pb2_grpc.BenchmarkStub
+        data["bench_name"] = bench_name
 
         with tracer.start_as_current_span("tpcc_client_main") as span:
             ctx = set_value("current_span", span)
@@ -247,12 +245,12 @@ class Experiment():
 
 
 args = sys.argv
-bench_type=args[1]
+bench_name=args[1]
 command_name=int(args[2])
 
 experiment = Experiment()
 if command_name == 0:
-    experiment.load_data(bench_type)
+    experiment.load_data(bench_name)
 
 if command_name == 1:
     experiment.set_parameters()
@@ -260,8 +258,8 @@ if command_name == 1:
 
     print("")
     experiment.initialize()
-    experiment.execute_benchmark(bench_type, "2pl")
+    experiment.execute_benchmark(bench_name, "2pl")
 
     print("")
     experiment.initialize()
-    experiment.execute_benchmark(bench_type, "frs")
+    experiment.execute_benchmark(bench_name, "frs")

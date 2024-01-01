@@ -1,10 +1,9 @@
-import config
 import random
-import tpccutils
-import math
 from datetime import datetime
+import config
+from benchmark.tpcc import tpccutils
 
-class TPCCNOTx:
+class TPCCTxNO:
     # initialize
     def __init__(self, tx, params=None):
         self.tx = tx

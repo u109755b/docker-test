@@ -31,6 +31,13 @@ if config.trace_enabled:
 app = falcon.App()
 server = grpc.server(ThreadPoolExecutor(max_workers=2000))
 
+# Benchmark
+from benchmark.load_data import LoadData
+data_pb2_grpc.add_LoadDataServicer_to_server(LoadData(), server)
+
+from benchmark.benchmark import Benchmark
+data_pb2_grpc.add_BenchmarkServicer_to_server(Benchmark(), server)
+
 # FRS
 from frs.propagation import FRSPropagation
 data_pb2_grpc.add_FRSPropagationServicer_to_server(FRSPropagation(), server)
@@ -52,21 +59,6 @@ from two_pl.termination import TPLTermination
 data_pb2_grpc.add_TPLTerminationServicer_to_server(TPLTermination(), server)
 
 # common
-from benchmark.ycsb_load import YCSBLoad
-data_pb2_grpc.add_YCSBLoadServicer_to_server(YCSBLoad(), server)
-
-from benchmark.ycsb import YCSB
-data_pb2_grpc.add_YCSBServicer_to_server(YCSB(), server)
-
-from benchmark.tpcc_load_local import TPCCLoadLocal
-data_pb2_grpc.add_TPCCLoadLocalServicer_to_server(TPCCLoadLocal(), server)
-
-from benchmark.tpcc_load_customer import TPCCLoadCustomer
-data_pb2_grpc.add_TPCCLoadCustomerServicer_to_server(TPCCLoadCustomer(), server)
-
-from benchmark.tpcc import TPCC
-data_pb2_grpc.add_TPCCServicer_to_server(TPCC(), server)
-
 from common.valchange import ValChange
 data_pb2_grpc.add_ValChangeServicer_to_server(ValChange(), server)
 

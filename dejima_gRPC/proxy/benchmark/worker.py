@@ -1,33 +1,30 @@
-import json
 import time
 import config
 import random
-from benchmark.do_tpcc_no_tx import doTPCC_NO
-from benchmark.do_tpcc_pay_tx import doTPCC_PAY
-import data_pb2
-import data_pb2_grpc
 
-# class TPCC(object):
-class TPCC(data_pb2_grpc.TPCCServicer):
+class Worker():
     def __init__(self):
         pass
 
-    def on_get(self, req, resp):
-        # get params
-        params = json.loads(req.json_str)
+    def execute(self, params):
         param_keys = ["bench_time", "method"]
         for key in param_keys:
             if not key in params.keys():
                 res_dic = {"result": "Invalid parameters"}
-                return data_pb2.Response(json_str=json.dumps(res_dic))
+                return res_dic
         bench_time = int(params['bench_time'])
         METHOD = params['method']
+        benchmark_management = params['benchmark_management']
+
+        Template = benchmark_management.get_tx_template()
+        template = Template()
 
         # create time management instances
         result_measurement = config.ResultMeasurement()
         time_measurement = config.TimeMeasurement()
         timestamp_management = config.TimestampManagement()
         params = {
+            "benchmark_management": benchmark_management,
             "result_measurement": result_measurement,
             "time_measurement": time_measurement,
             "timestamp_management": timestamp_management
@@ -44,11 +41,7 @@ class TPCC(data_pb2_grpc.TPCCServicer):
             current_time = time.time() - start_time
             while (current_time < bench_time):
                 current_time = time.time() - start_time
-                if random.randint(1,100) < 0:
-                    doTPCC = doTPCC_NO
-                else:
-                    doTPCC = doTPCC_PAY
-                result = doTPCC(params, METHOD)
+                result = template.execute(params, METHOD)
 
         # hybrid
         elif METHOD == "hybrid":
@@ -66,19 +59,14 @@ class TPCC(data_pb2_grpc.TPCCServicer):
             while (current_time < bench_time):
                 current_time = time.time() - start_time
 
-                if random.randint(1,100) < 50:
-                    doTPCC = doTPCC_NO
-                else:
-                    doTPCC = doTPCC_PAY
-
                 # normal mode
                 if current_time < next_check:
-                    result = doTPCC(params, current_method)
+                    result = template.execute(params, current_method)
 
                 # check mode
                 # before
                 elif current_time < next_check + check_time:
-                    result = doTPCC(params, current_method)
+                    result = template.execute(params, current_method)
                     if result == True:
                         temp_commit['before']['commit'] += 1
                     elif result == False:
@@ -90,7 +78,7 @@ class TPCC(data_pb2_grpc.TPCCServicer):
                         temp_changed_mode_flag = True
                         current_method = switch_method(current_method)
 
-                    result = doTPCC(params, current_method)
+                    result = template.execute(params, current_method)
                     if result == True:
                         temp_commit['after']['commit'] += 1
                     elif result == False:
@@ -114,7 +102,7 @@ class TPCC(data_pb2_grpc.TPCCServicer):
         # invalid method
         else:
             res_dic = {"result": "invalid method"}
-            return data_pb2.Response(json_str=json.dumps(res_dic))
+            return res_dic
 
 
         # get results
@@ -127,4 +115,4 @@ class TPCC(data_pb2_grpc.TPCCServicer):
         res_dic["process_time"] = timestamp_management.get_result(display=True)
 
         print("benchmark finished")
-        return data_pb2.Response(json_str=json.dumps(res_dic))
+        return res_dic

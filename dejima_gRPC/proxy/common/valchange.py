@@ -1,19 +1,15 @@
 import json
 import config
-import ycsbutils
-import tpccutils
-import random
 import data_pb2
 import data_pb2_grpc
+from benchmark.ycsb import ycsbutils
+from benchmark.tpcc import tpccutils
 
-# class ValChange(object):
 class ValChange(data_pb2_grpc.ValChangeServicer):
     def __init__(self):
         pass
 
     def on_get(self, req, resp):
-        # get params
-        # params = req.params
         params = json.loads(req.json_str)
 
         about = params['about']
@@ -68,8 +64,5 @@ class ValChange(data_pb2_grpc.ValChangeServicer):
             config.time_measurement.init()
             print('initialized')
 
-        # msg = "finished"
-        # resp.text = msg
-        # return
         res_dic = {"result": "finished"}
         return data_pb2.Response(json_str=json.dumps(res_dic))

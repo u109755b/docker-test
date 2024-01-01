@@ -1,8 +1,5 @@
-import config
-import random
-import ycsbutils
-import math
 import sqlparse
+from benchmark.ycsb import ycsbutils
 
 class YCSBTx:
     # initialize
