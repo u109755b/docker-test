@@ -685,6 +685,128 @@ class TPCC(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
 
+class LoadDataStub(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.on_get = channel.unary_unary(
+                '/LoadData/on_get',
+                request_serializer=data__pb2.Request.SerializeToString,
+                response_deserializer=data__pb2.Response.FromString,
+                )
+
+
+class LoadDataServicer(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def on_get(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_LoadDataServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'on_get': grpc.unary_unary_rpc_method_handler(
+                    servicer.on_get,
+                    request_deserializer=data__pb2.Request.FromString,
+                    response_serializer=data__pb2.Response.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'LoadData', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+
+
+ # This class is part of an EXPERIMENTAL API.
+class LoadData(object):
+    """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def on_get(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/LoadData/on_get',
+            data__pb2.Request.SerializeToString,
+            data__pb2.Response.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+
+class BenchmarkStub(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.on_get = channel.unary_unary(
+                '/Benchmark/on_get',
+                request_serializer=data__pb2.Request.SerializeToString,
+                response_deserializer=data__pb2.Response.FromString,
+                )
+
+
+class BenchmarkServicer(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def on_get(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_BenchmarkServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'on_get': grpc.unary_unary_rpc_method_handler(
+                    servicer.on_get,
+                    request_deserializer=data__pb2.Request.FromString,
+                    response_serializer=data__pb2.Response.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'Benchmark', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+
+
+ # This class is part of an EXPERIMENTAL API.
+class Benchmark(object):
+    """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def on_get(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/Benchmark/on_get',
+            data__pb2.Request.SerializeToString,
+            data__pb2.Response.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+
 class ValChangeStub(object):
     """Missing associated documentation comment in .proto file."""
 

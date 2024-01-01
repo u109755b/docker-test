@@ -28,19 +28,23 @@ if config.trace_enabled:
 
 tracer = trace.get_tracer(__name__)
 
+
 class Experiment():
     def __init__(self):
         self.peer_num = 2
         self.threads = 1   # num of threads for each peer
-        self.record_num = 100
         self.tx_t = 10
         self.test_time = 600
-        self.tpcc_record_num = 10
 
         self.default_zipf=0.99     # zipf
+
+        self.tpcc_record_num = 10
+        self.yscb_start_id = 1
+        self.ycsb_record_num = 100
+
         self.prelock_request_invalid = False
         self.prelock_invalid = False
-        self.plock_mode = True
+        self.plock_mode = False   # tpcc only
         self.hop_mode = False
         self.include_getting_tx_time = True
         self.getting_tx = True
@@ -49,8 +53,6 @@ class Experiment():
 
 
     def show_parameter(self):
-        # print('peer_num: {}'.format(self.peer_num))
-        # print('threads: {}'.format(self.threads))
         print('tpcc_record_num: {}'.format(self.tpcc_record_num))
 
 
@@ -65,24 +67,41 @@ class Experiment():
                 print("Peer{}: {}".format(i+1, params["result"]))
 
 
-    def load_tpcc(self):
-        print("load_tpcc {}".format(self.peer_num))
-
+    def load_tpcc(self, data):
         print("local load")
         for i in range(self.peer_num):
-            data = {
-                "peer_num": self.peer_num,
-            }
             service_stub = data_pb2_grpc.TPCCLoadLocalStub
             self.base_request(i, data, service_stub)
 
         print("customer load")
         for i in range(self.peer_num):
+            service_stub = data_pb2_grpc.TPCCLoadCustomerStub
+            self.base_request(i, data, service_stub)
+
+
+    def load_ycsb(self, data):
+        for i in range(self.peer_num):
+            service_stub = data_pb2_grpc.YCSBLoadStub
+            data["start_id"] += 1
+            self.base_request(i, data, service_stub)
+
+
+    def load_data(self, bench_type):
+        if bench_type == "tpcc":
+            print("load_tpcc {}".format(self.peer_num))
             data = {
                 "peer_num": self.peer_num,
             }
-            service_stub = data_pb2_grpc.TPCCLoadCustomerStub
-            self.base_request(i, data, service_stub)
+            self.load_tpcc(data)
+
+        if bench_type == "ycsb":
+            print("load_ycsb {} {} {}".format(self.yscb_start_id, self.ycsb_record_num, self.peer_num))
+            data = {
+                "start_id": self.yscb_start_id,
+                "record_num": self.ycsb_record_num,
+                "step": self.peer_num,
+            }
+            self.load_ycsb(data)
 
 
     def set_parameters(self):
@@ -116,7 +135,7 @@ class Experiment():
             self.base_request(i, data, service_stub, show_result=False)
 
 
-    def tpcc_peer(self, peer_address, service_stub, req, ctx):
+    def benchmark_per_peer(self, peer_address, service_stub, req, ctx):
         token = attach(ctx)
         self.res_list = []
         with grpc.insecure_channel(peer_address) as channel:
@@ -125,23 +144,26 @@ class Experiment():
             self.res_list.append(response.json_str)
         detach(token)
 
-    def tpcc(self, method):
+    def execute_benchmark(self, bench_type, method):
+        data = {
+            "bench_time": self.tx_t,
+            "method": method,
+        }
+        if bench_type == "tpcc":
+            service_stub = data_pb2_grpc.TPCCStub
+        if bench_type == "ycsb":
+            service_stub = data_pb2_grpc.YCSBStub
+
         with tracer.start_as_current_span("tpcc_client_main") as span:
             ctx = set_value("current_span", span)
             thread_list = []
-            data = {
-                "bench_time": self.tx_t,
-                "method": method,
-            }
             print("bench {} {} {} {}".format(method, self.peer_num, self.threads, self.tx_t))
             for i in range(self.peer_num):
                 for _ in range(self.threads):
-                    # peer_address = "localhost:{}".format(8001+i)
                     peer_address = "Peer{}-proxy:8000".format(i+1)
-                    service_stub = data_pb2_grpc.TPCCStub
                     req = data_pb2.Request(json_str=json.dumps(data))
                     args = [peer_address, service_stub, req, ctx]
-                    thread = threading.Thread(target=self.tpcc_peer, args=args)
+                    thread = threading.Thread(target=self.benchmark_per_peer, args=args)
                     thread_list.append(thread)
 
             for thread in thread_list:
@@ -230,7 +252,7 @@ command_name=int(args[2])
 
 experiment = Experiment()
 if command_name == 0:
-    experiment.load_tpcc()
+    experiment.load_data(bench_type)
 
 if command_name == 1:
     experiment.set_parameters()
@@ -238,8 +260,8 @@ if command_name == 1:
 
     print("")
     experiment.initialize()
-    experiment.tpcc("2pl")
+    experiment.execute_benchmark(bench_type, "2pl")
 
     print("")
     experiment.initialize()
-    experiment.tpcc("frs")
+    experiment.execute_benchmark(bench_type, "frs")

@@ -52,19 +52,19 @@ from two_pl.termination import TPLTermination
 data_pb2_grpc.add_TPLTerminationServicer_to_server(TPLTermination(), server)
 
 # common
-from common.ycsb_load import YCSBLoad
+from benchmark.ycsb_load import YCSBLoad
 data_pb2_grpc.add_YCSBLoadServicer_to_server(YCSBLoad(), server)
 
-from common.ycsb import YCSB
+from benchmark.ycsb import YCSB
 data_pb2_grpc.add_YCSBServicer_to_server(YCSB(), server)
 
-from common.tpcc_load_local import TPCCLoadLocal
+from benchmark.tpcc_load_local import TPCCLoadLocal
 data_pb2_grpc.add_TPCCLoadLocalServicer_to_server(TPCCLoadLocal(), server)
 
-from common.tpcc_load_customer import TPCCLoadCustomer
+from benchmark.tpcc_load_customer import TPCCLoadCustomer
 data_pb2_grpc.add_TPCCLoadCustomerServicer_to_server(TPCCLoadCustomer(), server)
 
-from common.tpcc import TPCC
+from benchmark.tpcc import TPCC
 data_pb2_grpc.add_TPCCServicer_to_server(TPCC(), server)
 
 from common.valchange import ValChange

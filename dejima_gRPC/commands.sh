@@ -30,6 +30,7 @@ function update(){
     peer_dirs="$ycsb_peer_dirs $tpcc_peer_dirs"
     for peer_dir in $peer_dirs; do
         cp "${peer_dir}/proxy/dejima_config.json" "${peer_dir}/dejima_config.json"
+        rm -r "${peer_dir}/proxy/"
         cp -r "./proxy" "${peer_dir}"
         mv "${peer_dir}/dejima_config.json" "${peer_dir}/proxy/dejima_config.json"
         cp -r "./db/postgresql.conf" "${peer_dir}/db/postgresql.conf"

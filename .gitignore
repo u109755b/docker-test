@@ -9,3 +9,4 @@ test/*
 !test/average_result/
 __pycache__/
 *.pyc
+.DS_Store

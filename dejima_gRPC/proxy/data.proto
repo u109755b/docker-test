@@ -22,6 +22,10 @@ service YCSB { rpc on_get(Request) returns (Response){} }
 service TPCCLoadLocal { rpc on_get(Request) returns (Response){} }
 service TPCCLoadCustomer { rpc on_get(Request) returns (Response){} }
 service TPCC { rpc on_get(Request) returns (Response){} }
+
+service LoadData { rpc on_get(Request) returns (Response){} }
+service Benchmark { rpc on_get(Request) returns (Response){} }
+
 service ValChange { rpc on_get(Request) returns (Response){} }
 
 

@@ -51,8 +51,10 @@ class TPLPropagation(data_pb2_grpc.TPLPropagationServicer):
 
         # update dejima table and propagate to base tables
         try:
-            for lineage, lock_stmt in zip(lineages, lock_stmts):
-                if config.plock_mode: config.lock_management.lock(global_xid, lineage)
+            for i, lock_stmt in enumerate(lock_stmts):
+                if config.plock_mode:
+                    lineage = lineages[i]
+                    config.lock_management.lock(global_xid, lineage)
                 tx.cur.execute(lock_stmt)
             timestamp.append(time.perf_counter())   # 1
             tx.cur.execute(stmt)
