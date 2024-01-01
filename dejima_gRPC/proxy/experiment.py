@@ -3,8 +3,8 @@ import threading
 import sys
 
 import grpc
-import data_pb2
-import data_pb2_grpc
+from grpcdata import data_pb2
+from grpcdata import data_pb2_grpc
 
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider

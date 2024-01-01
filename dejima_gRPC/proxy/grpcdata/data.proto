@@ -6,6 +6,10 @@ syntax = "proto3";
 message Request{ string json_str = 1; }
 message Response{ string json_str = 2; }
 
+// Benchmark
+service LoadData { rpc on_get(Request) returns (Response){} }
+service Benchmark { rpc on_get(Request) returns (Response){} }
+
 // FRS
 service FRSPropagation { rpc on_post(Request) returns (Response){} }
 service FRSTermination { rpc on_post(Request) returns (Response){} }
@@ -17,15 +21,6 @@ service TPLPropagation { rpc on_post(Request) returns (Response){} }
 service TPLTermination { rpc on_post(Request) returns (Response){} }
 
 // common
-service YCSBLoad { rpc on_get(Request) returns (Response){} }
-service YCSB { rpc on_get(Request) returns (Response){} }
-service TPCCLoadLocal { rpc on_get(Request) returns (Response){} }
-service TPCCLoadCustomer { rpc on_get(Request) returns (Response){} }
-service TPCC { rpc on_get(Request) returns (Response){} }
-
-service LoadData { rpc on_get(Request) returns (Response){} }
-service Benchmark { rpc on_get(Request) returns (Response){} }
-
 service ValChange { rpc on_get(Request) returns (Response){} }
 
 

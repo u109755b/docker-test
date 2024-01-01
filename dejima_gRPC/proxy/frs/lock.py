@@ -2,8 +2,8 @@ import json
 import config
 import time
 from transaction import Tx
-import data_pb2
-import data_pb2_grpc
+from grpcdata import data_pb2
+from grpcdata import data_pb2_grpc
 from opentelemetry import trace
 
 tracer = trace.get_tracer(__name__)

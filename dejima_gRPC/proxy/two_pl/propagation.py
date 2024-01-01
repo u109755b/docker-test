@@ -3,10 +3,9 @@ import dejimautils
 import config
 import time
 from transaction import Tx
-import data_pb2
-import data_pb2_grpc
+from grpcdata import data_pb2
+from grpcdata import data_pb2_grpc
 
-# class TPLPropagation(object):
 class TPLPropagation(data_pb2_grpc.TPLPropagationServicer):
     def __init__(self):
         pass
@@ -17,9 +16,6 @@ class TPLPropagation(data_pb2_grpc.TPLPropagationServicer):
         
         time.sleep(config.SLEEP_MS * 0.001)
 
-        # if req.content_length:
-        #     body = req.bounded_stream.read()
-        #     params = json.loads(body)
         params = json.loads(req.json_str)
 
         global_xid = params['xid']
@@ -30,8 +26,6 @@ class TPLPropagation(data_pb2_grpc.TPLPropagationServicer):
             tx.propagation_cnt += 1
         else:
             print("A propagation loop detected")
-            # resp.text = json.dumps({"result": "Nak"})
-            # return
             res_dic = {"result": "Nak"}
             return data_pb2.Response(json_str=json.dumps(res_dic))
 
@@ -60,8 +54,6 @@ class TPLPropagation(data_pb2_grpc.TPLPropagationServicer):
             tx.cur.execute(stmt)
             timestamp.append(time.perf_counter())   # 2
         except Exception as e:
-            # resp.text = json.dumps({"result": "Nak", "info": e.__class__.__name__})
-            # return
             res_dic = {"result": "Nak", "info": e.__class__.__name__}
             return data_pb2.Response(json_str=json.dumps(res_dic))
 
@@ -98,9 +90,6 @@ class TPLPropagation(data_pb2_grpc.TPLPropagationServicer):
         except Exception as e:
             print(e)
             tx.reset_childs()
-            # msg = {"result": "Nak"}
-            # resp.text = json.dumps(msg)
-            # return
             res_dic = {"result": "Nak"}
             return data_pb2.Response(json_str=json.dumps(res_dic))
 
@@ -121,6 +110,4 @@ class TPLPropagation(data_pb2_grpc.TPLPropagationServicer):
         if "timestamps" in params["global_params"] and result == "Ack":
             res_dic["timestamps"] = params["global_params"]["timestamps"]
             res_dic["timestamps"].append(timestamp)
-        # resp.text = json.dumps(msg)
-        # return
         return data_pb2.Response(json_str=json.dumps(res_dic))

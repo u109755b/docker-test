@@ -2,7 +2,132 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import data_pb2 as data__pb2
+from grpcdata import data_pb2 as data__pb2
+
+
+class LoadDataStub(object):
+    """Benchmark
+    """
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.on_get = channel.unary_unary(
+                '/LoadData/on_get',
+                request_serializer=data__pb2.Request.SerializeToString,
+                response_deserializer=data__pb2.Response.FromString,
+                )
+
+
+class LoadDataServicer(object):
+    """Benchmark
+    """
+
+    def on_get(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_LoadDataServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'on_get': grpc.unary_unary_rpc_method_handler(
+                    servicer.on_get,
+                    request_deserializer=data__pb2.Request.FromString,
+                    response_serializer=data__pb2.Response.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'LoadData', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+
+
+ # This class is part of an EXPERIMENTAL API.
+class LoadData(object):
+    """Benchmark
+    """
+
+    @staticmethod
+    def on_get(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/LoadData/on_get',
+            data__pb2.Request.SerializeToString,
+            data__pb2.Response.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+
+class BenchmarkStub(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.on_get = channel.unary_unary(
+                '/Benchmark/on_get',
+                request_serializer=data__pb2.Request.SerializeToString,
+                response_deserializer=data__pb2.Response.FromString,
+                )
+
+
+class BenchmarkServicer(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def on_get(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_BenchmarkServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'on_get': grpc.unary_unary_rpc_method_handler(
+                    servicer.on_get,
+                    request_deserializer=data__pb2.Request.FromString,
+                    response_serializer=data__pb2.Response.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'Benchmark', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+
+
+ # This class is part of an EXPERIMENTAL API.
+class Benchmark(object):
+    """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def on_get(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/Benchmark/on_get',
+            data__pb2.Request.SerializeToString,
+            data__pb2.Response.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
 
 class FRSPropagationStub(object):
@@ -377,438 +502,9 @@ class TPLTermination(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
 
-class YCSBLoadStub(object):
-    """common
-    """
-
-    def __init__(self, channel):
-        """Constructor.
-
-        Args:
-            channel: A grpc.Channel.
-        """
-        self.on_get = channel.unary_unary(
-                '/YCSBLoad/on_get',
-                request_serializer=data__pb2.Request.SerializeToString,
-                response_deserializer=data__pb2.Response.FromString,
-                )
-
-
-class YCSBLoadServicer(object):
-    """common
-    """
-
-    def on_get(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-
-def add_YCSBLoadServicer_to_server(servicer, server):
-    rpc_method_handlers = {
-            'on_get': grpc.unary_unary_rpc_method_handler(
-                    servicer.on_get,
-                    request_deserializer=data__pb2.Request.FromString,
-                    response_serializer=data__pb2.Response.SerializeToString,
-            ),
-    }
-    generic_handler = grpc.method_handlers_generic_handler(
-            'YCSBLoad', rpc_method_handlers)
-    server.add_generic_rpc_handlers((generic_handler,))
-
-
- # This class is part of an EXPERIMENTAL API.
-class YCSBLoad(object):
-    """common
-    """
-
-    @staticmethod
-    def on_get(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/YCSBLoad/on_get',
-            data__pb2.Request.SerializeToString,
-            data__pb2.Response.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-
-class YCSBStub(object):
-    """Missing associated documentation comment in .proto file."""
-
-    def __init__(self, channel):
-        """Constructor.
-
-        Args:
-            channel: A grpc.Channel.
-        """
-        self.on_get = channel.unary_unary(
-                '/YCSB/on_get',
-                request_serializer=data__pb2.Request.SerializeToString,
-                response_deserializer=data__pb2.Response.FromString,
-                )
-
-
-class YCSBServicer(object):
-    """Missing associated documentation comment in .proto file."""
-
-    def on_get(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-
-def add_YCSBServicer_to_server(servicer, server):
-    rpc_method_handlers = {
-            'on_get': grpc.unary_unary_rpc_method_handler(
-                    servicer.on_get,
-                    request_deserializer=data__pb2.Request.FromString,
-                    response_serializer=data__pb2.Response.SerializeToString,
-            ),
-    }
-    generic_handler = grpc.method_handlers_generic_handler(
-            'YCSB', rpc_method_handlers)
-    server.add_generic_rpc_handlers((generic_handler,))
-
-
- # This class is part of an EXPERIMENTAL API.
-class YCSB(object):
-    """Missing associated documentation comment in .proto file."""
-
-    @staticmethod
-    def on_get(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/YCSB/on_get',
-            data__pb2.Request.SerializeToString,
-            data__pb2.Response.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-
-class TPCCLoadLocalStub(object):
-    """Missing associated documentation comment in .proto file."""
-
-    def __init__(self, channel):
-        """Constructor.
-
-        Args:
-            channel: A grpc.Channel.
-        """
-        self.on_get = channel.unary_unary(
-                '/TPCCLoadLocal/on_get',
-                request_serializer=data__pb2.Request.SerializeToString,
-                response_deserializer=data__pb2.Response.FromString,
-                )
-
-
-class TPCCLoadLocalServicer(object):
-    """Missing associated documentation comment in .proto file."""
-
-    def on_get(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-
-def add_TPCCLoadLocalServicer_to_server(servicer, server):
-    rpc_method_handlers = {
-            'on_get': grpc.unary_unary_rpc_method_handler(
-                    servicer.on_get,
-                    request_deserializer=data__pb2.Request.FromString,
-                    response_serializer=data__pb2.Response.SerializeToString,
-            ),
-    }
-    generic_handler = grpc.method_handlers_generic_handler(
-            'TPCCLoadLocal', rpc_method_handlers)
-    server.add_generic_rpc_handlers((generic_handler,))
-
-
- # This class is part of an EXPERIMENTAL API.
-class TPCCLoadLocal(object):
-    """Missing associated documentation comment in .proto file."""
-
-    @staticmethod
-    def on_get(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/TPCCLoadLocal/on_get',
-            data__pb2.Request.SerializeToString,
-            data__pb2.Response.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-
-class TPCCLoadCustomerStub(object):
-    """Missing associated documentation comment in .proto file."""
-
-    def __init__(self, channel):
-        """Constructor.
-
-        Args:
-            channel: A grpc.Channel.
-        """
-        self.on_get = channel.unary_unary(
-                '/TPCCLoadCustomer/on_get',
-                request_serializer=data__pb2.Request.SerializeToString,
-                response_deserializer=data__pb2.Response.FromString,
-                )
-
-
-class TPCCLoadCustomerServicer(object):
-    """Missing associated documentation comment in .proto file."""
-
-    def on_get(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-
-def add_TPCCLoadCustomerServicer_to_server(servicer, server):
-    rpc_method_handlers = {
-            'on_get': grpc.unary_unary_rpc_method_handler(
-                    servicer.on_get,
-                    request_deserializer=data__pb2.Request.FromString,
-                    response_serializer=data__pb2.Response.SerializeToString,
-            ),
-    }
-    generic_handler = grpc.method_handlers_generic_handler(
-            'TPCCLoadCustomer', rpc_method_handlers)
-    server.add_generic_rpc_handlers((generic_handler,))
-
-
- # This class is part of an EXPERIMENTAL API.
-class TPCCLoadCustomer(object):
-    """Missing associated documentation comment in .proto file."""
-
-    @staticmethod
-    def on_get(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/TPCCLoadCustomer/on_get',
-            data__pb2.Request.SerializeToString,
-            data__pb2.Response.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-
-class TPCCStub(object):
-    """Missing associated documentation comment in .proto file."""
-
-    def __init__(self, channel):
-        """Constructor.
-
-        Args:
-            channel: A grpc.Channel.
-        """
-        self.on_get = channel.unary_unary(
-                '/TPCC/on_get',
-                request_serializer=data__pb2.Request.SerializeToString,
-                response_deserializer=data__pb2.Response.FromString,
-                )
-
-
-class TPCCServicer(object):
-    """Missing associated documentation comment in .proto file."""
-
-    def on_get(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-
-def add_TPCCServicer_to_server(servicer, server):
-    rpc_method_handlers = {
-            'on_get': grpc.unary_unary_rpc_method_handler(
-                    servicer.on_get,
-                    request_deserializer=data__pb2.Request.FromString,
-                    response_serializer=data__pb2.Response.SerializeToString,
-            ),
-    }
-    generic_handler = grpc.method_handlers_generic_handler(
-            'TPCC', rpc_method_handlers)
-    server.add_generic_rpc_handlers((generic_handler,))
-
-
- # This class is part of an EXPERIMENTAL API.
-class TPCC(object):
-    """Missing associated documentation comment in .proto file."""
-
-    @staticmethod
-    def on_get(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/TPCC/on_get',
-            data__pb2.Request.SerializeToString,
-            data__pb2.Response.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-
-class LoadDataStub(object):
-    """Missing associated documentation comment in .proto file."""
-
-    def __init__(self, channel):
-        """Constructor.
-
-        Args:
-            channel: A grpc.Channel.
-        """
-        self.on_get = channel.unary_unary(
-                '/LoadData/on_get',
-                request_serializer=data__pb2.Request.SerializeToString,
-                response_deserializer=data__pb2.Response.FromString,
-                )
-
-
-class LoadDataServicer(object):
-    """Missing associated documentation comment in .proto file."""
-
-    def on_get(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-
-def add_LoadDataServicer_to_server(servicer, server):
-    rpc_method_handlers = {
-            'on_get': grpc.unary_unary_rpc_method_handler(
-                    servicer.on_get,
-                    request_deserializer=data__pb2.Request.FromString,
-                    response_serializer=data__pb2.Response.SerializeToString,
-            ),
-    }
-    generic_handler = grpc.method_handlers_generic_handler(
-            'LoadData', rpc_method_handlers)
-    server.add_generic_rpc_handlers((generic_handler,))
-
-
- # This class is part of an EXPERIMENTAL API.
-class LoadData(object):
-    """Missing associated documentation comment in .proto file."""
-
-    @staticmethod
-    def on_get(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/LoadData/on_get',
-            data__pb2.Request.SerializeToString,
-            data__pb2.Response.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-
-class BenchmarkStub(object):
-    """Missing associated documentation comment in .proto file."""
-
-    def __init__(self, channel):
-        """Constructor.
-
-        Args:
-            channel: A grpc.Channel.
-        """
-        self.on_get = channel.unary_unary(
-                '/Benchmark/on_get',
-                request_serializer=data__pb2.Request.SerializeToString,
-                response_deserializer=data__pb2.Response.FromString,
-                )
-
-
-class BenchmarkServicer(object):
-    """Missing associated documentation comment in .proto file."""
-
-    def on_get(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-
-def add_BenchmarkServicer_to_server(servicer, server):
-    rpc_method_handlers = {
-            'on_get': grpc.unary_unary_rpc_method_handler(
-                    servicer.on_get,
-                    request_deserializer=data__pb2.Request.FromString,
-                    response_serializer=data__pb2.Response.SerializeToString,
-            ),
-    }
-    generic_handler = grpc.method_handlers_generic_handler(
-            'Benchmark', rpc_method_handlers)
-    server.add_generic_rpc_handlers((generic_handler,))
-
-
- # This class is part of an EXPERIMENTAL API.
-class Benchmark(object):
-    """Missing associated documentation comment in .proto file."""
-
-    @staticmethod
-    def on_get(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/Benchmark/on_get',
-            data__pb2.Request.SerializeToString,
-            data__pb2.Response.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-
 class ValChangeStub(object):
-    """Missing associated documentation comment in .proto file."""
+    """common
+    """
 
     def __init__(self, channel):
         """Constructor.
@@ -824,7 +520,8 @@ class ValChangeStub(object):
 
 
 class ValChangeServicer(object):
-    """Missing associated documentation comment in .proto file."""
+    """common
+    """
 
     def on_get(self, request, context):
         """Missing associated documentation comment in .proto file."""
@@ -848,7 +545,8 @@ def add_ValChangeServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class ValChange(object):
-    """Missing associated documentation comment in .proto file."""
+    """common
+    """
 
     @staticmethod
     def on_get(request,

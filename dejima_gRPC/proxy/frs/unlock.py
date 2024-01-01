@@ -1,8 +1,8 @@
 import json
 import config
 import time
-import data_pb2
-import data_pb2_grpc
+from grpcdata import data_pb2
+from grpcdata import data_pb2_grpc
 
 # class Unlock(object):
 class Unlock(data_pb2_grpc.UnlockServicer):

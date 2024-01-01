@@ -4,8 +4,8 @@ sys.dont_write_bytecode = True
 
 from concurrent.futures import ThreadPoolExecutor
 import grpc
-import data_pb2
-import data_pb2_grpc
+from grpcdata import data_pb2
+from grpcdata import data_pb2_grpc
 
 import falcon
 from opentelemetry import trace

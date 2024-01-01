@@ -7,8 +7,8 @@ import requests
 import uuid
 import config
 import grpc
-import data_pb2
-import data_pb2_grpc
+from grpcdata import data_pb2
+from grpcdata import data_pb2_grpc
 from opentelemetry import trace
 from opentelemetry.instrumentation.grpc import GrpcInstrumentorClient
 from opentelemetry.context import attach, detach, set_value

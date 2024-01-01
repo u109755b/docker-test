@@ -1,6 +1,6 @@
 import json
-import data_pb2
-import data_pb2_grpc
+from grpcdata import data_pb2
+from grpcdata import data_pb2_grpc
 from benchmark.ycsb.ycsb_load import YCSBLoad
 from benchmark.tpcc.tpcc_load_local import TPCCLoadLocal
 from benchmark.tpcc.tpcc_load_customer import TPCCLoadCustomer

@@ -2,8 +2,8 @@ import json
 import dejimautils
 import config
 import time
-import data_pb2
-import data_pb2_grpc
+from grpcdata import data_pb2
+from grpcdata import data_pb2_grpc
 
 # class TPLTermination(object):
 class TPLTermination(data_pb2_grpc.TPLTerminationServicer):
