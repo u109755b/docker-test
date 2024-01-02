@@ -1,6 +1,6 @@
 import time
-import config
 import random
+import config
 
 class Worker():
     def __init__(self):
@@ -107,7 +107,6 @@ class Worker():
 
         # get results
         res_dic = {}
-        config.lock_management.get_result(display=True)
         res_dic1 = time_measurement.get_result(display=True)
         res_dic2 = config.time_measurement.get_result(display=True)
         res_dic.update(**res_dic1, **res_dic2)

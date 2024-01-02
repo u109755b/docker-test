@@ -14,7 +14,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\ndata.proto\"\x1b\n\x07Request\x12\x10\n\x08json_str\x18\x01 \x01(\t\"\x1c\n\x08Response\x12\x10\n\x08json_str\x18\x02 \x01(\t2+\n\x08LoadData\x12\x1f\n\x06on_get\x12\x08.Request\x1a\t.Response\"\x00\x32,\n\tBenchmark\x12\x1f\n\x06on_get\x12\x08.Request\x1a\t.Response\"\x00\x32\x32\n\x0e\x46RSPropagation\x12 \n\x07on_post\x12\x08.Request\x1a\t.Response\"\x00\x32\x32\n\x0e\x46RSTermination\x12 \n\x07on_post\x12\x08.Request\x1a\t.Response\"\x00\x32(\n\x04Lock\x12 \n\x07on_post\x12\x08.Request\x1a\t.Response\"\x00\x32*\n\x06Unlock\x12 \n\x07on_post\x12\x08.Request\x1a\t.Response\"\x00\x32\x32\n\x0eTPLPropagation\x12 \n\x07on_post\x12\x08.Request\x1a\t.Response\"\x00\x32\x32\n\x0eTPLTermination\x12 \n\x07on_post\x12\x08.Request\x1a\t.Response\"\x00\x32,\n\tValChange\x12\x1f\n\x06on_get\x12\x08.Request\x1a\t.Response\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\ndata.proto\"\x1b\n\x07Request\x12\x10\n\x08json_str\x18\x01 \x01(\t\"\x1c\n\x08Response\x12\x10\n\x08json_str\x18\x02 \x01(\t2(\n\x04Lock\x12 \n\x07on_post\x12\x08.Request\x1a\t.Response\"\x00\x32*\n\x06Unlock\x12 \n\x07on_post\x12\x08.Request\x1a\t.Response\"\x00\x32/\n\x0bPropagation\x12 \n\x07on_post\x12\x08.Request\x1a\t.Response\"\x00\x32/\n\x0bTermination\x12 \n\x07on_post\x12\x08.Request\x1a\t.Response\"\x00\x32,\n\tValChange\x12\x1f\n\x06on_get\x12\x08.Request\x1a\t.Response\"\x00\x32+\n\x08LoadData\x12\x1f\n\x06on_get\x12\x08.Request\x1a\t.Response\"\x00\x32,\n\tBenchmark\x12\x1f\n\x06on_get\x12\x08.Request\x1a\t.Response\"\x00\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -25,22 +25,18 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _globals['_REQUEST']._serialized_end=41
   _globals['_RESPONSE']._serialized_start=43
   _globals['_RESPONSE']._serialized_end=71
-  _globals['_LOADDATA']._serialized_start=73
-  _globals['_LOADDATA']._serialized_end=116
-  _globals['_BENCHMARK']._serialized_start=118
-  _globals['_BENCHMARK']._serialized_end=162
-  _globals['_FRSPROPAGATION']._serialized_start=164
-  _globals['_FRSPROPAGATION']._serialized_end=214
-  _globals['_FRSTERMINATION']._serialized_start=216
-  _globals['_FRSTERMINATION']._serialized_end=266
-  _globals['_LOCK']._serialized_start=268
-  _globals['_LOCK']._serialized_end=308
-  _globals['_UNLOCK']._serialized_start=310
-  _globals['_UNLOCK']._serialized_end=352
-  _globals['_TPLPROPAGATION']._serialized_start=354
-  _globals['_TPLPROPAGATION']._serialized_end=404
-  _globals['_TPLTERMINATION']._serialized_start=406
-  _globals['_TPLTERMINATION']._serialized_end=456
-  _globals['_VALCHANGE']._serialized_start=458
-  _globals['_VALCHANGE']._serialized_end=502
+  _globals['_LOCK']._serialized_start=73
+  _globals['_LOCK']._serialized_end=113
+  _globals['_UNLOCK']._serialized_start=115
+  _globals['_UNLOCK']._serialized_end=157
+  _globals['_PROPAGATION']._serialized_start=159
+  _globals['_PROPAGATION']._serialized_end=206
+  _globals['_TERMINATION']._serialized_start=208
+  _globals['_TERMINATION']._serialized_end=255
+  _globals['_VALCHANGE']._serialized_start=257
+  _globals['_VALCHANGE']._serialized_end=301
+  _globals['_LOADDATA']._serialized_start=303
+  _globals['_LOADDATA']._serialized_end=346
+  _globals['_BENCHMARK']._serialized_start=348
+  _globals['_BENCHMARK']._serialized_end=392
 # @@protoc_insertion_point(module_scope)

@@ -19,7 +19,6 @@ host_name = 'host.docker.internal'   # ローカル環境のとき
 
 prelock_request_invalid = False
 prelock_invalid = False
-plock_mode = True
 hop_mode = False
 include_getting_tx_time = True
 getting_tx = True
@@ -66,58 +65,6 @@ class TimingLock:
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.lock.release()
-
-
-from itertools import product
-class LockManagement:
-    def init(self):
-        self.plock = threading.Lock()
-        self.tx_lock_list = {}
-
-        self.locked = {}
-        self.record_lock = {}
-        for c_w_id, c_d_id, c_id in product(range(1, 101), range(1, 11), range(1, 101)):
-            lineage = self.get_tpcc_lineage('customer', c_w_id, c_d_id, c_id)
-            self.locked[lineage] = False
-            self.record_lock[lineage] = TimingLock()
-
-    def __init__(self):
-        self.init()
-
-    def get_tpcc_lineage(self, bt, c_w_id, c_d_id, c_id):
-        peer_name = 'Peer{}'.format(10*(c_w_id-1) + c_d_id)
-        record_id = '({})'.format(','.join([str(c_w_id), str(c_d_id), str(c_id)]))
-        lineage = '{}-{}-{}'.format(peer_name, bt, record_id)
-        return lineage
-
-    def lock(self, global_xid, lineage):
-        if global_xid not in self.tx_lock_list:
-            self.tx_lock_list[global_xid] = []
-        with self.record_lock[lineage]:
-            if self.locked[lineage]:
-                if lineage in self.tx_lock_list[global_xid]:
-                    return
-                else:
-                    raise Exception('LockManagement: failed to lock a record')
-            self.locked[lineage] = True
-        self.tx_lock_list[global_xid].append(lineage)
-
-    def unlock(self, global_xid):
-        if global_xid not in self.tx_lock_list:
-            return
-        for lineage in self.tx_lock_list[global_xid]:
-            with self.record_lock[lineage]:
-                self.locked[lineage] = False
-        del self.tx_lock_list[global_xid]
-
-    def get_result(self, display=False):
-        total_wait_time = 0
-        with self.plock:
-            for tx_lock in self.record_lock.values():
-                total_wait_time += tx_lock.wait_time
-        if display: print('total_wait_time: {}[ms]'.format(utils.round2(1000*total_wait_time)))
-        return total_wait_time
-lock_management = LockManagement()
 
 
 class TimestampManagement:

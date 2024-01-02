@@ -31,6 +31,23 @@ if config.trace_enabled:
 app = falcon.App()
 server = grpc.server(ThreadPoolExecutor(max_workers=2000))
 
+
+# Dejima
+from dejima.lock import Lock
+data_pb2_grpc.add_LockServicer_to_server(Lock(), server)
+
+from dejima.unlock import Unlock
+data_pb2_grpc.add_UnlockServicer_to_server(Unlock(), server)
+
+from dejima.propagation import Propagation
+data_pb2_grpc.add_PropagationServicer_to_server(Propagation(), server)
+
+from dejima.termination import Termination
+data_pb2_grpc.add_TerminationServicer_to_server(Termination(), server)
+
+from dejima.valchange import ValChange
+data_pb2_grpc.add_ValChangeServicer_to_server(ValChange(), server)
+
 # Benchmark
 from benchmark.load_data import LoadData
 data_pb2_grpc.add_LoadDataServicer_to_server(LoadData(), server)
@@ -38,29 +55,6 @@ data_pb2_grpc.add_LoadDataServicer_to_server(LoadData(), server)
 from benchmark.benchmark import Benchmark
 data_pb2_grpc.add_BenchmarkServicer_to_server(Benchmark(), server)
 
-# FRS
-from frs.propagation import FRSPropagation
-data_pb2_grpc.add_FRSPropagationServicer_to_server(FRSPropagation(), server)
-
-from frs.termination import FRSTermination
-data_pb2_grpc.add_FRSTerminationServicer_to_server(FRSTermination(), server)
-
-from frs.lock import Lock
-data_pb2_grpc.add_LockServicer_to_server(Lock(), server)
-
-from frs.unlock import Unlock
-data_pb2_grpc.add_UnlockServicer_to_server(Unlock(), server)
-
-# 2PL
-from two_pl.propagation import TPLPropagation
-data_pb2_grpc.add_TPLPropagationServicer_to_server(TPLPropagation(), server)
-
-from two_pl.termination import TPLTermination
-data_pb2_grpc.add_TPLTerminationServicer_to_server(TPLTermination(), server)
-
-# common
-from common.valchange import ValChange
-data_pb2_grpc.add_ValChangeServicer_to_server(ValChange(), server)
 
 if __name__ == "__main__":    
     import config

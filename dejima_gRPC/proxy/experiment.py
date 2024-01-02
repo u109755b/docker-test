@@ -44,7 +44,6 @@ class Experiment():
 
         self.prelock_request_invalid = False
         self.prelock_invalid = False
-        self.plock_mode = False   # tpcc only
         self.hop_mode = False
         self.include_getting_tx_time = True
         self.getting_tx = True
@@ -109,7 +108,6 @@ class Experiment():
             "zipf": {"theta": self.default_zipf, "record_num": self.tpcc_record_num},
             "prelock_request_invalid": self.prelock_request_invalid,
             "prelock_invalid": self.prelock_invalid,
-            "plock_mode": self.plock_mode,
             "hop_mode": self.hop_mode,
             "include_getting_tx_time": self.include_getting_tx_time,
             "getting_tx": self.getting_tx,

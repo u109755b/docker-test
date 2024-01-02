@@ -43,10 +43,6 @@ class ValChange(data_pb2_grpc.ValChangeServicer):
             config.prelock_invalid = params['parameter']
             print('set prelock_invalid {}'.format(config.prelock_invalid))
 
-        elif about == 'plock_mode':
-            config.plock_mode = params['parameter']
-            print('set plock_mode {}'.format(config.plock_mode))
-
         elif about == 'hop_mode':
             config.hop_mode = params['parameter']
             print('set hop_mode {}'.format(config.hop_mode))
@@ -60,7 +56,6 @@ class ValChange(data_pb2_grpc.ValChangeServicer):
             print('set getting_tx {}'.format(config.getting_tx))
 
         elif about == 'initialize':
-            config.lock_management.init()
             config.time_measurement.init()
             print('initialized')
 

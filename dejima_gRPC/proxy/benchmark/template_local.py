@@ -1,5 +1,5 @@
-import dejimautils
 import config
+import dejimautils
 from transaction import Tx
 
 class TemplateLocal:

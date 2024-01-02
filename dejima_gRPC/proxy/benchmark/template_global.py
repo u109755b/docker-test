@@ -1,9 +1,9 @@
-import dejimautils
-import config
-from transaction import Tx
 import json
 import time
 from opentelemetry import trace
+from transaction import Tx
+import config
+import dejimautils
 
 tracer = trace.get_tracer(__name__)
 

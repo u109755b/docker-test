@@ -1,21 +1,17 @@
 import json
-import dejimautils
-import config
 import time
 from grpcdata import data_pb2
 from grpcdata import data_pb2_grpc
+import config
+import dejimautils
 
-# class TPLTermination(object):
-class TPLTermination(data_pb2_grpc.TPLTerminationServicer):
+class Termination(data_pb2_grpc.TerminationServicer):
     def __init__(self):
         pass
 
     def on_post(self, req, resp):
         time.sleep(config.SLEEP_MS * 0.001)
 
-        # if req.content_length:
-        #     body = req.bounded_stream.read()
-        #     params = json.loads(body)
         params = json.loads(req.json_str)
 
         if params['result'] == "commit":
@@ -29,15 +25,12 @@ class TPLTermination(data_pb2_grpc.TPLTerminationServicer):
         # termination 
         if commit:
             tx.commit()
-            dejimautils.termination_request("commit", global_xid, "2pl") 
+            dejimautils.termination_request("commit", global_xid, params["method"]) 
         else:
             tx.abort()
-            dejimautils.termination_request("abort", global_xid, "2pl") 
+            dejimautils.termination_request("abort", global_xid, params["method"]) 
 
         del config.tx_dict[global_xid]
 
-        # msg = {"result": "Ack"}
-        # resp.text = json.dumps(msg)
-        # return
         res_dic = {"result": "Ack"}
         return data_pb2.Response(json_str=json.dumps(res_dic))

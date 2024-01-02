@@ -1,26 +1,31 @@
 import json
-import dejimautils
-import config
 import time
-from transaction import Tx
 from grpcdata import data_pb2
 from grpcdata import data_pb2_grpc
+from transaction import Tx
+import config
+import dejimautils
 
-class TPLPropagation(data_pb2_grpc.TPLPropagationServicer):
+class Propagation(data_pb2_grpc.PropagationServicer):
     def __init__(self):
         pass
 
     def on_post(self, req, resp):
         timestamp = []
         timestamp.append(time.perf_counter())   # 0
-        
+
         time.sleep(config.SLEEP_MS * 0.001)
 
         params = json.loads(req.json_str)
 
         global_xid = params['xid']
-        tx = Tx(global_xid)
-        config.tx_dict[global_xid] = tx
+        if global_xid in config.tx_dict:
+            tx = config.tx_dict[global_xid]
+            locked_flag = True
+        else:
+            tx = Tx(global_xid)
+            config.tx_dict[global_xid] = tx
+            locked_flag = False
 
         if tx.propagation_cnt == 0:
             tx.propagation_cnt += 1
@@ -29,30 +34,20 @@ class TPLPropagation(data_pb2_grpc.TPLPropagationServicer):
             res_dic = {"result": "Nak"}
             return data_pb2.Response(json_str=json.dumps(res_dic))
 
-        # prepare lock stmts
-        stmt = dejimautils.convert_to_sql_from_json(params['delta'])
-        lineages = []
-        lock_stmts = []
-        for bt in config.bt_list:
-            if bt == "customer":
-                for delete in params['delta']["deletions"]:
-                    lineage = config.lock_management.get_tpcc_lineage('customer', delete['c_w_id'], delete['c_d_id'], delete['c_id'])
-                    lineages.append(lineage)
-                    lock_stmts.append("SELECT * FROM customer WHERE c_w_id={} AND c_d_id={} AND c_id={} FOR UPDATE NOWAIT".format(delete['c_w_id'], delete['c_d_id'], delete['c_id']))
-            else:
-                for delete in params['delta']["deletions"]:
-                    lock_stmts.append("SELECT * FROM bt WHERE id={} FOR UPDATE NOWAIT".format(delete['id']))
-
         # update dejima table and propagate to base tables
         try:
-            for i, lock_stmt in enumerate(lock_stmts):
-                if config.plock_mode:
-                    lineage = lineages[i]
-                    config.lock_management.lock(global_xid, lineage)
-                tx.cur.execute(lock_stmt)
+            # additional lock for peers out of lock scope
+            if not locked_flag:
+                lock_stmts = dejimautils.get_lock_stmts(params['delta'])
+                for lock_stmt in lock_stmts:
+                    tx.cur.execute(lock_stmt)
             timestamp.append(time.perf_counter())   # 1
+
+            # execute stmt
+            stmt = dejimautils.get_execute_stmt(params['delta'])
             tx.cur.execute(stmt)
             timestamp.append(time.perf_counter())   # 2
+
         except Exception as e:
             res_dic = {"result": "Nak", "info": e.__class__.__name__}
             return data_pb2.Response(json_str=json.dumps(res_dic))
@@ -95,7 +90,7 @@ class TPLPropagation(data_pb2_grpc.TPLPropagationServicer):
 
         timestamp.append(time.perf_counter())   # 3
         if prop_dict != {}:
-            result = dejimautils.prop_request(prop_dict, global_xid, "2pl", params['global_params'])
+            result = dejimautils.prop_request(prop_dict, global_xid, params["method"], params['global_params'])
         else:
             result = "Ack"
         timestamp.append(time.perf_counter())   # 4

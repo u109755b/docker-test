@@ -8,7 +8,6 @@ from opentelemetry import trace
 
 tracer = trace.get_tracer(__name__)
 
-# class Lock(object):
 class Lock(data_pb2_grpc.LockServicer):
     def __init__(self):
         pass
@@ -20,9 +19,6 @@ class Lock(data_pb2_grpc.LockServicer):
             res_dic = {"result": "Ack"}
             return data_pb2.Response(json_str=json.dumps(res_dic))
 
-        # if req.content_length:
-        #     body = req.bounded_stream.read()
-        #     params = json.loads(body)
         params = json.loads(req.json_str)
 
         global_xid = params['xid']
@@ -45,24 +41,15 @@ class Lock(data_pb2_grpc.LockServicer):
             stmt = "SELECT {} FROM {} WHERE ".format(lineage_col_name, bt) + " OR ".join(["{} = '{}'".format(lineage_col_name, lineage) for lineage in params['lineages']]) + " FOR UPDATE NOWAIT"
 
         try:
-            if config.plock_mode:
-                for lineage in params['lineages']:
-                    config.lock_management.lock(global_xid, lineage)
-            else:
-                tx.cur.execute(stmt)
-                result = tx.cur.fetchone()
-                if result == None:
-                    tx.abort()
-                    del config.tx_dict[global_xid]
+            tx.cur.execute(stmt)
+            result = tx.cur.fetchone()
+            if result == None:
+                tx.abort()
+                del config.tx_dict[global_xid]
         except Exception as e:
-            # # print("DB ERROR: ", e)
-            # resp.text = json.dumps({"result": "Nak"})
-            # return
             res_dic = {"result": "Nak"}
             return data_pb2.Response(json_str=json.dumps(res_dic))
         config.time_measurement.stop_timer("lock_process", global_xid)
-        
-        # resp.text = json.dumps({"result": "Ack"})
-        # return
+
         res_dic = {"result": "Ack"}
         return data_pb2.Response(json_str=json.dumps(res_dic))

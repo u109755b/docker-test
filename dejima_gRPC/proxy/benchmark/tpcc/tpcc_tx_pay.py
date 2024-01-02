@@ -50,8 +50,6 @@ class TPCCTxPay:
             tx.cur.execute("SELECT * FROM district WHERE d_w_id = {} AND d_id = {} FOR UPDATE NOWAIT".format(w_id, d_id))
 
             if select_with_c_id_flag:
-                lineage = config.lock_management.get_tpcc_lineage('customer', c_w_id, c_d_id, c_id)
-                if config.plock_mode: config.lock_management.lock(global_xid, lineage)
                 tx.cur.execute("SELECT c_lineage FROM customer WHERE c_w_id = {} AND c_d_id = {} AND c_id = {} FOR UPDATE NOWAIT".format(c_w_id, c_d_id, c_id))
                 all_records = tx.cur.fetchall()
                 if len(all_records) != 0:

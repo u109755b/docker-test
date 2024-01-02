@@ -9,18 +9,16 @@ class Tx:
         self.child_peers = []
         self.cur = self.db_conn.cursor(cursor_factory=DictCursor)
         self.propagation_cnt = 0
-    
+
     def commit(self):
         self.cur.close()
         self.db_conn.commit()
         pool.putconn(self.db_conn)
-        if config.plock_mode: config.lock_management.unlock(self.global_xid)
 
     def abort(self):
         self.cur.close()
         self.db_conn.rollback()
         pool.putconn(self.db_conn)
-        if config.plock_mode: config.lock_management.unlock(self.global_xid)
 
     def extend_childs(self, target_peers):
         self.child_peers.extend(target_peers)

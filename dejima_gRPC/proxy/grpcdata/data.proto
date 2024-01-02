@@ -6,23 +6,20 @@ syntax = "proto3";
 message Request{ string json_str = 1; }
 message Response{ string json_str = 2; }
 
+// Dejima
+service Lock { rpc on_post(Request) returns (Response){} }
+service Unlock { rpc on_post(Request) returns (Response){} }
+service Propagation { rpc on_post(Request) returns (Response){} }
+service Termination { rpc on_post(Request) returns (Response){} }
+service ValChange { rpc on_get(Request) returns (Response){} }
+
 // Benchmark
 service LoadData { rpc on_get(Request) returns (Response){} }
 service Benchmark { rpc on_get(Request) returns (Response){} }
 
-// FRS
-service FRSPropagation { rpc on_post(Request) returns (Response){} }
-service FRSTermination { rpc on_post(Request) returns (Response){} }
-service Lock { rpc on_post(Request) returns (Response){} }
-service Unlock { rpc on_post(Request) returns (Response){} }
-
-// 2PL
-service TPLPropagation { rpc on_post(Request) returns (Response){} }
-service TPLTermination { rpc on_post(Request) returns (Response){} }
-
-// common
-service ValChange { rpc on_get(Request) returns (Response){} }
-
 
 // python3 -m grpc_tools.protoc -I＜プロトコル定義ファイルが格納されているディレクトリ＞ --python_out=＜コード出力先ディレクトリ＞ --grpc_python_out=＜コード出力先ディレクトリ＞ ＜プロトコル定義ファイルのパス名＞
 // python3 -m grpc_tools.protoc -I . --python_out=. --grpc_python_out=. data.proto
+
+// 必要に応じて data_pb2_grpc.py のimport文を書き換える
+// from grpcdata import data_pb2 as data__pb2
