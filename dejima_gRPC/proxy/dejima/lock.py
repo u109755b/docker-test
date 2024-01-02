@@ -1,10 +1,11 @@
 import json
-import config
 import time
-from transaction import Tx
 from grpcdata import data_pb2
 from grpcdata import data_pb2_grpc
 from opentelemetry import trace
+from transaction import Tx
+import config
+import measurement
 
 tracer = trace.get_tracer(__name__)
 
@@ -23,12 +24,12 @@ class Lock(data_pb2_grpc.LockServicer):
 
         global_xid = params['xid']
         if config.include_getting_tx_time == True:
-            config.time_measurement.start_timer("lock_process", global_xid)
+            measurement.time_measurement.start_timer("lock_process", global_xid)
         if config.getting_tx:
             tx = Tx(global_xid)
             config.tx_dict[global_xid] = tx
         if config.include_getting_tx_time == False:
-            config.time_measurement.start_timer("lock_process", global_xid)
+            measurement.time_measurement.start_timer("lock_process", global_xid)
 
         # lock with lineages
         bt_list = config.dejima_config_dict['base_table'][config.peer_name]
@@ -49,7 +50,7 @@ class Lock(data_pb2_grpc.LockServicer):
         except Exception as e:
             res_dic = {"result": "Nak"}
             return data_pb2.Response(json_str=json.dumps(res_dic))
-        config.time_measurement.stop_timer("lock_process", global_xid)
+        measurement.time_measurement.stop_timer("lock_process", global_xid)
 
         res_dic = {"result": "Ack"}
         return data_pb2.Response(json_str=json.dumps(res_dic))

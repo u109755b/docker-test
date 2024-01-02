@@ -1,7 +1,8 @@
 import json
-import config
 from grpcdata import data_pb2
 from grpcdata import data_pb2_grpc
+import config
+import measurement
 from benchmark.ycsb import ycsbutils
 from benchmark.tpcc import tpccutils
 
@@ -56,7 +57,7 @@ class ValChange(data_pb2_grpc.ValChangeServicer):
             print('set getting_tx {}'.format(config.getting_tx))
 
         elif about == 'initialize':
-            config.time_measurement.init()
+            measurement.time_measurement.init()
             print('initialized')
 
         res_dic = {"result": "finished"}

@@ -1,6 +1,7 @@
 import time
 import random
 import config
+import measurement
 
 class Worker():
     def __init__(self):
@@ -20,9 +21,9 @@ class Worker():
         template = Template()
 
         # create time management instances
-        result_measurement = config.ResultMeasurement()
-        time_measurement = config.TimeMeasurement()
-        timestamp_management = config.TimestampManagement()
+        result_measurement = measurement.ResultMeasurement()
+        time_measurement = measurement.TimeMeasurement()
+        timestamp_management = measurement.TimestampManagement()
         params = {
             "benchmark_management": benchmark_management,
             "result_measurement": result_measurement,
@@ -108,7 +109,7 @@ class Worker():
         # get results
         res_dic = {}
         res_dic1 = time_measurement.get_result(display=True)
-        res_dic2 = config.time_measurement.get_result(display=True)
+        res_dic2 = measurement.time_measurement.get_result(display=True)
         res_dic.update(**res_dic1, **res_dic2)
         res_dic["basic_res"] = result_measurement.get_result(display=True)
         res_dic["process_time"] = timestamp_management.get_result(display=True)
