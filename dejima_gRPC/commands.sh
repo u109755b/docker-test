@@ -19,6 +19,7 @@ function remove(){
 }
 
 function update(){
+    sudo find . -type d -name '__pycache__' -exec rm -rf {} +
     # cp -r "./proxy" "./env_generator/src/RSAB/"
     # peer_dirs=$(find ./env_generator/RSAB* -maxdepth 0)
     cp -r "./proxy" "./env_generator/src/YCSB/"

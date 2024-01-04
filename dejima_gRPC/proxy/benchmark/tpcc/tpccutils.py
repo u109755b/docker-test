@@ -1,7 +1,8 @@
 import random, string
-import config
 from datetime import datetime
 import threading
+import config
+from benchmark import benchutils
 
 COND_N = 10
 WAREHOUSE_NUM = 1
@@ -10,6 +11,7 @@ random.seed(0)
 C_FOR_C_LAST = random.randint(0, 255)
 C_FOR_C_ID = random.randint(0, 1023)
 C_FOR_OL_I_ID = random.randint(0, 8191)
+zipf_gen = benchutils.ZipfGenerator(100, 0.99)
 
 def randomStr(n):
     return ''.join(random.choices(string.ascii_letters + string.digits, k=n))
@@ -225,33 +227,3 @@ def get_stmt_for_no(w_id, d_id, c_id):
     ret_stmts.append("INSERT INTO orders (o_id, o_d_id, o_w_id, o_c_id, o_entry_d, o_ol_cnt, o_all_local) VALUES ({}, {}, {}, {}, {}, {}, {})".format(w_id, d_id))
 
     pass
-
-# prepare zipf generator
-class zipfGenerator:
-    def __init__(self, n, theta):
-        self.n = n
-        self.theta = theta
-        self.alpha = 1 / (1-theta)
-        self.zetan = self.zeta(n, theta)
-        self.eta = (1 - pow(2.0/n, 1-theta)) / (1 - self.zeta(2, theta) / self.zetan)
-        self.lock = threading.Lock()
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        with self.lock:
-            u = random.random()
-            uz = u * self.zetan
-            if uz < 1:
-                return 1
-            elif uz < 1 + pow(0.5, self.theta):
-                return 2
-            else:
-                return 1 + int(self.n * pow(self.eta * u - self.eta + 1, self.alpha))
-
-    def zeta(self, n, theta):
-        sum = 0
-        for i in range(1,n+1):
-            sum += 1 / pow(i, theta)
-        return sum

@@ -17,9 +17,6 @@ class Worker():
         METHOD = params['method']
         benchmark_management = params['benchmark_management']
 
-        Template = benchmark_management.get_tx_template()
-        template = Template()
-
         # create time management instances
         result_measurement = measurement.ResultMeasurement()
         time_measurement = measurement.TimeMeasurement()
@@ -42,6 +39,8 @@ class Worker():
             current_time = time.time() - start_time
             while (current_time < bench_time):
                 current_time = time.time() - start_time
+                Template = benchmark_management.get_tx_template()
+                template = Template()
                 result = template.execute(params, METHOD)
 
         # hybrid
@@ -59,6 +58,8 @@ class Worker():
             current_time = time.time() - start_time
             while (current_time < bench_time):
                 current_time = time.time() - start_time
+                Template = benchmark_management.get_tx_template()
+                template = Template()
 
                 # normal mode
                 if current_time < next_check:

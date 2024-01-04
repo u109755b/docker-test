@@ -1,9 +1,11 @@
 import random, string
-import config
 import threading
+import config
+from benchmark import benchutils
 
 COL_N = 10
 COND_N = 10
+zipf_gen = benchutils.ZipfGenerator(100, 0.99)
 
 def randomname(n):
    return ''.join(random.choices(string.ascii_letters + string.digits, k=n))
@@ -31,45 +33,3 @@ def get_stmt_for_load(start_id, record_num, step):
         records.append(record)
     stmt = stmt + ",".join(records)
     return stmt
-
-def get_workload_for_ycsb(read_num=5, write_num=5):
-    stmts = []
-    # Read
-    for i in range(read_num):
-        target_col = 'col{}'.format(random.randint(1,COL_N))
-        stmts.append("SELECT {} FROM bt WHERE id={}".format(target_col, next(zipf_gen)))
-    # Write
-    for i in range(write_num):
-        target_col = 'col{}'.format(random.randint(1,COL_N))
-        stmts.append("UPDATE bt SET {}='{}' WHERE id={}".format(target_col, randomname(10), next(zipf_gen)))
-    return stmts
-
-# prepare zipf generator
-class zipfGenerator:
-    def __init__(self, n, theta):
-        self.n = n
-        self.theta = theta
-        self.alpha = 1 / (1-theta)
-        self.zetan = self.zeta(n, theta)
-        self.eta = (1 - pow(2.0/n, 1-theta)) / (1 - self.zeta(2, theta) / self.zetan)
-        self.lock = threading.Lock()
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        with self.lock:
-            u = random.random()
-            uz = u * self.zetan
-            if uz < 1:
-                return 1
-            elif uz < 1 + pow(0.5, self.theta):
-                return 2
-            else:
-                return 1 + int(self.n * pow(self.eta * u - self.eta + 1, self.alpha))
-
-    def zeta(self, n, theta):
-        sum = 0
-        for i in range(1,n+1):
-            sum += 1 / pow(i, theta)
-        return sum

@@ -1,4 +1,6 @@
+import random
 import sqlparse
+from benchmark import benchutils
 from benchmark.ycsb import ycsbutils
 
 class YCSBTx:
@@ -12,7 +14,7 @@ class YCSBTx:
         tx = self.tx
 
         # workload
-        self.stmts = ycsbutils.get_workload_for_ycsb(5, 5)
+        self.stmts = self.get_stmts(5, 5)
 
         # get local locks and get lineages
         lock_stmts_for_read = []
@@ -59,3 +61,19 @@ class YCSBTx:
         except:
             return False
         return True
+
+
+    # create statement and return it
+    def get_stmts(self, read_num, write_num):
+        stmts = []
+        # Read
+        for i in range(read_num):
+            target_col = 'col{}'.format(random.randint(1,ycsbutils.COL_N))
+            stmts.append("SELECT {} FROM bt WHERE id={}".format(target_col, next(ycsbutils.zipf_gen)))
+        # Write
+        for i in range(write_num):
+            target_col = 'col{}'.format(random.randint(1,ycsbutils.COL_N))
+            target_val = benchutils.randomname(10)
+            ycsb_id = next(ycsbutils.zipf_gen)
+            stmts.append("UPDATE bt SET {}='{}' WHERE id={}".format(target_col, target_val, ycsb_id))
+        return stmts

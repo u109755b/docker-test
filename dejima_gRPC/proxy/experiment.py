@@ -30,7 +30,9 @@ tracer = trace.get_tracer(__name__)
 
 
 class Experiment():
-    def __init__(self):
+    def __init__(self, bench_name):
+        self.bench_name = bench_name
+
         self.peer_num = 2
         self.threads = 1   # num of threads for each peer
         self.tx_t = 10
@@ -38,9 +40,9 @@ class Experiment():
 
         self.default_zipf=0.99     # zipf
 
-        self.tpcc_record_num = 10
+        self.tpcc_record_num = 10   # per peer
         self.yscb_start_id = 1
-        self.ycsb_record_num = 100
+        self.ycsb_record_num = 100   # per peer
 
         self.prelock_request_invalid = False
         self.prelock_invalid = False
@@ -52,7 +54,10 @@ class Experiment():
 
 
     def show_parameter(self):
-        print('tpcc_record_num: {}'.format(self.tpcc_record_num))
+        if self.bench_name == "tpcc":
+            print("tpcc_record_num: {}".format(self.tpcc_record_num))
+        if self.bench_name == "ycsb":
+            print("ycsb_record_num: {}".format(self.ycsb_record_num))
 
 
     def base_request(self, i, data, service_stub, show_result=True):
@@ -78,24 +83,24 @@ class Experiment():
 
     def load_ycsb(self, data, service_stub):
         for i in range(self.peer_num):
-            data["start_id"] += 1
             self.base_request(i, data, service_stub)
+            data["start_id"] += 1
 
 
-    def load_data(self, bench_name):
+    def load_data(self):
         service_stub = data_pb2_grpc.LoadDataStub
-        if bench_name == "tpcc":
+        if self.bench_name == "tpcc":
             print("load_tpcc {}".format(self.peer_num))
             data = {
-                "bench_name": bench_name,
+                "bench_name": self.bench_name,
                 "peer_num": self.peer_num,
             }
             self.load_tpcc(data, service_stub)
 
-        if bench_name == "ycsb":
+        if self.bench_name == "ycsb":
             print("load_ycsb {} {} {}".format(self.yscb_start_id, self.ycsb_record_num, self.peer_num))
             data = {
-                "bench_name": bench_name,
+                "bench_name": self.bench_name,
                 "start_id": self.yscb_start_id,
                 "record_num": self.ycsb_record_num,
                 "step": self.peer_num,
@@ -105,13 +110,18 @@ class Experiment():
 
     def set_parameters(self):
         parameters = {
-            "zipf": {"theta": self.default_zipf, "record_num": self.tpcc_record_num},
+            "zipf": {"theta": self.default_zipf},
             "prelock_request_invalid": self.prelock_request_invalid,
             "prelock_invalid": self.prelock_invalid,
             "hop_mode": self.hop_mode,
             "include_getting_tx_time": self.include_getting_tx_time,
             "getting_tx": self.getting_tx,
         }
+        if self.bench_name == "tpcc":
+            parameters["zipf"]["record_num"] = self.tpcc_record_num   # ToDo: * self.peer_num
+        if self.bench_name == "ycsb":
+            parameters["zipf"]["record_num"] = self.ycsb_record_num * self.peer_num
+
         for parameter_name, parameter in parameters.items():
             print("set_{} {}".format(parameter_name, parameter))
             for i in range(self.peer_num):
@@ -142,13 +152,13 @@ class Experiment():
             self.res_list.append(response.json_str)
         detach(token)
 
-    def execute_benchmark(self, bench_name, method):
+    def execute_benchmark(self, method):
         data = {
             "bench_time": self.tx_t,
             "method": method,
         }
         service_stub = data_pb2_grpc.BenchmarkStub
-        data["bench_name"] = bench_name
+        data["bench_name"] = self.bench_name
 
         with tracer.start_as_current_span("tpcc_client_main") as span:
             ctx = set_value("current_span", span)
@@ -246,9 +256,9 @@ args = sys.argv
 bench_name=args[1]
 command_name=int(args[2])
 
-experiment = Experiment()
+experiment = Experiment(bench_name)
 if command_name == 0:
-    experiment.load_data(bench_name)
+    experiment.load_data()
 
 if command_name == 1:
     experiment.set_parameters()
@@ -256,8 +266,8 @@ if command_name == 1:
 
     print("")
     experiment.initialize()
-    experiment.execute_benchmark(bench_name, "2pl")
+    experiment.execute_benchmark("2pl")
 
     print("")
     experiment.initialize()
-    experiment.execute_benchmark(bench_name, "frs")
+    experiment.execute_benchmark("frs")

@@ -3,10 +3,10 @@ import dejimautils
 from transaction import Tx
 
 class TemplateLocal:
-    def __init__():
+    def __init__(self):
         pass
 
-    def execute(params, locking_method):
+    def execute(self, params, locking_method):
         if "benchmark_management" in params:
             benchmark_management = params["benchmark_management"]
         if "result_measurement" in params:

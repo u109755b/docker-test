@@ -7,7 +7,7 @@ class Tx:
         self.global_xid = global_xid
         self.db_conn = pool.getconn(key=global_xid)
         self.child_peers = []
-        self.cur = self.db_conn.cursor(cursor_factory=DictCursor)
+        self.cur = self.db_conn.cursor(cursor_factory=DictCursor)   # return DictRow instead of TupleRow
         self.propagation_cnt = 0
 
     def commit(self):

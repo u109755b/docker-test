@@ -3,6 +3,7 @@ from grpcdata import data_pb2
 from grpcdata import data_pb2_grpc
 import config
 import measurement
+from benchmark import benchutils
 from benchmark.ycsb import ycsbutils
 from benchmark.tpcc import tpccutils
 
@@ -17,18 +18,11 @@ class ValChange(data_pb2_grpc.ValChangeServicer):
 
         if about == 'zipf':
             parameters = params['parameter']
-            if "theta" in parameters.keys():
-                theta = float(parameters['theta'])
-            else:
-                theta = 0.5
+            record_num = int(parameters['record_num'])
+            theta = float(parameters['theta'])
 
-            if "record_num" in parameters.keys():
-                record_num = int(parameters['record_num'])
-            else:
-                record_num = 100000
-
-            ycsbutils.zipf_gen = ycsbutils.zipfGenerator(record_num, theta)
-            tpccutils.zipf_gen = tpccutils.zipfGenerator(record_num, theta)
+            tpccutils.zipf_gen = benchutils.ZipfGenerator(record_num, theta)
+            ycsbutils.zipf_gen = benchutils.ZipfGenerator(record_num, theta)
 
             print('set zipf {}'.format(theta))
 
