@@ -1,0 +1,20 @@
+{
+  "dejima_table": {
+    "d_customer": [
+      "Peer1",
+      "Peer2"
+    ]
+  },
+  "base_table": {
+    "Peer1": [
+      "customer"
+    ],
+    "Peer2": [
+      "customer"
+    ]
+  },
+  "peer_address": {
+    "Peer1": "Peer1-proxy:8000",
+    "Peer2": "Peer2-proxy:8000"
+  }
+}

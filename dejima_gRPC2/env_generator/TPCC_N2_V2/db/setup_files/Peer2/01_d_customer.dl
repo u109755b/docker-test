@@ -1,0 +1,56 @@
+% schema
+source customer(
+    'c_w_id': int,
+    'c_d_id': int,
+    'c_id': int,
+    'c_discount': string,
+    'c_credit': string,
+    'c_last': string,
+    'c_first': string,
+    'c_credit_lim': string,
+    'c_balance': string,
+    'c_ytd_payment': string,
+    'c_payment_cnt': int,
+    'c_delivery_cnt': int,
+    'c_street_1': string,
+    'c_street_2': string,
+    'c_city': string,
+    'c_state': string,
+    'c_zip': string,
+    'c_phone': string,
+    'c_since': string,
+    'c_middle': string,
+    'c_data': string,
+    'c_lineage': string,
+).
+view d_customer(
+    'c_w_id': int,
+    'c_d_id': int,
+    'c_id': int,
+    'c_discount': string,
+    'c_credit': string,
+    'c_last': string,
+    'c_first': string,
+    'c_credit_lim': string,
+    'c_balance': string,
+    'c_ytd_payment': string,
+    'c_payment_cnt': int,
+    'c_delivery_cnt': int,
+    'c_street_1': string,
+    'c_street_2': string,
+    'c_city': string,
+    'c_state': string,
+    'c_zip': string,
+    'c_phone': string,
+    'c_since': string,
+    'c_middle': string,
+    'c_data': string,
+    'c_lineage': string,
+).
+
+% view definition
+d_customer(C_W_ID, C_D_ID, C_ID, C_DISCOUNT, C_CREDIT, C_LAST, C_FIRST, C_CREDIT_LIM, C_BALANCE, C_YTD_PAYMENT, C_PAYMENT_CNT, C_DELIVERY_CNT, C_STREET_1, C_STREET_2, C_CITY, C_STATE, C_ZIP, C_PHONE, C_SINCE, C_MIDDLE, C_DATA, C_LINEAGE) :- customer(C_W_ID, C_D_ID, C_ID, C_DISCOUNT, C_CREDIT, C_LAST, C_FIRST, C_CREDIT_LIM, C_BALANCE, C_YTD_PAYMENT, C_PAYMENT_CNT, C_DELIVERY_CNT, C_STREET_1, C_STREET_2, C_CITY, C_STATE, C_ZIP, C_PHONE, C_SINCE, C_MIDDLE, C_DATA, C_LINEAGE).
+
+% rules for update strategy
+-customer(C_W_ID, C_D_ID, C_ID, C_DISCOUNT, C_CREDIT, C_LAST, C_FIRST, C_CREDIT_LIM, C_BALANCE, C_YTD_PAYMENT, C_PAYMENT_CNT, C_DELIVERY_CNT, C_STREET_1, C_STREET_2, C_CITY, C_STATE, C_ZIP, C_PHONE, C_SINCE, C_MIDDLE, C_DATA, C_LINEAGE) :- customer(C_W_ID, C_D_ID, C_ID, C_DISCOUNT, C_CREDIT, C_LAST, C_FIRST, C_CREDIT_LIM, C_BALANCE, C_YTD_PAYMENT, C_PAYMENT_CNT, C_DELIVERY_CNT, C_STREET_1, C_STREET_2, C_CITY, C_STATE, C_ZIP, C_PHONE, C_SINCE, C_MIDDLE, C_DATA, C_LINEAGE), NOT d_customer(C_W_ID, C_D_ID, C_ID, C_DISCOUNT, C_CREDIT, C_LAST, C_FIRST, C_CREDIT_LIM, C_BALANCE, C_YTD_PAYMENT, C_PAYMENT_CNT, C_DELIVERY_CNT, C_STREET_1, C_STREET_2, C_CITY, C_STATE, C_ZIP, C_PHONE, C_SINCE, C_MIDDLE, C_DATA, C_LINEAGE).
++customer(C_W_ID, C_D_ID, C_ID, C_DISCOUNT, C_CREDIT, C_LAST, C_FIRST, C_CREDIT_LIM, C_BALANCE, C_YTD_PAYMENT, C_PAYMENT_CNT, C_DELIVERY_CNT, C_STREET_1, C_STREET_2, C_CITY, C_STATE, C_ZIP, C_PHONE, C_SINCE, C_MIDDLE, C_DATA, C_LINEAGE) :- NOT customer(C_W_ID, C_D_ID, C_ID, C_DISCOUNT, C_CREDIT, C_LAST, C_FIRST, C_CREDIT_LIM, C_BALANCE, C_YTD_PAYMENT, C_PAYMENT_CNT, C_DELIVERY_CNT, C_STREET_1, C_STREET_2, C_CITY, C_STATE, C_ZIP, C_PHONE, C_SINCE, C_MIDDLE, C_DATA, C_LINEAGE), d_customer(C_W_ID, C_D_ID, C_ID, C_DISCOUNT, C_CREDIT, C_LAST, C_FIRST, C_CREDIT_LIM, C_BALANCE, C_YTD_PAYMENT, C_PAYMENT_CNT, C_DELIVERY_CNT, C_STREET_1, C_STREET_2, C_CITY, C_STATE, C_ZIP, C_PHONE, C_SINCE, C_MIDDLE, C_DATA, C_LINEAGE).

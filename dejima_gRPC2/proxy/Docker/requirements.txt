@@ -1,0 +1,13 @@
+gunicorn
+falcon
+psycopg2
+requests
+sqlparse
+numpy
+grpcio
+grpcio-tools
+opentelemetry-api
+opentelemetry-sdk
+opentelemetry-instrumentation-falcon
+opentelemetry-instrumentation-grpc
+opentelemetry-exporter-otlp
