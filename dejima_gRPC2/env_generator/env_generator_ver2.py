@@ -1,7 +1,7 @@
 import os
 import sys
-from utils.tpcc_env_gen import TPCCEnvGenerator
-from utils.ycsb_env_gen import YCSBEnvGenerator
+from utils.tpcc.tpcc_env_gen import TPCCEnvGenerator
+from utils.ycsb.ycsb_env_gen import YCSBEnvGenerator
 
 # add root directory to sys.path
 project_root = os.path.dirname(os.path.abspath(__file__))

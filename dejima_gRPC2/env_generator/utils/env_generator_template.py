@@ -7,7 +7,6 @@ import shutil
 import glob
 import subprocess
 import re
-from utils import tpcc_env_data
 
 # add root directory to sys.path
 project_root = os.path.dirname(os.path.abspath(__file__))
@@ -19,27 +18,30 @@ if project_root not in sys.path:
 class EnvGenerator:
     # get arguments
     def __init__(self, argv):
-        if len(argv) != 3:
-            print("2 arguments required")
+        self.node_names = []
+
+        try:
+            if len(argv) != 3:
+                raise Exception("2 arguments required")
+
+            benchmark = argv[1]
+            if not benchmark.upper() in ["TPCC", "YCSB"]:
+                raise Exception("Benchmark must be 'YCSB' or 'TPCC'")
+
+            N = argv[2]
+            if not N.isdigit():
+                raise Exception("Invalid argument")
+
+            # B = argv[3]
+            # if not B.isdigit():
+            #     raise Exception("Invalid argument")
+
+        except Exception as e:
+            print(e)
             exit()
 
-        benchmark = argv[1]
-        # if not (benchmark.upper() == "YCSB" or benchmark.upper() == "TPCC"):
-        if not benchmark.upper() in ["TPCC", "YCSB"]:
-            print("Benchmark must be 'YCSB' or 'TPCC'")
-            exit()
         self.benchmark = benchmark.upper()
-
-        N = argv[2]
-        if not N.isdigit():
-            print("Invalid argument.")
-            exit()
         self.N = int(N)
-
-        # B = argv[3]
-        # if not B.isdigit():
-        #     print("Invalid argument.")
-        #     exit()
         # self.B = B
 
 
@@ -85,24 +87,37 @@ class EnvGenerator:
 
         self.config = {'dejima_table': {}, 'base_table': {}, 'peer_address': {}}
 
+
+
+    """
+    ----- Node -----
+    """
+    # add node
+    def _add_node(self, node_name):
+        self.node_names.append(node_name)
+        self.G.node(node_name)
+        self.config['peer_address'][node_name] = f'{node_name}-proxy:8000'
+        shutil.copytree(f'src/{self.benchmark}/Peer', f'{self.output_dir_path}/db/setup_files/{node_name}')
+
+    # add init sql
+    def _add_init_sql(self, init_sql, node_name, sql_name):
+        with open(f"{self.output_dir_path}/db/setup_files/{node_name}/{sql_name}", mode="w") as f:
+            f.write(init_sql)
+
     # generate nodes
     def generate_nodes(self):
-        for i in range(1, self.N+1):
-            shutil.copytree(f'src/{self.benchmark}/Peer', f'{self.output_dir_path}/db/setup_files/Peer{i}')
-            self.G.node(f'{i}')
-            if self.benchmark == "YCSB":
-                self.config['base_table'][f'Peer{i}'] = ['bt']
-            elif self.benchmark == "TPCC":
-                self.config['base_table'][f'Peer{i}'] = ['customer']
-            self.config['peer_address'][f'Peer{i}'] = f'Peer{i}-proxy:8000'
-            # datalog
-            shutil.copy(f"utils/tpcc_00_init.sql", f"{self.output_dir_path}/db/setup_files/Peer{i}/00_init.sql")
+        raise Exception("set generate_nodes")
 
+
+    """
+    ----- Edge -----
+    """
     # add dejima table
     def _add_dejima_table(self, dt_name, dt_label=None):
         if not dt_label: dt_label = dt_name
         self.G.node(dt_name)
         self.config["dejima_table"][dt_name] = []
+
     # add edge
     def _add_edge(self, dt_name, node_name, bt_list, dt_label=None, node_label=None):
         if not dt_label: dt_label = dt_name
@@ -114,6 +129,7 @@ class EnvGenerator:
         if not node_name in self.config['base_table']:
             self.config['base_table'][node_name] = {}
         self.config['base_table'][node_name][dt_name] = bt_list
+
     # add datalog
     def _add_datalog(self, datalog, node_name, dl_name):
         with open(f"{self.output_dir_path}/db/setup_files/{node_name}/{dl_name}", mode="w") as f:
@@ -121,17 +137,8 @@ class EnvGenerator:
 
     # generate edges
     def generate_edges(self):
-        for i in range(2, self.N+1):
-            target_node = str(random.randint(1, i-1))
-            self.G.edge(f'{i}', target_node, color=random.choice(self.colors), style='bold')
-            dt_name = f'd{target_node}_{i}'
-            self.config['dejima_table'][dt_name] = [f'Peer{i}', f'Peer{target_node}']
-            # datalog
-            datalog_customer = tpcc_env_data.datalog_customer
-            with open("{}/db/setup_files/Peer{}/01_{}.dl".format(self.output_dir_path, i, dt_name), mode="w") as f:
-                f.write(datalog_customer.replace("dt_name", dt_name))
-            with open("{}/db/setup_files/Peer{}/01_{}.dl".format(self.output_dir_path, target_node, dt_name), mode="w") as f:
-                f.write(datalog_customer.replace("dt_name", dt_name))
+        raise Exception("set generate_edges")
+
 
 
     # compile dl to sql
@@ -184,7 +191,6 @@ class EnvGenerator:
             file.write(self.G.source)
 
         # save to graph.pdf
-        # self.G.subgraph(legend)
         self.G.render(self.output_dir_path + '/graph', cleanup=True)
 
 
@@ -196,36 +202,35 @@ class EnvGenerator:
         yml['version'] = '3'
 
         yml['services'] = {}
-        for i in range(1,self.N+1):
-            peer_name_uc = "Peer{}".format(i)
-            peer_name_lc = "peer{}".format(i)
+        for i, node_name in enumerate(self.node_names):
+            peer_name_uc = node_name
+            peer_name_lc = node_name.lower()
 
             # db
-            db = yml['services'][peer_name_lc+'-db'] = {}
+            db = yml['services'][f"{peer_name_lc}-db"] = {}
             db['image'] = 'ekayim/dejima-pg'
-            db['container_name'] = peer_name_uc+'-db'
-            # db['ports'] = ['{}:5432'.format(50000+i)]
+            db['container_name'] = f"{peer_name_uc}-db"
+            # db['ports'] = [f'{50001+i}:5432']
             db['volumes'] = ['./db/postgresql.conf:/etc/postgresql.conf', './db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh', './db/setup_files:/etc/setup_files']
-            db['environment'] = ['PEER_NAME={}'.format(peer_name_uc)]
+            db['environment'] = [f'PEER_NAME={peer_name_uc}']
             db['networks'] = {'dejima_net': None}
             db['cap_add'] = ['NET_ADMIN']
 
             # proxy
             proxy = yml['services'][peer_name_lc+'-proxy'] = {}
             proxy['image'] = 'ouyoshida/dejima-proxy:latest'
-            proxy['container_name'] = peer_name_uc+'-proxy'
-            # proxy['command'] = 'gunicorn -b 0.0.0.0:8000 --threads {} server:app'.format(N+10)
+            proxy['container_name'] = f"{peer_name_uc}-proxy"
             proxy['command'] = 'python3 /code/server.py'
             proxy['volumes'] = ['./proxy:/code']
-            proxy['ports'] = ['{}:8000'.format(8000+i)]
-            proxy['depends_on'] = ['{}-db'.format(peer_name_lc)]
-            proxy['environment'] = ['PEER_NAME={}'.format(peer_name_uc)]
+            proxy['ports'] = [f'{8001+i}:8000']
+            proxy['depends_on'] = [f'{peer_name_lc}-db']
+            proxy['environment'] = [f'PEER_NAME={peer_name_uc}']
             proxy['networks'] = {'dejima_net': None}
             proxy['cap_add'] = ['NET_ADMIN']
 
         yml['networks'] = {'dejima_net': {'driver': 'bridge', 'ipam': {'driver': 'default'}}}
 
-        with open(self.output_dir_path + '/docker-compose.yml', mode='w') as f:
+        with open(f"{self.output_dir_path}/docker-compose.yml", mode='w') as f:
             f.write(yaml.dump(yml))
 
         print("complete")

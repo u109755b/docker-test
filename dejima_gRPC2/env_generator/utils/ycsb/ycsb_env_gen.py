@@ -1,19 +1,16 @@
-import random
-import shutil
 from utils.env_generator_template import EnvGenerator
-from utils import ycsb_env_data
+from utils.ycsb import ycsb_env_data
 
 # YCSBEnvGenerator
 class YCSBEnvGenerator(EnvGenerator):
     # generate nodes
     def generate_nodes(self):
+        with open(f"utils/ycsb/ycsb_00_init.sql") as f:
+            init_sql = f.read()
         for i in range(1, self.N+1):
-            shutil.copytree(f'src/{self.benchmark}/Peer', f'{self.output_dir_path}/db/setup_files/Peer{i}')
-            self.G.node(f'Peer{i}')
-            # self.config['base_table'][f'Peer{i}'] = ['customer']
-            self.config['peer_address'][f'Peer{i}'] = f'Peer{i}-proxy:8000'
-            # datalog
-            shutil.copy(f"utils/ycsb_00_init.sql", f"{self.output_dir_path}/db/setup_files/Peer{i}/00_init.sql")
+            node_name = f"Peer{i}"
+            self._add_node(node_name)
+            self._add_init_sql(init_sql, node_name, "00_init.sql")
 
     # generate edges
     def generate_edges(self):

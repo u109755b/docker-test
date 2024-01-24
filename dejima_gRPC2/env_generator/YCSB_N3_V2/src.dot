@@ -75,7 +75,7 @@ graph {
 	Peer2
 	Peer3
 	dt
-	dt -- Peer1 [color="#DDDDDD" style=bold]
-	dt -- Peer2 [color="#88CCEE" style=bold]
-	dt -- Peer3 [color="#117733" style=bold]
+	dt -- Peer1 [color="#117733" style=bold]
+	dt -- Peer2 [color="#AA4499" style=bold]
+	dt -- Peer3 [color="#AA4499" style=bold]
 }
