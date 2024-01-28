@@ -22,26 +22,24 @@ class EnvGenerator:
 
         try:
             if len(argv) != 3:
-                raise Exception("2 arguments required")
+                raise ValueError("2 arguments required")
 
-            benchmark = argv[1]
-            if not benchmark.upper() in ["TPCC", "YCSB"]:
-                raise Exception("Benchmark must be 'YCSB' or 'TPCC'")
+            self.benchmark = argv[1].upper()
 
-            N = argv[2]
-            if not N.isdigit():
-                raise Exception("Invalid argument")
+            self.N = int(argv[2])
+            # if not N.isdigit():
+            #     raise Exception("Invalid argument")
 
             # B = argv[3]
             # if not B.isdigit():
             #     raise Exception("Invalid argument")
 
         except Exception as e:
-            print(e)
+            print(f"{type(e)}: {e}")
             exit()
 
-        self.benchmark = benchmark.upper()
-        self.N = int(N)
+        # self.benchmark = benchmark.upper()
+        # self.N = int(N)
         # self.B = B
 
 
@@ -71,7 +69,7 @@ class EnvGenerator:
 
     # create output directory
     def create_output_dir(self):
-        self.output_dir_path = f'{self.benchmark}_N{self.N}_V2'
+        self.output_dir_path = f'{self.benchmark}_N{self.N}'
 
         if os.path.isdir(self.output_dir_path):
             print("A same environment has already been created")
@@ -143,7 +141,7 @@ class EnvGenerator:
 
     # compile dl to sql
     def compile_dl(self):
-        for datalog in glob.glob("{}/db/setup_files/**/*.dl".format(self.output_dir_path), recursive=True):
+        for datalog in glob.glob(f"{self.output_dir_path}/db/setup_files/**/*.dl", recursive=True):
             sql = "{}.sql".format(datalog[:-3])
             command = "birds -i -e -f {} -o {} --dejima -b src/{}/Peer/dejima_update.sh".format(datalog, sql, self.benchmark)
             print(command)
@@ -151,30 +149,49 @@ class EnvGenerator:
 
     # modify sql for dejima
     def modify_sql(self):
-        for filename in glob.glob("{}/db/setup_files/**/01_*.sql".format(self.output_dir_path), recursive=True):
+        with open("utils/dejima_custom.sql", 'r') as f:
+            dejima_custom = f.readlines()
+
+        for filename in glob.glob(f"{self.output_dir_path}/db/setup_files/**/01_*.sql", recursive=True):
             with open(filename, 'r') as f:
                 lines = f.readlines()
 
             patterns = []
-            patterns.append(r'--DELETE FROM public.__dummy__(.*)_detected_deletions;')
-            patterns.append(r'--DELETE FROM public.__dummy__(.*)_detected_insertions;')
-            patterns.append(r'DROP TABLE IF EXISTS (.*)_detect_update_on_(.*)_flag;')
             replaces = []
-            replaces.append([r'DELETE FROM public.__dummy__\1_detected_deletions t where t.txid = $1;'])
-            replaces.append([r'DELETE FROM public.__dummy__\1_detected_insertions t where t.txid = $1;'])
+            max_rep_cnt = []
+
+            patterns.append(r'--.*DELETE FROM public.__dummy__(.*)_detected_(.*);')   # dt, deletions | insertions
+            replaces.append([r'DELETE FROM public.__dummy__\1_detected_\2 t where t.txid = $1;'])
+            max_rep_cnt.append(2)
+
+            patterns.append(r'DROP TABLE IF EXISTS (.*)_detect_update_on_(.*)_flag;')   # bt, dt
             replaces.append([
                 r'DROP TABLE IF EXISTS \1_detect_update_on_\2_flag;',
                 r'    DROP TABLE IF EXISTS __tmp_delta_del_\1_for_\2;',
                 r'    DROP TABLE IF EXISTS __tmp_delta_ins_\1_for_\2;'
             ])
-            mask = [True] * len(patterns)
+            max_rep_cnt.append(1)
+
+            patterns.append(r'public.(.*)_detect_update_on_(.*)\(\)')   # bt, dt
+            replaces.append([])   # 結果代入
+            max_rep_cnt.append(1)
 
             for i, line in enumerate(lines):
                 for j, (pattern, replace) in enumerate(zip(patterns, replaces)):
-                    if re.search(pattern, line) and mask[j] == True:
+                    if max_rep_cnt[j] == 0: continue
+                    if not re.search(pattern, line): continue
+                    if not replace:
+                        m = re.search(pattern, line)
+                        replace += list(m.groups())
+                    else:
                         replace_string = '\n'.join(replace)
                         lines[i] = re.sub(pattern, replace_string, line)
-                        mask[j] = False    
+                    if 0 < max_rep_cnt[j]:
+                        max_rep_cnt[j] -= 1
+
+            bt_name, dt_name = replaces[-1]
+            for line in dejima_custom:
+                lines.append(line.replace("bt_name", bt_name).replace("dt_name", dt_name))
 
             with open(filename, 'w') as f:
                 f.writelines(lines)

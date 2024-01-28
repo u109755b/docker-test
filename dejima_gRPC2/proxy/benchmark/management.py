@@ -1,4 +1,5 @@
 import random
+from benchmark.tenv import tenv_config
 from benchmark.tpcc import tpcc_config
 from benchmark.ycsb import ycsb_config
 
@@ -6,19 +7,30 @@ class BenchmarkManagement:
     def __init__(self, bench_name):
         self.bench_name = bench_name
         # select a config file
+        if bench_name == "tenv":
+            self.config = tenv_config
         if bench_name == "tpcc":
             self.config = tpcc_config
         if bench_name == "ycsb":
             self.config = ycsb_config
 
-    def get_tx_template(self):
+
+    # get loader
+    def get_loader(self, params):
+        loader_name = params["data_name"]
+        loader = self.config.loaders[loader_name]()
+        return loader
+
+
+    # get tx class
+    def get_tx_class(self):
         weights = []
-        tx_templates = []
+        tx_classes = []
 
         # read config data
         for tx_setting in self.config.tx_settings:
             weights.append(tx_setting["weight"])
-            tx_templates.append(tx_setting["transaction_template"])
+            tx_classes.append(tx_setting["transaction"])
         if sum(weights) != 100:
             raise ValueError("sum of weights must be 100")
 
@@ -29,7 +41,4 @@ class BenchmarkManagement:
             self.tx_idx = i
             weight_sum += weight
             if threshold <= weight_sum:
-                return tx_templates[i]
-
-    def get_tx(self):
-        return self.config.tx_settings[self.tx_idx]["transaction"]
+                return tx_classes[i]

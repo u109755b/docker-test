@@ -1,9 +1,9 @@
 import json
 from grpcdata import data_pb2
 from grpcdata import data_pb2_grpc
-from benchmark.tpcc import loader as tpcc_loader
-from benchmark.ycsb import loader as ycsb_loader
+from benchmark.management import BenchmarkManagement
 
+# return {"result": str}
 class LoadData(data_pb2_grpc.LoadDataServicer):
     def __init__(self):
         pass
@@ -12,12 +12,12 @@ class LoadData(data_pb2_grpc.LoadDataServicer):
         params = json.loads(req.json_str)
         bench_name = params["bench_name"]
 
-        result = None
-        if bench_name == "tpcc":
-            result = tpcc_loader.load(params)
+        if not "data_name" in params:
+            params["data_name"] = bench_name
 
-        if bench_name == "ycsb":
-            result = ycsb_loader.load(params)
+        benchmark_management = BenchmarkManagement(bench_name)
+        loader = benchmark_management.get_loader(params)
+        result = loader.load(params)
 
         if not result: print("result is None")
         res_dic = {"result": result["result"]}

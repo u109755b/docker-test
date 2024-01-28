@@ -1,0 +1,17 @@
+{
+  "dejima_table": {
+    "dt": [
+      "Peer1"
+    ]
+  },
+  "base_table": {
+    "Peer1": {
+      "dt": [
+        "bt"
+      ]
+    }
+  },
+  "peer_address": {
+    "Peer1": "Peer1-proxy:8000"
+  }
+}

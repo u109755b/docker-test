@@ -82,6 +82,7 @@ def prop_request(arg_dict, global_xid, method, global_params={}):
         thread_list = []
         results = []
         params = {}
+        params["peer_name"] = [None]
         if "max_hop" in global_params: params["max_hop"] = [0]
         if "timestamps" in global_params: params["timestamps"] = [[]]
         lock = threading.Lock()
@@ -101,13 +102,19 @@ def prop_request(arg_dict, global_xid, method, global_params={}):
                 args = ([peer_address, service_stub, req, results, lock, ctx, params])
                 thread = threading.Thread(target=base_request, args=args)
                 thread_list.append(thread)
-        
-        for thread in thread_list:
-            thread.start()
-        
-        for thread in thread_list:
-            thread.join()
-        
+
+            for thread in thread_list:
+                thread.start()
+
+            for thread in thread_list:
+                thread.join()
+
+            if not all(results): break
+            thread_list = []
+
+        peer_names = set(params["peer_name"])
+        peer_names.remove(None)
+        global_params["peer_names"] = list(peer_names)
         if "max_hop" in global_params:
             if config.hop_mode: global_params["max_hop"] = max(params["max_hop"]) + 1
             else: global_params["max_hop"] = sum(params["max_hop"]) + 1
@@ -164,6 +171,8 @@ def base_request(peer_address, service_stub, req, results, lock, ctx=None, param
             results.append(True)
         else:
             results.append(False)
+        if "peer_name" in res_dic:
+            params["peer_name"].append(res_dic["peer_name"])
         if "max_hop" in res_dic:
             params["max_hop"].append(res_dic["max_hop"])
         if "timestamps" in res_dic:
@@ -192,7 +201,7 @@ def get_lock_stmts(json_data):
         lock_stmts.append("SELECT * FROM {} WHERE {} FOR UPDATE NOWAIT".format(json_dict["view"], where))
     return lock_stmts
 
-def get_execute_stmt(json_data):
+def get_execute_stmt(json_data, local_xid):
     sql_statements = []
     json_dict = json_data
 
@@ -227,7 +236,8 @@ def get_execute_stmt(json_data):
     update_stmts = []
     for i, stmt in enumerate(sql_statements):
         update_stmts.append("updated{} AS ({})".format(i, stmt))
-    update_stmts.append("prop_to_bt AS (SELECT {}_propagate_updates())".format(json_dict["view"]))
+    # print(local_xid)
+    update_stmts.append("prop_to_bt AS (SELECT {}_propagate({}))".format(json_dict["view"], local_xid))
     update_stmts = "WITH " + ", ".join(update_stmts)
     union_stmts = []
     for i, _ in enumerate(sql_statements):

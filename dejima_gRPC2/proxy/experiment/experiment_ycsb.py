@@ -13,6 +13,7 @@ class ExperimentYCSB(Experiment):
 
         data = {
             "bench_name": self.bench_name,
+            "data_name": self.bench_name,
             "start_id": self.yscb_start_id,
             "record_num": self.ycsb_record_num,
             "step": self.peer_num,

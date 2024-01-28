@@ -1,41 +1,44 @@
 from benchmark.ycsb import ycsbutils
+import dejima
+from dejima import LocalBencher
 
-class ReadRecord:
-    # initialize
-    def __init__(self, tx, params=None):
-        self.tx = tx
+class ReadRecord(LocalBencher):
+    def _execute(self):
+        # create executer
+        executer = dejima.get_executer()
+        executer.create_tx()
+        # executer.set_params(self.benchmark_management, self.result_measurement, self.time_measurement, self.timestamp_management, self.timestamp)
 
-
-    # get local locks, and return lineages
-    def get_local_locks(self):
-        tx = self.tx
-
-        self.stmt = self.get_stmt()
-        lock_stmt = f"{self.stmt} FOR SHARE NOWAIT"
-
-        try:
-            tx.cur.execute(lock_stmt)
-            res = tx.cur.fetchone()
-
-            if not res:
-                print("read_record.py: miss")
-                return "miss"   # did not find the record
-        except Exception as e:
-            return False   # failed to get lock
-        return True
+        stmt = self.get_stmt()
+        lock_stmt = f"{stmt} FOR SHARE NOWAIT"
 
 
-    # execute local transacion
-    def execute_local_tx(self):
-        tx = self.tx
-        stmt = self.stmt
+        # local lock
+        lineages = []
 
-        try:
-            tx.cur.execute(stmt)
+        executer.execute_stmt(lock_stmt)
+        record = executer.fetchone()
+        if not record:
+            executer._restore()
+            print("read miss")
+            return "miss"
+        lineages.append(record[0])
 
-        except:
-            return False
-        return True
+        # global lock
+        # if self.locking_method == "frs":
+        #     executer.lock_global(lineages)
+
+        # local execution
+        executer.execute_stmt(stmt)
+
+        # propagation
+        # executer.propagate(self.global_params)
+
+        # termination
+        commit = executer.terminate()
+
+        return commit
+
 
 
     # create statement and return it

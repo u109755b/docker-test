@@ -1,0 +1,18 @@
+% schema
+source bt(
+	'ID': int, 
+	'COL': string, 
+	'LINEAGE': string
+).
+view dt(
+	'ID': int, 
+	'COL': string, 
+	'LINEAGE': string
+).
+
+% view definition
+dt(ID, COL, LINEAGE) :- bt(ID, COL, LINEAGE).
+
+% rules for update strategy
+-bt(ID, COL, LINEAGE) :- bt(ID, COL, LINEAGE), NOT dt(ID, COL, LINEAGE).
++bt(ID, COL, LINEAGE) :- NOT bt(ID, COL, LINEAGE), dt(ID, COL, LINEAGE).

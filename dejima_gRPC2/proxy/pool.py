@@ -3,6 +3,9 @@ from psycopg2 import extensions as _ext
 import time
 import config
 
+class PoolError(psycopg2.Error):
+    pass
+
 class CustomedAbstractConnectionPool(psycopg2.pool.AbstractConnectionPool):
     def __init__(self, max_txn_cnt, minconn, maxconn, *args, **kwargs):
         self.txn_cnt = {}

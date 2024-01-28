@@ -39,9 +39,9 @@ class Worker():
             current_time = time.time() - start_time
             while (current_time < bench_time):
                 current_time = time.time() - start_time
-                Template = benchmark_management.get_tx_template()
-                template = Template()
-                result = template.execute(params, METHOD)
+                tx_class = benchmark_management.get_tx_class()
+                transaction = tx_class()
+                result = transaction.execute(params, METHOD)
 
         # hybrid
         elif METHOD == "hybrid":
@@ -58,17 +58,17 @@ class Worker():
             current_time = time.time() - start_time
             while (current_time < bench_time):
                 current_time = time.time() - start_time
-                Template = benchmark_management.get_tx_template()
-                template = Template()
+                tx_class = benchmark_management.get_tx_class()
+                transaction = tx_class()
 
                 # normal mode
                 if current_time < next_check:
-                    result = template.execute(params, current_method)
+                    result = transaction.execute(params, current_method)
 
                 # check mode
                 # before
                 elif current_time < next_check + check_time:
-                    result = template.execute(params, current_method)
+                    result = transaction.execute(params, current_method)
                     if result == True:
                         temp_commit['before']['commit'] += 1
                     elif result == False:
@@ -80,7 +80,7 @@ class Worker():
                         temp_changed_mode_flag = True
                         current_method = switch_method(current_method)
 
-                    result = template.execute(params, current_method)
+                    result = transaction.execute(params, current_method)
                     if result == True:
                         temp_commit['after']['commit'] += 1
                     elif result == False:

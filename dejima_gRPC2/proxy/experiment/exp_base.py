@@ -111,8 +111,8 @@ class ExperimentBase():
 
         # その他の計算
         tx_time = basic_res["commit_time"][0] + basic_res["abort_time"][0]
-        throughput = basic_res["commit"][0] / tx_time
-        custom_throughput = basic_res["custom_commit"][0] / tx_time
+        throughput = utils.divide(basic_res["commit"][0], tx_time)
+        custom_throughput = utils.divide(basic_res["custom_commit"][0], tx_time)
 
         commit_time = basic_res["commit_time"][0]
 

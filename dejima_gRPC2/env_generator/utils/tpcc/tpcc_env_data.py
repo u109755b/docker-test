@@ -27,7 +27,7 @@ columns = {
 
 # column_definitions
 column_definitions = [f"'{key}': {value}" for key, value in columns.items()]
-column_definitions = ", \n\t".join(column_definitions)
+column_definitions = ",\n\t".join(column_definitions)
 column_definitions = f"\n\t{column_definitions}\n"
 
 # column_names
@@ -73,7 +73,7 @@ columns = {
 
 # column_definitions
 column_definitions = [f"'{key}': {value}" for key, value in columns.items()]
-column_definitions = ", \n\t".join(column_definitions)
+column_definitions = ",\n\t".join(column_definitions)
 column_definitions = f"\n{column_definitions}\n"
 
 # column_names
@@ -91,4 +91,43 @@ dt_name({column_names}) :- stock({column_names}).
 % rules for update strategy
 -stock({column_names}) :- stock({column_names}), NOT dt_name({column_names}).
 +stock({column_names}) :- NOT stock({column_names}), dt_name({column_names}).
+"""
+
+
+
+# warehouse
+# columns
+columns = {
+    "w_id":         "int",
+    "w_ytd":        "string",
+    "w_tax":        "string",
+    "w_name":       "string",
+    "w_street_1":   "string",
+    "w_street_2":   "string",
+    "w_city":       "string",
+    "w_state":      "string",
+    "w_zip":        "string",
+    "lineage":      "string",
+}
+
+# column_definitions
+column_definitions = [f"'{key}': {value}" for key, value in columns.items()]
+column_definitions = ",\n\t".join(column_definitions)
+column_definitions = f"\n{column_definitions}\n"
+
+# column_names
+column_names = ", ".join([s.upper() for s in columns.keys()])
+
+# datalog_warehouse
+datalog_warehouse = f"""\
+% schema
+source warehouse({column_definitions}).
+view dt_name({column_definitions}).
+
+% view definition
+dt_name({column_names}) :- warehouse({column_names}).
+
+% rules for update strategy
+-warehouse({column_names}) :- warehouse({column_names}), NOT dt_name({column_names}).
++warehouse({column_names}) :- NOT warehouse({column_names}), dt_name({column_names}).
 """

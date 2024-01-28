@@ -46,7 +46,8 @@ def get_loadstmt_for_item():
 
 def get_loadstmt_for_warehouse(w_id):
     random.seed(2)
-    warehouse_loadstmt = "INSERT INTO warehouse (w_id, w_ytd, w_tax, w_name, w_street_1, w_street_2, w_city, w_state, w_zip) VALUES "
+    # warehouse_loadstmt = "INSERT INTO warehouse (w_id, w_ytd, w_tax, w_name, w_street_1, w_street_2, w_city, w_state, w_zip) VALUES "
+    warehouse_loadstmt = "INSERT INTO warehouse (w_id, w_ytd, w_tax, w_name, w_street_1, w_street_2, w_city, w_state, w_zip, lineage) VALUES "
     records = []
 
     w_ytd = 300000
@@ -57,7 +58,9 @@ def get_loadstmt_for_warehouse(w_id):
     w_city = randomStr(random.randint(10, 20))
     w_state = randomStr(2).upper()
     w_zip = "".join(random.choices("0123456789", k=4)) + "11111"
-    records.append("({}, {}, {}, '{}', '{}', '{}', '{}', '{}', '{}')".format(w_id, w_ytd, w_tax, w_name, w_street_1, w_street_2, w_city, w_state, w_zip))
+    lineage = f"{config.peer_name}-stock-({w_id})"
+    # records.append("({}, {}, {}, '{}', '{}', '{}', '{}', '{}', '{}')".format(w_id, w_ytd, w_tax, w_name, w_street_1, w_street_2, w_city, w_state, w_zip))
+    records.append("({}, {}, {}, '{}', '{}', '{}', '{}', '{}', '{}', '{}')".format(w_id, w_ytd, w_tax, w_name, w_street_1, w_street_2, w_city, w_state, w_zip, lineage))
 
     warehouse_loadstmt = warehouse_loadstmt + ",".join(records)
     return warehouse_loadstmt

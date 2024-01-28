@@ -3,6 +3,7 @@ from grpcdata import data_pb2
 from grpcdata import data_pb2_grpc
 from benchmark.worker import Worker
 from benchmark.management import BenchmarkManagement
+from benchmark.tenv.procedures import tenv_tx
 
 class Benchmark(data_pb2_grpc.BenchmarkServicer):
     def __init__(self):
@@ -11,6 +12,10 @@ class Benchmark(data_pb2_grpc.BenchmarkServicer):
     def on_get(self, req, resp):
         params = json.loads(req.json_str)
         bench_name = params["bench_name"]
+
+        if bench_name == "tenv":
+            res_dic = tenv_tx.execute(params)
+            return data_pb2.Response(json_str=json.dumps(res_dic))
 
         worker = Worker()
         result = None

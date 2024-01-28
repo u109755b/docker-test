@@ -9,7 +9,7 @@ class CustomerLoader(Loader):
         self.param_check(params, param_keys)
 
         # create executer
-        executer = dejima.get_executer()
+        executer = dejima.get_executer("load")
         executer.create_tx()
         executer.lock_global(['dummy'])
 

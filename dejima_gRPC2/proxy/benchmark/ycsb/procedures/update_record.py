@@ -2,43 +2,49 @@ import random
 import sqlparse
 from benchmark import benchutils
 from benchmark.ycsb import ycsbutils
+import config
+import dejima
+from dejima import GlobalBencher
+import dejimautils
 
-class UpdateRecord:
-    # initialize
-    def __init__(self, tx, params=None):
-        self.tx = tx
+class UpdateRecord(GlobalBencher):
+    def _execute(self):
+        # create executer
+        executer = dejima.get_executer("bench")
+        executer.create_tx()
+        executer.set_params(self.benchmark_management, self.result_measurement, self.time_measurement, self.timestamp_management, self.timestamp)
 
-
-    # get local locks, and return lineages
-    def get_local_locks(self):
-        tx = self.tx
-        lineages = []
-
-        self.stmt = self.get_stmt()
-        where_clause = sqlparse.parse(self.stmt)[0][-1].value
+        stmt = self.get_stmt()
+        where_clause = sqlparse.parse(stmt)[0][-1].value
         get_lineage_stmt = "SELECT lineage FROM bt {} FOR UPDATE NOWAIT".format(where_clause)
 
-        try:
-            tx.cur.execute(get_lineage_stmt)
-            lineage = tx.cur.fetchone()[0]   # DictRow type: ex) ['Peer1-bt-1']
-            lineages.append(lineage)
 
-        except Exception as e:
-            return False   # failed to get lock
-        return lineages
+        # local lock
+        lineages = []
 
+        executer.execute_stmt(get_lineage_stmt)
+        record = executer.fetchone()
+        if not record:
+            executer._restore()
+            print("write miss")
+            return "miss"
+        lineages.append(record[0])
 
-    # execute local transacion
-    def execute_local_tx(self):
-        tx = self.tx
-        stmt = self.stmt
+        # global lock
+        if self.locking_method == "frs":
+            executer.lock_global(lineages)
 
-        try:
-            tx.cur.execute(stmt)
+        # local execution
+        executer.execute_stmt(stmt)
 
-        except:
-            return False
-        return True
+        # propagation
+        executer.propagate(self.global_params)
+
+        # termination
+        commit = executer.terminate()
+
+        return commit
+
 
 
     # create statement and return it

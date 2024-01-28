@@ -10,9 +10,9 @@ class YCSBLoader(Loader):
         start_id = int(params['start_id'])
         record_num = int(params['record_num'])
         step = int(params['step'])
-            
+
         # create executer
-        executer = dejima.get_executer()
+        executer = dejima.get_executer("load")
         executer.create_tx()
         executer.lock_global(['dummy'])
 

@@ -1,9 +1,12 @@
+import dejima
+
 class Loader:
     # check parameters
     def param_check(self, params, param_keys):
         for key in param_keys:
             if not key in params.keys():
-                raise Exception("Invalid parameters")
+                print("Invalid parameters")
+                return {"result": "Invalid parameters"}
 
     # load for specific data
     def _load(self, params):
@@ -17,6 +20,7 @@ class Loader:
         try:
             result = self._load(params)
         except Exception as e:
+            dejima.out_err(e, "loader error")
             return {"result": e}
 
         print("load finish")

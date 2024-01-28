@@ -16,18 +16,11 @@ class LocalLoader(Loader):
         config.warehouse_num = warehouse_num
 
         # create executer
-        executer = dejima.get_executer()
+        executer = dejima.get_executer("load")
         executer.create_tx()
 
         # execution
-        for w_id in range(1, warehouse_num+1):
-            executer.execute_stmt(tpccutils.get_loadstmt_for_warehouse(w_id))
         executer.execute_stmt(tpccutils.get_loadstmt_for_item())
-        # w_id = (params["peer_idx"]-1) // 10 + 1
-        # start_id = (params["peer_idx"]-1) * 10000 + 1
-        # executer.execute_stmt(tpccutils.get_loadstmt_for_stock(w_id, start_id))
-        for w_id in range(1, warehouse_num+1):
-            executer.execute_stmt(tpccutils.get_loadstmt_for_district(w_id))
 
         # termination
         result = executer.terminate(DEBUG=True)
