@@ -2,8 +2,8 @@ import json
 import time
 from grpcdata import data_pb2
 from grpcdata import data_pb2_grpc
-import config
-import measurement
+from dejima import config
+from dejima import measurement
 
 class Unlock(data_pb2_grpc.UnlockServicer):
     def __init__(self):

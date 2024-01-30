@@ -1,9 +1,9 @@
 import random
 from datetime import datetime
-from benchmark.tpcc import tpccutils
-import config
 import dejima
+from dejima import config
 from dejima import GlobalBencher
+from benchmark.tpcc import tpccutils
 
 class TPCCTxNO(GlobalBencher):
     def _execute(self):
@@ -41,7 +41,7 @@ class TPCCTxNO(GlobalBencher):
         # create executer
         executer = dejima.get_executer("bench")
         executer.create_tx()
-        executer.set_params(self.benchmark_management, self.result_measurement, self.time_measurement, self.timestamp_management, self.timestamp)
+        executer.set_params(self.params)
 
 
         # local lock

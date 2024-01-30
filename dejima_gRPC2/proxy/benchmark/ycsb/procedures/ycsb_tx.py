@@ -2,17 +2,15 @@ import random
 import sqlparse
 from benchmark import benchutils
 from benchmark.ycsb import ycsbutils
-import config
 import dejima
 from dejima import GlobalBencher
-import dejimautils
 
 class YCSBTx(GlobalBencher):
     def _execute(self):
         # create executer
         executer = dejima.get_executer("bench")
         executer.create_tx()
-        executer.set_params(self.benchmark_management, self.result_measurement, self.time_measurement, self.timestamp_management, self.timestamp)
+        executer.set_params(self.params)
 
 
         stmts = self.get_stmts(5, 5)

@@ -1,4 +1,4 @@
-import dejima
+from dejima import errors
 
 class Loader:
     # check parameters
@@ -20,7 +20,7 @@ class Loader:
         try:
             result = self._load(params)
         except Exception as e:
-            dejima.out_err(e, "loader error")
+            errors.out_err(e, "loader error")
             return {"result": e}
 
         print("load finish")

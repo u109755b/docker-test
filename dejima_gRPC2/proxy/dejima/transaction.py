@@ -1,6 +1,6 @@
-from pool import pool
 from psycopg2.extras import DictCursor
-import dejima
+from dejima import errors
+from dejima.pool import pool
 
 class Tx:
     def __init__(self, global_xid):
@@ -15,7 +15,7 @@ class Tx:
     def check_tx_existance(func):
         def _wrapper(self, *args, **kwargs):
             if self.is_terminated:
-                raise dejima.TxTerminated("this tx has already been terminated")
+                raise errors.TxTerminated("this tx has already been terminated")
             return func(self, *args, **kwargs)
         return _wrapper
 

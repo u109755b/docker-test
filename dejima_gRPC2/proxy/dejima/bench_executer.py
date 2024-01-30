@@ -1,18 +1,15 @@
-import json
 import time
-import config
-from transaction import Tx
-import dejimautils
+from dejima import config
+from dejima import dejimautils
 from dejima.executer import Executer
 
 class BenchExecuter(Executer):
     # set params
-    def set_params(self, benchmark_management, result_measurement, time_measurement, timestamp_management, timestamp):
-        self.benchmark_management = benchmark_management
-        self.result_measurement = result_measurement
-        self.time_measurement = time_measurement
-        self.timestamp_management = timestamp_management
-        self.timestamp = timestamp
+    def set_params(self, params):
+        self.result_measurement = params["result_measurement"]
+        self.time_measurement = params["time_measurement"]
+        self.timestamp_management = params["timestamp_management"]
+        self.timestamp = params["timestamp"]
 
     # get member variables
     def get_global_xid(self):

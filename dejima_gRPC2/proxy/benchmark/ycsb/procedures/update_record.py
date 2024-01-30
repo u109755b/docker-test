@@ -1,18 +1,16 @@
 import random
 import sqlparse
+import dejima
 from benchmark import benchutils
 from benchmark.ycsb import ycsbutils
-import config
-import dejima
 from dejima import GlobalBencher
-import dejimautils
 
 class UpdateRecord(GlobalBencher):
     def _execute(self):
         # create executer
         executer = dejima.get_executer("bench")
         executer.create_tx()
-        executer.set_params(self.benchmark_management, self.result_measurement, self.time_measurement, self.timestamp_management, self.timestamp)
+        executer.set_params(self.params)
 
         stmt = self.get_stmt()
         where_clause = sqlparse.parse(stmt)[0][-1].value

@@ -1,5 +1,5 @@
-from benchmark.ycsb import ycsbutils
 import dejima
+from benchmark.ycsb import ycsbutils
 from dejima import LocalBencher
 
 class ReadRecord(LocalBencher):
@@ -7,7 +7,6 @@ class ReadRecord(LocalBencher):
         # create executer
         executer = dejima.get_executer()
         executer.create_tx()
-        # executer.set_params(self.benchmark_management, self.result_measurement, self.time_measurement, self.timestamp_management, self.timestamp)
 
         stmt = self.get_stmt()
         lock_stmt = f"{stmt} FOR SHARE NOWAIT"

@@ -1,6 +1,6 @@
-import random, string
-import threading
-import config
+import random
+import string
+from dejima import config
 from benchmark import benchutils
 
 COL_N = 10

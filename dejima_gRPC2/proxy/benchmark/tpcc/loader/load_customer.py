@@ -1,7 +1,7 @@
-import config
-from benchmark.tpcc import tpccutils
 import dejima
+from dejima import config
 from dejima import Loader
+from benchmark.tpcc import tpccutils
 
 class CustomerLoader(Loader):
     def _load(self, params):

@@ -1,11 +1,11 @@
 import json
 import time
+from opentelemetry import trace
 from grpcdata import data_pb2
 from grpcdata import data_pb2_grpc
-from opentelemetry import trace
-from transaction import Tx
-import config
-import measurement
+from dejima import config
+from dejima import measurement
+from dejima.transaction import Tx
 
 tracer = trace.get_tracer(__name__)
 

@@ -7,7 +7,6 @@ import grpc
 from grpcdata import data_pb2
 from grpcdata import data_pb2_grpc
 
-import falcon
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.resources import Resource
@@ -16,7 +15,7 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.instrumentation.falcon import FalconInstrumentor
 from opentelemetry.instrumentation.grpc import GrpcInstrumentorServer
 
-import config
+from dejima import config
 
 if config.trace_enabled:
     resource = Resource(attributes={"service.name": "dejima_server"})
@@ -57,7 +56,6 @@ data_pb2_grpc.add_BenchmarkServicer_to_server(Benchmark(), server)
 
 
 if __name__ == "__main__":    
-    import config
     peer_name = config.dejima_config_dict["peer_address"][config.peer_name]
     server.add_insecure_port("0.0.0.0:8000")
     server.start()

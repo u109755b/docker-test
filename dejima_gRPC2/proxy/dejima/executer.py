@@ -1,8 +1,8 @@
 import json
-import config
-from transaction import Tx
-import dejima
-import dejimautils
+from dejima import config
+from dejima import dejimautils
+from dejima import errors
+from dejima.transaction import Tx
 
 class Executer:
     def __init__(self):
@@ -49,23 +49,23 @@ class Executer:
         result = dejimautils.lock_request(lineages, self.global_xid)
         if result != "Ack":
             self._restore()
-            raise dejima.GlobalLockNotAvailable("Abort during global lock")
+            raise errors.GlobalLockNotAvailable("abort during global lock")
         return result
 
     # execution
     def execute_stmt(self, stmt):
         try:
             self.tx.cur.execute(stmt)
-        except dejima.errors.LockNotAvailable as e:
+        except errors.LockNotAvailable as e:
             print("lock failed")
             self._restore()
-            raise
-        except dejima.errors.SyntaxError as e:
-            dejima.out_err(e, "systax error")
+            raise errors.LocalLockNotAvailable("abort during local lock")
+        except errors.SyntaxError as e:
+            errors.out_err(e, "systax error")
             self._restore()
             raise
         except Exception as e:
-            dejima.out_err(e, "abort during local execution", out_trace=True)
+            errors.out_err(e, "abort during local execution", out_trace=True)
             self._restore()
             raise
         self.status = self.status_dirty
@@ -76,14 +76,12 @@ class Executer:
         - success -> psycopg2.extras.DictRow   ex) [val1, val2, ...]
         - select non-existent record -> None
         - no result (INSERT, UPDATE, DELETE) -> raise psycopg2.ProgrammingError: no results to fetch
-        - lock fail -> raise psycopg2.errors.LockNotAvailable
         """
         return self.tx.cur.fetchone()
     def fetchall(self):
         """Returns:
         - success -> psycopg2.extras.DictRow   ex) [DictRow, DictRow, ...]
-        - no result -> []
-        - lock fail -> raise dejima.errors.LockNotAvailable
+        - select non-existent record -> []
         """
         return self.tx.cur.fetchall()
 
@@ -117,7 +115,7 @@ class Executer:
 
         except Exception as e:
             self._restore()
-            dejima.out_err(e, "BIRDS execution error", out_trace=True)
+            errors.out_err(e, "BIRDS execution error", out_trace=True)
             raise
 
         return prop_dict

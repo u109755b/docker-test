@@ -1,7 +1,7 @@
+import time
 import psycopg2.pool
 from psycopg2 import extensions as _ext
-import time
-import config
+from dejima import config
 
 class PoolError(psycopg2.Error):
     pass

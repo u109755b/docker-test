@@ -1,6 +1,4 @@
 import json
-import threading
-import sys
 
 import grpc
 from grpcdata import data_pb2
@@ -14,8 +12,8 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.instrumentation.grpc import GrpcInstrumentorClient
 from opentelemetry.context import attach, detach, set_value
 
-import config
-import utils
+from dejima import config
+from dejima import utils
 
 if config.trace_enabled:
     resource = Resource(attributes={"service.name": "dejima_client"})

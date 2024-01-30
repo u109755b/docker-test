@@ -2,10 +2,10 @@ import json
 import time
 from grpcdata import data_pb2
 from grpcdata import data_pb2_grpc
-from transaction import Tx
-import config
-import dejima
-import dejimautils
+from dejima import config
+from dejima import errors
+from dejima import dejimautils
+from dejima.transaction import Tx
 
 class Propagation(data_pb2_grpc.PropagationServicer):
     def __init__(self):
@@ -52,14 +52,14 @@ class Propagation(data_pb2_grpc.PropagationServicer):
             tx.cur.execute(stmt)
             timestamp.append(time.perf_counter())   # 2
 
-        except dejima.errors.LockNotAvailable as e:
+        except errors.LockNotAvailable as e:
             print("global lock failed")
             res_dic = {"result": "Nak"}
             return data_pb2.Response(json_str=json.dumps(res_dic))
         except Exception as e:
             if "stmt" in locals():
                 print(stmt)
-            dejima.out_err(e, "dejima table update error", out_trace=True)
+            errors.out_err(e, "dejima table update error", out_trace=True)
             res_dic = {"result": "Nak"}
             return data_pb2.Response(json_str=json.dumps(res_dic))
 

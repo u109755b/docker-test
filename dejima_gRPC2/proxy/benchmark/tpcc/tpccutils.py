@@ -1,7 +1,7 @@
-import random, string
+import random
+import string
 from datetime import datetime
-import threading
-import config
+from dejima import config
 from benchmark import benchutils
 
 COND_N = 10

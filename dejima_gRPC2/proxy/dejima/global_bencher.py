@@ -1,10 +1,8 @@
-import json
 import time
+import copy
 from opentelemetry import trace
-from transaction import Tx
-import config
-import dejima
-import dejimautils
+from dejima import config
+from dejima import errors
 
 tracer = trace.get_tracer(__name__)
 
@@ -17,18 +15,16 @@ class GlobalBencher:
     def execute(self, params, locking_method):
         self.locking_method = locking_method
 
-        self.benchmark_management = None
-        self.result_measurement = None
-        self.time_measurement = None
-        self.timestamp_management = None
-        if "benchmark_management" in params:
-            self.benchmark_management = params["benchmark_management"]
-        if "result_measurement" in params:
-            self.result_measurement = params["result_measurement"]
-        if "time_measurement" in params:
-            self.time_measurement = params["time_measurement"]
-        if "timestamp_management" in params:
-            self.timestamp_management = params["timestamp_management"]
+        self.result_measurement = params["result_measurement"]
+        self.time_measurement = params["time_measurement"]
+        self.timestamp_management = params["timestamp_management"]
+        self.timestamp = []
+
+        self.params = copy.copy(params)
+        self.params["timestamp"] = self.timestamp
+
+        self.timestamp.append(time.perf_counter())   # 0
+        self.result_measurement.start_tx()
 
         # propagation to other peers
         self.global_params = {
@@ -37,22 +33,19 @@ class GlobalBencher:
             "source_peer": config.peer_name,
         }
 
-        self.timestamp = []
-        self.timestamp.append(time.perf_counter())   # 0
-        self.result_measurement.start_tx()
 
         try:
             commit = self._execute()
-        except dejima.errors.LockNotAvailable as e:
+        except errors.LocalLockNotAvailable as e:
             print("local lock failed")
             self.result_measurement.abort_tx('local')
             return False
-        except dejima.GlobalLockNotAvailable as e:
+        except errors.GlobalLockNotAvailable as e:
             print("global lock failed")
             self.result_measurement.abort_tx('global', 1)
             return False
         except Exception as e:
-            # dejima.out_err(e, "global bencher error", out_trace=True)
+            # errors.out_err(e, "global bencher error", out_trace=True)
             raise
 
         return commit

@@ -1,6 +1,6 @@
 import time
 import threading
-import utils
+from dejima import utils
 
 # TimestampManagement
 # measure each time taking process

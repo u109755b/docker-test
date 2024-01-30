@@ -2,8 +2,8 @@ import json
 import time
 from grpcdata import data_pb2
 from grpcdata import data_pb2_grpc
-import config
-import dejimautils
+from dejima import config
+from dejima import dejimautils
 
 class Termination(data_pb2_grpc.TerminationServicer):
     def __init__(self):

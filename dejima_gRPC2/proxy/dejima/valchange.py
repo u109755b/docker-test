@@ -1,8 +1,8 @@
 import json
 from grpcdata import data_pb2
 from grpcdata import data_pb2_grpc
-import config
-import measurement
+from dejima import config
+from dejima import measurement
 from benchmark import benchutils
 from benchmark.ycsb import ycsbutils
 from benchmark.tpcc import tpccutils

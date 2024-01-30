@@ -1,7 +1,7 @@
 import time
 import random
-import config
-import measurement
+from dejima import config
+from dejima import measurement
 
 class Worker():
     def __init__(self):
@@ -22,7 +22,6 @@ class Worker():
         time_measurement = measurement.TimeMeasurement()
         timestamp_management = measurement.TimestampManagement()
         params = {
-            "benchmark_management": benchmark_management,
             "result_measurement": result_measurement,
             "time_measurement": time_measurement,
             "timestamp_management": timestamp_management
@@ -39,8 +38,8 @@ class Worker():
             current_time = time.time() - start_time
             while (current_time < bench_time):
                 current_time = time.time() - start_time
-                tx_class = benchmark_management.get_tx_class()
-                transaction = tx_class()
+                TransactionClass = benchmark_management.get_tx_class()
+                transaction = TransactionClass()
                 result = transaction.execute(params, METHOD)
 
         # hybrid
@@ -58,8 +57,8 @@ class Worker():
             current_time = time.time() - start_time
             while (current_time < bench_time):
                 current_time = time.time() - start_time
-                tx_class = benchmark_management.get_tx_class()
-                transaction = tx_class()
+                TransactionClass = benchmark_management.get_tx_class()
+                transaction = TransactionClass()
 
                 # normal mode
                 if current_time < next_check:
