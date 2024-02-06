@@ -2,45 +2,21 @@ import random
 from graphviz import Graph
 import json
 import os
-import sys
 import shutil
 import glob
 import subprocess
 import re
 
-# add root directory to sys.path
-project_root = os.path.dirname(os.path.abspath(__file__))
-if project_root not in sys.path:
-    sys.path.append(project_root)
-
 
 # EnvGenerator
 class EnvGenerator:
     # get arguments
-    def __init__(self, argv):
+    def __init__(self, args):
         self.node_names = []
-
-        try:
-            if len(argv) != 3:
-                raise ValueError("2 arguments required")
-
-            self.benchmark = argv[1].upper()
-
-            self.N = int(argv[2])
-            # if not N.isdigit():
-            #     raise Exception("Invalid argument")
-
-            # B = argv[3]
-            # if not B.isdigit():
-            #     raise Exception("Invalid argument")
-
-        except Exception as e:
-            print(f"{type(e)}: {e}")
-            exit()
-
-        # self.benchmark = benchmark.upper()
-        # self.N = int(N)
-        # self.B = B
+        self.benchmark = args.benchmark_name
+        self.N = args.N
+        self.env_name = args.env_name
+        self.yes = args.yes
 
 
     # generate basic_graph
@@ -70,14 +46,17 @@ class EnvGenerator:
     # create output directory
     def create_output_dir(self):
         self.output_dir_path = f'{self.benchmark}_N{self.N}'
+        if self.env_name:
+            self.output_dir_path = self.env_name
 
         if os.path.isdir(self.output_dir_path):
-            print("A same environment has already been created")
-            res = input("Delete the environment and generate new one? (Y or N): ")
-            if "Y" in res.upper():
-                subprocess.run(f"sudo rm -r {self.output_dir_path}", shell=True)
+            print("An environment with the same name already exists")
+            if self.yes:
+                print("Deleting the environment and generating new one")
             else:
-                exit()
+                res = input("Delete the environment and generate new one? (Y or N): ")
+                if not "Y" in res.upper(): exit()
+            subprocess.run(f"sudo rm -r {self.output_dir_path}", shell=True)
         os.mkdir(self.output_dir_path)
 
         shutil.copytree(f'src/{self.benchmark}/db', f'{self.output_dir_path}/db')

@@ -1,7 +1,7 @@
 import dejima
-from dejima import config
 from dejima import Loader
 from benchmark.tpcc import tpccutils
+from benchmark.tpcc import tpcc_consts
 
 class StockLoader(Loader):
     def _load(self, params):
@@ -10,10 +10,6 @@ class StockLoader(Loader):
 
         peer_idx = int(params["peer_idx"])
         w_id = (peer_idx-1) // 10 + 1
-        start_id = (peer_idx-1) * 10000 + 1
-        overall_size = 1000
-        batch_size = 500
-
 
         # create executer
         executer = dejima.get_executer("load")
@@ -21,26 +17,26 @@ class StockLoader(Loader):
         executer.lock_global(['dummy'])
 
         # warehouse
-        for w_id in range(1, config.warehouse_num+1):
-            if peer_idx % 10 == 1:
-                executer.execute_stmt(tpccutils.get_loadstmt_for_warehouse(w_id))
-        executer.propagate(DEBUG=True)
+        if peer_idx % 10 == 1:
+            executer.execute_stmt(tpccutils.get_loadstmt_for_warehouse(w_id))
+            executer.propagate(DEBUG=True)
 
         # district
-        for w_id in range(1, config.warehouse_num+1):
-            executer.execute_stmt(tpccutils.get_loadstmt_for_district(w_id))
+        for d_id in range(1, 10+1):
+            executer.execute_stmt(tpccutils.get_loadstmt_for_district(w_id, d_id))
         executer.propagate(DEBUG=True)
 
         # stock
-        for offset in range(0, overall_size, batch_size):
-            # items_size
-            if overall_size - offset < batch_size:
-                items_size = overall_size - offset
-            else:
-                items_size = batch_size
+        stock_size = tpcc_consts.RECORDS_NUM_STOCK
+        stock_batch_size = tpcc_consts.BATCH_SIZE_STOCK
+        stock_peer_offset = (w_id-1) * (10*stock_size) + ((peer_idx-1)%10) * stock_size + 1
 
-            # execution and propagation
-            executer.execute_stmt(tpccutils.get_loadstmt_for_stock(w_id, start_id+offset, items_size))
+        for batch_offset in range(0, stock_size, stock_batch_size):
+            items_size = stock_batch_size
+            if stock_size - batch_offset < stock_batch_size:
+                items_size = stock_size - batch_offset
+
+            executer.execute_stmt(tpccutils.get_loadstmt_for_stock(w_id, stock_peer_offset + batch_offset, items_size))
             executer.propagate(DEBUG=True)
 
         # termination

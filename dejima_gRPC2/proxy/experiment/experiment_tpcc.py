@@ -32,7 +32,9 @@ class ExperimentTPCC(Experiment):
             data["peer_idx"] += 1
 
         print("customer load")
+        data["peer_idx"] = 1
         data["data_name"] = "customer"
         for i in range(self.peer_num):
             peer_name = f"Peer{i+1}"
             self.base_load(peer_name, data)
+            data["peer_idx"] += 1

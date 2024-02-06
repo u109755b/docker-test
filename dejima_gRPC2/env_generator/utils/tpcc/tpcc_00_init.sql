@@ -68,7 +68,6 @@ CREATE TABLE history (
   h_data varchar(24) NOT NULL
 );
 
-
 DROP TABLE IF EXISTS item;
 CREATE TABLE item (
   i_id int NOT NULL,
