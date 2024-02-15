@@ -1,3 +1,4 @@
+import os
 import time
 import copy
 from opentelemetry import trace
@@ -37,11 +38,11 @@ class GlobalBencher:
         try:
             commit = self._execute()
         except errors.LocalLockNotAvailable as e:
-            print("local lock failed")
+            # print(f"{os.path.basename(__file__)}: local lock failed")
             self.result_measurement.abort_tx('local')
             return False
         except errors.GlobalLockNotAvailable as e:
-            print("global lock failed")
+            # print(f"{os.path.basename(__file__)}: global lock failed")
             self.result_measurement.abort_tx('global', 1)
             return False
         except Exception as e:

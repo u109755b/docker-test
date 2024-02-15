@@ -74,16 +74,20 @@ graph {
 	Peer1
 	Peer2
 	Peer3
-	d_customer
-	d_customer -- Peer1 [color="#DDCC77" style=bold]
-	d_customer -- Peer2 [color="#332288" style=bold]
-	d_customer -- Peer3 [color="#44AA99" style=bold]
-	d_stock
-	d_stock -- Peer1 [color="#88CCEE" style=bold]
-	d_stock -- Peer2 [color="#88CCEE" style=bold]
-	d_stock -- Peer3 [color="#882255" style=bold]
 	d_warehouse
-	d_warehouse -- Peer1 [color="#117733" style=bold]
+	d_warehouse -- Peer1 [color="#88CCEE" style=bold]
 	d_warehouse -- Peer2 [color="#332288" style=bold]
-	d_warehouse -- Peer3 [color="#CC6677" style=bold]
+	d_warehouse -- Peer3 [color="#DDDDDD" style=bold]
+	d_district
+	d_district -- Peer1 [color="#DDDDDD" style=bold]
+	d_district -- Peer2 [color="#DDCC77" style=bold]
+	d_district -- Peer3 [color="#DDDDDD" style=bold]
+	d_customer
+	d_customer -- Peer1 [color="#CC6677" style=bold]
+	d_customer -- Peer2 [color="#DDCC77" style=bold]
+	d_customer -- Peer3 [color="#DDCC77" style=bold]
+	d_stock
+	d_stock -- Peer1 [color="#44AA99" style=bold]
+	d_stock -- Peer2 [color="#AA4499" style=bold]
+	d_stock -- Peer3 [color="#DDDDDD" style=bold]
 }

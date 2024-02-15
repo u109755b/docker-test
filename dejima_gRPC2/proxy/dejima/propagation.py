@@ -1,3 +1,4 @@
+import os
 import json
 import time
 from grpcdata import data_pb2
@@ -53,7 +54,7 @@ class Propagation(data_pb2_grpc.PropagationServicer):
             timestamp.append(time.perf_counter())   # 2
 
         except errors.LockNotAvailable as e:
-            print("global lock failed")
+            # print(f"{os.path.basename(__file__)}: global lock failed")
             res_dic = {"result": "Nak"}
             return data_pb2.Response(json_str=json.dumps(res_dic))
         except Exception as e:
@@ -97,7 +98,7 @@ class Propagation(data_pb2_grpc.PropagationServicer):
             if str(e).startswith("the JSON object must be str, bytes or bytearray"):
                 print("delta:", delta)
             # tx.reset_childs()
-            dejima.out_err(e, "BIRDS execution error", out_trace=True)
+            errors.out_err(e, "BIRDS execution error", out_trace=True)
             res_dic = {"result": "Nak"}
             return data_pb2.Response(json_str=json.dumps(res_dic))
 

@@ -10,6 +10,7 @@ class StockLoader(Loader):
 
         peer_idx = int(params["peer_idx"])
         w_id = (peer_idx-1) // 10 + 1
+        idx_in_group = (peer_idx-1) % 10 + 1
 
         # create executer
         executer = dejima.get_executer("load")
@@ -22,14 +23,13 @@ class StockLoader(Loader):
             executer.propagate(DEBUG=True)
 
         # district
-        for d_id in range(1, 10+1):
-            executer.execute_stmt(tpccutils.get_loadstmt_for_district(w_id, d_id))
+        executer.execute_stmt(tpccutils.get_loadstmt_for_district(w_id, idx_in_group))
         executer.propagate(DEBUG=True)
 
         # stock
         stock_size = tpcc_consts.RECORDS_NUM_STOCK
         stock_batch_size = tpcc_consts.BATCH_SIZE_STOCK
-        stock_peer_offset = (w_id-1) * (10*stock_size) + ((peer_idx-1)%10) * stock_size + 1
+        stock_peer_offset = (idx_in_group-1) * stock_size + 1
 
         for batch_offset in range(0, stock_size, stock_batch_size):
             items_size = stock_batch_size

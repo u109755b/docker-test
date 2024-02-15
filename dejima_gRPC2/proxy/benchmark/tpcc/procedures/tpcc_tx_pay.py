@@ -9,23 +9,23 @@ from benchmark.tpcc import tpccutils
 class TPCCTxPay(GlobalBencher):
     def _execute(self):
         # prepare parameters
-        w_id = random.randint(1, config.warehouse_num)
-        d_id = random.randint(1, 10)
+        w_id = config.w_id   # home w_id
+        d_id = random.randint(1, tpccutils.get_group_peer_num(w_id))
         if random.randint(1, 100) <= 85:
-            c_d_id = d_id
             c_w_id = w_id
+            c_d_id = d_id
         else:
-            c_d_id = random.randint(1, 10)
-            c_w_id = random.randint(1, config.warehouse_num)
-        # if random.randint(1, 100) <= 40:
-        #     c_id = tpccutils.nurand(1023, 1, 3000, tpccutils.C_FOR_C_ID)
-        #     select_with_c_id_flag = True
-        # else:
-        #     c_last = tpccutils.get_last(tpccutils.nurand(255,0,999,tpccutils.C_FOR_C_LAST))
-        #     select_with_c_id_flag = False
-        c_id = next(tpccutils.zipf_gen)
-        c_last = None
-        select_with_c_id_flag = True
+            c_w_id = tpccutils.get_remote_w_id(w_id)
+            c_d_id = random.randint(1, tpccutils.get_group_peer_num(c_w_id))
+        if random.randint(1, 100) <= 40:
+            c_id = tpccutils.nurand(1023, 1, 3000, tpccutils.C_FOR_C_ID)
+            select_with_c_id_flag = True
+        else:
+            c_last = tpccutils.get_last(tpccutils.nurand(255,0,999,tpccutils.C_FOR_C_LAST))
+            select_with_c_id_flag = False
+        # c_id = next(tpccutils.zipf_gen)
+        # c_last = None
+        # select_with_c_id_flag = True
 
         # h_amount is defined as string
         h_amount = '{:.2f}'.format(random.random() * 4999 + 1)
@@ -39,28 +39,29 @@ class TPCCTxPay(GlobalBencher):
 
 
         # local lock
-        miss_flag = True
         lineages = []
+        miss_flag = False
 
-        executer.execute_stmt("SELECT * FROM warehouse WHERE w_id = {} FOR UPDATE NOWAIT".format(w_id))
+        executer.execute_stmt("SELECT lineage FROM warehouse WHERE w_id = {} FOR UPDATE NOWAIT".format(w_id), max_retry_cnt=3)
+        row = executer.fetchone()
+        lineages.append(row[0])
 
-        executer.execute_stmt("SELECT * FROM district WHERE d_w_id = {} AND d_id = {} FOR UPDATE NOWAIT".format(w_id, d_id))
+        executer.execute_stmt("SELECT lineage FROM district WHERE d_w_id = {} AND d_id = {} FOR UPDATE NOWAIT".format(w_id, d_id), max_retry_cnt=3)
+        row = executer.fetchone()
+        lineages.append(row[0])
 
         if select_with_c_id_flag:
-            executer.execute_stmt("SELECT c_lineage FROM customer WHERE c_w_id = {} AND c_d_id = {} AND c_id = {} FOR UPDATE NOWAIT".format(c_w_id, c_d_id, c_id))
-            all_records = executer.fetchall()
-            if len(all_records) != 0:
-                lineage, *_ = all_records[0]
-                lineages.append(lineage)
-                miss_flag = False
+            executer.execute_stmt("SELECT c_lineage FROM customer WHERE c_w_id = {} AND c_d_id = {} AND c_id = {} FOR UPDATE NOWAIT".format(c_w_id, c_d_id, c_id), max_retry_cnt=3)
+            row = executer.fetchone()
+            lineages.append(row[0])
         else:
-            executer.execute_stmt("SELECT c_lineage FROM customer WHERE c_w_id = {} AND c_d_id = {} AND c_last = '{}' ORDER BY c_first FOR UPDATE NOWAIT".format(c_w_id, c_d_id, c_last))
-            all_records = executer.fetchall()
-            if len(all_records) != 0:
-                idx = math.ceil(len(all_records) / 2)
-                lineage, *_ = all_records[idx-1]
-                lineages.append(lineage)
-                miss_flag = False
+            executer.execute_stmt("SELECT c_lineage FROM customer WHERE c_w_id = {} AND c_d_id = {} AND c_last = '{}' ORDER BY c_first FOR UPDATE NOWAIT".format(c_w_id, c_d_id, c_last), max_retry_cnt=3)
+            all_rows = executer.fetchall()
+            if len(all_rows):
+                idx = math.ceil(len(all_rows) / 2)
+                lineages.append(all_rows[idx-1][0])
+            else:
+                miss_flag = True
 
         if miss_flag:
             executer._restore()
@@ -92,9 +93,9 @@ class TPCCTxPay(GlobalBencher):
         else:
             # case2
             executer.execute_stmt("SELECT c_id, c_first, c_middle, c_last, c_street_1, c_street_2, c_city, c_state, c_zip, c_phone, c_since, c_credit, c_credit_lim, c_discount, c_balance FROM customer WHERE c_w_id = {} AND c_d_id = {} AND c_last = '{}' ORDER BY c_first".format(c_w_id, c_d_id, c_last))
-            all_records = executer.fetchall()
-            idx = math.ceil(len(all_records) / 2)
-            c_id, c_first, c_middle, c_last, c_street_1, c_street_2, c_city, c_state, c_zip, c_phone, c_since, c_credit, c_credit_lim, c_discount, c_balance = all_records[idx-1]
+            all_rows = executer.fetchall()
+            idx = math.ceil(len(all_rows) / 2)
+            c_id, c_first, c_middle, c_last, c_street_1, c_street_2, c_city, c_state, c_zip, c_phone, c_since, c_credit, c_credit_lim, c_discount, c_balance = all_rows[idx-1]
 
         if c_credit == "BC":
             executer.execute_stmt("SELECT c_data FROM customer WHERE c_w_id = {} AND c_d_id = {} AND c_id = {}".format(c_w_id, c_d_id, c_id))

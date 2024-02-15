@@ -1,6 +1,7 @@
 import dejima
 from dejima import Loader
 from benchmark.tpcc import tpccutils
+from benchmark.tpcc import tpcc_consts
 
 class CustomerLoader(Loader):
     def _load(self, params):
@@ -17,9 +18,18 @@ class CustomerLoader(Loader):
         executer.lock_global(['dummy'])
 
         # customer, history
-        c_stmt, h_stmt = tpccutils.get_loadstmt_for_customer_history(w_id, d_id)
-        executer.execute_stmt(c_stmt)
-        executer.execute_stmt(h_stmt)
+        customer_size = tpcc_consts.RECORDS_NUM_CUSTOMER
+        customer_batch_size = tpcc_consts.BATCH_SIZE_CUSTOMER
+
+        for batch_offset in range(1, customer_size, customer_batch_size):
+            items_size = customer_batch_size
+            if customer_size - batch_offset < customer_batch_size:
+                items_size = customer_size - batch_offset
+
+            c_stmt, h_stmt = tpccutils.get_loadstmt_for_customer_history(w_id, d_id, batch_offset, items_size)
+            executer.execute_stmt(c_stmt)
+            executer.execute_stmt(h_stmt)
+            executer.propagate(DEBUG=True)
 
         # orders, neworders, orderline
         o_stmt, ol_stmt, no_stmt = tpccutils.get_loadstmt_for_orders_neworders_orderline(w_id, d_id)

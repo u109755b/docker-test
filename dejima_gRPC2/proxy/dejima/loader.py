@@ -19,9 +19,12 @@ class Loader:
 
         try:
             result = self._load(params)
+        except errors.UniqueViolation as e:
+            errors.out_err(e, "unique violation")
+            return {"result": "unique violation"}
         except Exception as e:
             errors.out_err(e, "loader error")
-            return {"result": e}
+            return {"result": "loader error"}
 
         print("load finish")
         return {"result": result}

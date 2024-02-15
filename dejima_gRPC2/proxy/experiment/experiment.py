@@ -5,6 +5,7 @@ from opentelemetry import trace
 from opentelemetry.context import attach, detach, set_value
 
 from experiment.exp_base import ExperimentBase
+from experiment import exp_config
 
 tracer = trace.get_tracer(__name__)
 
@@ -13,22 +14,22 @@ class Experiment(ExperimentBase):
     def __init__(self, bench_name):
         self.bench_name = bench_name
 
-        self.peer_num = 3
-        self.threads = 1   # num of threads for each peer
-        self.tx_t = 10
-        self.test_time = 600
+        self.peer_num = exp_config.peer_num
+        self.threads = exp_config.threads   # num of threads for each peer
+        self.tx_t = exp_config.tx_t
+        self.test_time = exp_config.test_time
 
-        self.default_zipf=0.99     # zipf
+        self.default_zipf=exp_config.default_zipf     # zipf
 
-        self.tpcc_record_num = 10   # per peer
-        self.yscb_start_id = 1
-        self.ycsb_record_num = 100   # per peer
+        self.tpcc_record_num = exp_config.tpcc_record_num   # per peer
+        self.yscb_start_id = exp_config.yscb_start_id
+        self.ycsb_record_num = exp_config.ycsb_record_num   # per peer
 
-        self.prelock_request_invalid = False
-        self.prelock_invalid = False
-        self.hop_mode = False
-        self.include_getting_tx_time = True
-        self.getting_tx = True
+        self.prelock_request_invalid = exp_config.prelock_request_invalid
+        self.prelock_invalid = exp_config.prelock_invalid
+        self.hop_mode = exp_config.hop_mode
+        self.include_getting_tx_time = exp_config.include_getting_tx_time
+        self.getting_tx = exp_config.getting_tx
 
         self.res_list = []
 

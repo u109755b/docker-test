@@ -1,5 +1,15 @@
 {
   "dejima_table": {
+    "d_warehouse": [
+      "Peer1",
+      "Peer2",
+      "Peer3"
+    ],
+    "d_district": [
+      "Peer1",
+      "Peer2",
+      "Peer3"
+    ],
     "d_customer": [
       "Peer1",
       "Peer2",
@@ -9,45 +19,49 @@
       "Peer1",
       "Peer2",
       "Peer3"
-    ],
-    "d_warehouse": [
-      "Peer1",
-      "Peer2",
-      "Peer3"
     ]
   },
   "base_table": {
     "Peer1": {
+      "d_warehouse": [
+        "warehouse"
+      ],
+      "d_district": [
+        "district"
+      ],
       "d_customer": [
         "customer"
       ],
       "d_stock": [
         "stock"
-      ],
-      "d_warehouse": [
-        "warehouse"
       ]
     },
     "Peer2": {
+      "d_warehouse": [
+        "warehouse"
+      ],
+      "d_district": [
+        "district"
+      ],
       "d_customer": [
         "customer"
       ],
       "d_stock": [
         "stock"
-      ],
-      "d_warehouse": [
-        "warehouse"
       ]
     },
     "Peer3": {
+      "d_warehouse": [
+        "warehouse"
+      ],
+      "d_district": [
+        "district"
+      ],
       "d_customer": [
         "customer"
       ],
       "d_stock": [
         "stock"
-      ],
-      "d_warehouse": [
-        "warehouse"
       ]
     }
   },

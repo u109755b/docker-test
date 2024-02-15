@@ -26,6 +26,7 @@ CREATE TABLE district (
   d_city varchar(20) NOT NULL,
   d_state char(2) NOT NULL,
   d_zip char(9) NOT NULL,
+  lineage varchar(500) NOT NULL,
   PRIMARY KEY (d_w_id, d_id)
 );
 
@@ -67,7 +68,6 @@ CREATE TABLE history (
   h_amount decimal(6,2) NOT NULL,
   h_data varchar(24) NOT NULL
 );
-
 
 DROP TABLE IF EXISTS item;
 CREATE TABLE item (
@@ -147,6 +147,7 @@ CREATE INDEX idx_stock_2 ON stock (s_i_id);
 CREATE INDEX idx_order_line_2 ON order_line (ol_supply_w_id,ol_i_id);
 
 CREATE INDEX ON warehouse (lineage);
+CREATE INDEX ON district (lineage);
 CREATE INDEX ON customer (c_lineage);
 CREATE INDEX ON stock (lineage);
 

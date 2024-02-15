@@ -14,6 +14,9 @@ class LocalLockNotAvailable(LockNotAvailable):
 class GlobalLockNotAvailable(LockNotAvailable):
     pass
 
+# UniqueViolation
+UniqueViolation = psycopg2.errors.UniqueViolation
+
 # DatabaseErrorpsycopg2.DatabaseError
 DatabaseError = psycopg2.DatabaseError
 
@@ -49,7 +52,7 @@ def out_err(e=None, info=None, light_trace=True, out_trace=False):
         print(f'File "{file_name}", line {line_num}, in {func_name}')
         print(f"  {line}")
     if info: print("Comment:", info)
-    if e: print(f"{type(e)}: {e.strip()}")
+    if e: print(f"{type(e)}: {e}")
     if out_trace:
         print("------------------ Trackback ------------------")
         print(traceback.format_exc().strip())

@@ -137,13 +137,17 @@ class ResultMeasurement:
         if display:
             rounded_result = utils.general_1obj_func(result, utils.round2)
             # commit
-            print("commit: {} ({} {})".format(*rounded_result["commit"]), end="  ")
-            print("{} ({} {})[s]".format(*rounded_result["commit_time"]), end=",   ")
-            print("{} = {} * {}".format(*rounded_result["custom_commit"]))
+            commit_result = ""
+            commit_result += "commit: {} ({} {})".format(*rounded_result["commit"]) + "  "
+            commit_result += "{} ({} {})[s]".format(*rounded_result["commit_time"]) + ",   "
+            commit_result += "{} = {} * {}".format(*rounded_result["custom_commit"])
+            print(commit_result)
             # abort
-            print("abort: {} ({} {})".format(*rounded_result["abort"]), end="  ")
-            print("{} ({} {})[s]".format(*rounded_result["abort_time"]), end=",   ")
-            print("{} = {} * {}".format(*rounded_result["custom_abort"]))
+            abort_result = ""
+            abort_result += "abort: {} ({} {})".format(*rounded_result["abort"]) + "  "
+            abort_result += "{} ({} {})[s]".format(*rounded_result["abort_time"]) + ",   "
+            abort_result += "{} = {} * {}".format(*rounded_result["custom_abort"])
+            print(abort_result)
             # global lock
             print("global lock: {}[s]".format(*rounded_result["global_lock"]))
         return result

@@ -1,4 +1,5 @@
 from psycopg2.extras import DictCursor
+from psycopg2.extensions import ISOLATION_LEVEL_READ_COMMITTED
 from dejima import errors
 from dejima.pool import pool
 
@@ -6,6 +7,7 @@ class Tx:
     def __init__(self, global_xid):
         self.global_xid = global_xid
         self.db_conn = pool.getconn(key=global_xid)
+        self.db_conn.set_session(isolation_level=ISOLATION_LEVEL_READ_COMMITTED)   # default setting though
         self.child_peers = set()
         self.cur = self.db_conn.cursor(cursor_factory=DictCursor)   # return DictRow instead of TupleRow
         self.propagation_cnt = 0

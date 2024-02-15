@@ -9,7 +9,11 @@ class LocalLoader(Loader):
         self.param_check(params, param_keys)
 
         peer_num = int(params['peer_num'])
+        peer_idx = int(params['peer_idx'])
+        config.peer_num = peer_num
         config.warehouse_num = (peer_num-1) // 10 + 1
+        config.w_id = (peer_idx-1) // 10 + 1
+        config.d_id = (peer_idx-1) % 10 + 1
 
         # create executer
         executer = dejima.get_executer("load")

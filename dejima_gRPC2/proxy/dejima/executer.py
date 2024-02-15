@@ -1,3 +1,4 @@
+import os
 import json
 from dejima import config
 from dejima import dejimautils
@@ -16,6 +17,7 @@ class Executer:
     def _init(self):
         self.locking_method = "2pl"
         self.status = self.status_clean
+        self.fetchone_result = None
 
     # _restore
     def _restore(self):
@@ -53,11 +55,25 @@ class Executer:
         return result
 
     # execution
-    def execute_stmt(self, stmt):
+    def execute_stmt(self, stmt, max_retry_cnt=0, DEBUG=False):
         try:
+            self.fetchone_result = None
             self.tx.cur.execute(stmt)
+            if max_retry_cnt:
+                result = self.fetchone()
+                retry_cnt = 0
+                while not result and retry_cnt < max_retry_cnt:
+                    self.tx.cur.execute(stmt)
+                    result = self.fetchone()
+                    retry_cnt += 1
+                self.fetchone_result = result
+                if retry_cnt:
+                    if self.fetchone_result:
+                        print(f'"{stmt}": retried {retry_cnt} out of {max_retry_cnt} times to get a result')
+                    else:
+                        print(f'"{stmt}": failed to fetch a result after trying {retry_cnt} times')
         except errors.LockNotAvailable as e:
-            print("lock failed")
+            if DEBUG: print(f"{os.path.basename(__file__)}: local lock failed")
             self._restore()
             raise errors.LocalLockNotAvailable("abort during local lock")
         except errors.SyntaxError as e:
@@ -77,13 +93,23 @@ class Executer:
         - select non-existent record -> None
         - no result (INSERT, UPDATE, DELETE) -> raise psycopg2.ProgrammingError: no results to fetch
         """
-        return self.tx.cur.fetchone()
+        if self.fetchone_result:
+            result = self.fetchone_result
+            self.fetchone_result = None
+        else:
+            result = self.tx.cur.fetchone()
+        return result
     def fetchall(self):
         """Returns:
-        - success -> psycopg2.extras.DictRow   ex) [DictRow, DictRow, ...]
+        - success -> list   ex) [DictRow, DictRow, ...]
         - select non-existent record -> []
         """
-        return self.tx.cur.fetchall()
+        if self.fetchone_result:
+            result = [self.fetchone_result] + self.tx.cur.fetchall()
+            self.fetchone_result = None
+        else:
+            result = self.tx.cur.fetchall()
+        return result
 
     # propagate to dejima table
     def propagate_dejima_table(self):

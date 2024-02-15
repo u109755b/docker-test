@@ -4,15 +4,15 @@ import dejima
 from dejima import config
 from dejima import GlobalBencher
 from benchmark.tpcc import tpccutils
+from benchmark.tpcc import tpcc_consts
 
 class TPCCTxNO(GlobalBencher):
     def _execute(self):
         # prepare parameters
-        w_id = random.randint(1, config.warehouse_num)
-        # d_id = random.randint(1, 10)
-        d_id = random.randint(1, 1)
-        # c_id = tpccutils.nurand(1023, 1, 3000, tpccutils.C_FOR_C_ID)
-        c_id = next(tpccutils.zipf_gen)
+        w_id = config.w_id   # home w_id
+        d_id = random.randint(1, tpccutils.get_group_peer_num(w_id))
+        c_id = tpccutils.nurand(1023, 1, 3000, tpccutils.C_FOR_C_ID)
+        # c_id = next(tpccutils.zipf_gen)
         ol_cnt = random.randint(5, 15)
         rbk = random.randint(1, 100)
         o_entry_d = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -21,21 +21,23 @@ class TPCCTxNO(GlobalBencher):
         ol_quantity_list = []
         o_all_local = 1
         for i in range(1, ol_cnt+1):
+            # ol_i_id
             if i == ol_cnt and rbk == 1:
-                ol_i_id_list.append(None)
+                ol_i_id = 111000
             else:
-                ol_i_id_list.append(tpccutils.nurand(8191, 1, 100000, tpccutils.C_FOR_OL_I_ID))
-            if random.randint(1,100) == 1 or config.warehouse_num == 1:
-                ol_supply_w_id_list.append(w_id)
-            else:
+                items_size = tpcc_consts.RECORDS_NUM_STOCK * tpccutils.get_group_peer_num(w_id)   # <= 100,000
+                ol_i_id = tpccutils.nurand(8191, 1, items_size, tpccutils.C_FOR_OL_I_ID)
+            ol_i_id_list.append(ol_i_id)
+            # ol_supply_w_id
+            if random.randint(1, 100) == 1 and config.warehouse_num > 1:
                 o_all_local = 0
-                while True:
-                    ol_supply_w_id = random.randint(1, config.warehouse_num)
-                    if ol_supply_w_id == w_id:
-                        continue
-                    break
-                ol_supply_w_id_list.append(ol_supply_w_id)
-            ol_quantity_list.append(random.randint(1, 10))
+                ol_supply_w_id = tpccutils.get_remote_w_id(w_id)
+            else:
+                ol_supply_w_id = w_id
+            ol_supply_w_id_list.append(ol_supply_w_id)
+            # ol_quantity
+            ol_quantity = random.randint(1, 10)
+            ol_quantity_list.append(ol_quantity)
 
 
         # create executer
@@ -45,28 +47,34 @@ class TPCCTxNO(GlobalBencher):
 
 
         # local lock
-        miss_flag = True
         lineages = []
+        miss_flag = False
 
-        executer.execute_stmt("SELECT * FROM warehouse WHERE W_ID = {} FOR SHARE NOWAIT".format(w_id))
-        executer.execute_stmt("SELECT * FROM district WHERE d_w_id = {} AND d_id = {} FOR UPDATE NOWAIT".format(w_id, d_id))
-        executer.execute_stmt("SELECT * FROM customer WHERE c_w_id = {} AND c_d_id = {} AND c_id = {} FOR SHARE NOWAIT".format(w_id, d_id, c_id))
-        # if tx.cur.fetchone() != None:
-        #     miss_flag = False
+        executer.execute_stmt("SELECT * FROM warehouse WHERE W_ID = {} FOR SHARE NOWAIT".format(w_id), max_retry_cnt=3)
+        executer.execute_stmt("SELECT lineage FROM district WHERE d_w_id = {} AND d_id = {} FOR UPDATE NOWAIT".format(w_id, d_id), max_retry_cnt=3)
+        row = executer.fetchone()
+        lineages.append(row[0])
+        executer.execute_stmt("SELECT * FROM customer WHERE c_w_id = {} AND c_d_id = {} AND c_id = {} FOR SHARE NOWAIT".format(w_id, d_id, c_id), max_retry_cnt=3)
+
         for i_id in ol_i_id_list:
-            if i_id == None:
-                continue
-            executer.execute_stmt("SELECT * FROM item WHERE I_ID = {} FOR SHARE NOWAIT".format(i_id))
-            executer.execute_stmt("SELECT lineage FROM stock WHERE s_i_id = {} AND s_w_id = {} FOR SHARE NOWAIT".format(i_id, w_id))
-            all_records = executer.fetchall()
-            if len(all_records) != 0:
-                _lineages = [record[0] for record in all_records]
-                lineages += _lineages
-                miss_flag = False
+            executer.execute_stmt("SELECT i_id FROM item WHERE i_id = {} FOR SHARE NOWAIT".format(i_id), max_retry_cnt=3)
+            row = executer.fetchone()
+            if not row:
+                miss_flag = True
+                print("new order miss")
+                break
+
+            executer.execute_stmt("SELECT lineage FROM stock WHERE s_i_id = {} AND s_w_id = {} FOR UPDATE NOWAIT".format(i_id, w_id), max_retry_cnt=3)
+            row = executer.fetchone()
+            if row:
+                lineages.append(row[0])
+            else:
+                miss_flag = True
+                print("** unexpected new order miss **")
+                break
 
         if miss_flag:
             executer._restore()
-            print("new order miss")
             return "miss"
 
 
@@ -82,22 +90,16 @@ class TPCCTxNO(GlobalBencher):
         executer.execute_stmt("SELECT d_tax, d_next_o_id FROM district WHERE d_w_id = {} AND d_id = {} FOR UPDATE".format(w_id, d_id))
         d_tax, d_next_o_id = executer.fetchone()
 
+        executer.execute_stmt("UPDATE district SET d_next_o_id = d_next_o_id + 1 WHERE d_w_id = {} AND d_id = {}".format(w_id, d_id))
+
         executer.execute_stmt("SELECT c_discount, c_last, c_credit FROM customer WHERE c_w_id = {} AND c_d_id = {} AND c_id = {}".format(w_id, d_id, c_id))
         c_discount, c_last, c_credit = executer.fetchone()
-
-        executer.execute_stmt("UPDATE district SET d_next_o_id = d_next_o_id + 1 WHERE d_w_id = {} AND d_id = {}".format(w_id, d_id))
 
         executer.execute_stmt("INSERT INTO oorder (o_id, o_d_id, o_w_id, o_c_id, o_entry_d, o_ol_cnt, o_all_local) VALUES ({}, {}, {}, {}, '{}', {}, {})".format(d_next_o_id, d_id, w_id, c_id, o_entry_d, ol_cnt, o_all_local))
 
         executer.execute_stmt("INSERT INTO new_order (no_o_id, no_d_id, no_w_id) VALUES ({}, {}, {})".format(d_next_o_id, d_id, w_id))
 
-        # for i, i_id in enumerate(ol_i_id_list):
-        for i, lineage in enumerate(lineages):
-            i_id = lineage.split(",")[1][:-1]
-            # rollback if i_id is unused value
-            if i_id == None:
-                raise Exception('i_id = None, rollback')
-
+        for i, i_id in enumerate(ol_i_id_list):
             executer.execute_stmt("SELECT I_PRICE, I_NAME, I_DATA FROM item WHERE I_ID = {}".format(i_id))
             i_price, i_name, i_data = executer.fetchone()
 

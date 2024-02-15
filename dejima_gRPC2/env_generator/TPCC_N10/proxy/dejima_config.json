@@ -1,0 +1,206 @@
+{
+  "dejima_table": {
+    "d_warehouse": [
+      "Peer1",
+      "Peer2",
+      "Peer3",
+      "Peer4",
+      "Peer5",
+      "Peer6",
+      "Peer7",
+      "Peer8",
+      "Peer9",
+      "Peer10"
+    ],
+    "d_district": [
+      "Peer1",
+      "Peer2",
+      "Peer3",
+      "Peer4",
+      "Peer5",
+      "Peer6",
+      "Peer7",
+      "Peer8",
+      "Peer9",
+      "Peer10"
+    ],
+    "d_customer": [
+      "Peer1",
+      "Peer2",
+      "Peer3",
+      "Peer4",
+      "Peer5",
+      "Peer6",
+      "Peer7",
+      "Peer8",
+      "Peer9",
+      "Peer10"
+    ],
+    "d_stock": [
+      "Peer1",
+      "Peer2",
+      "Peer3",
+      "Peer4",
+      "Peer5",
+      "Peer6",
+      "Peer7",
+      "Peer8",
+      "Peer9",
+      "Peer10"
+    ]
+  },
+  "base_table": {
+    "Peer1": {
+      "d_warehouse": [
+        "warehouse"
+      ],
+      "d_district": [
+        "district"
+      ],
+      "d_customer": [
+        "customer"
+      ],
+      "d_stock": [
+        "stock"
+      ]
+    },
+    "Peer2": {
+      "d_warehouse": [
+        "warehouse"
+      ],
+      "d_district": [
+        "district"
+      ],
+      "d_customer": [
+        "customer"
+      ],
+      "d_stock": [
+        "stock"
+      ]
+    },
+    "Peer3": {
+      "d_warehouse": [
+        "warehouse"
+      ],
+      "d_district": [
+        "district"
+      ],
+      "d_customer": [
+        "customer"
+      ],
+      "d_stock": [
+        "stock"
+      ]
+    },
+    "Peer4": {
+      "d_warehouse": [
+        "warehouse"
+      ],
+      "d_district": [
+        "district"
+      ],
+      "d_customer": [
+        "customer"
+      ],
+      "d_stock": [
+        "stock"
+      ]
+    },
+    "Peer5": {
+      "d_warehouse": [
+        "warehouse"
+      ],
+      "d_district": [
+        "district"
+      ],
+      "d_customer": [
+        "customer"
+      ],
+      "d_stock": [
+        "stock"
+      ]
+    },
+    "Peer6": {
+      "d_warehouse": [
+        "warehouse"
+      ],
+      "d_district": [
+        "district"
+      ],
+      "d_customer": [
+        "customer"
+      ],
+      "d_stock": [
+        "stock"
+      ]
+    },
+    "Peer7": {
+      "d_warehouse": [
+        "warehouse"
+      ],
+      "d_district": [
+        "district"
+      ],
+      "d_customer": [
+        "customer"
+      ],
+      "d_stock": [
+        "stock"
+      ]
+    },
+    "Peer8": {
+      "d_warehouse": [
+        "warehouse"
+      ],
+      "d_district": [
+        "district"
+      ],
+      "d_customer": [
+        "customer"
+      ],
+      "d_stock": [
+        "stock"
+      ]
+    },
+    "Peer9": {
+      "d_warehouse": [
+        "warehouse"
+      ],
+      "d_district": [
+        "district"
+      ],
+      "d_customer": [
+        "customer"
+      ],
+      "d_stock": [
+        "stock"
+      ]
+    },
+    "Peer10": {
+      "d_warehouse": [
+        "warehouse"
+      ],
+      "d_district": [
+        "district"
+      ],
+      "d_customer": [
+        "customer"
+      ],
+      "d_stock": [
+        "stock"
+      ]
+    }
+  },
+  "peer_address": {
+    "Peer1": "Peer1-proxy:8000",
+    "Peer2": "Peer2-proxy:8000",
+    "Peer3": "Peer3-proxy:8000",
+    "Peer4": "Peer4-proxy:8000",
+    "Peer5": "Peer5-proxy:8000",
+    "Peer6": "Peer6-proxy:8000",
+    "Peer7": "Peer7-proxy:8000",
+    "Peer8": "Peer8-proxy:8000",
+    "Peer9": "Peer9-proxy:8000",
+    "Peer10": "Peer10-proxy:8000"
+  }
+}

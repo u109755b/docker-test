@@ -10,6 +10,7 @@
 
 # customer
 RECORDS_NUM_CUSTOMER = 3000 # 3,000 / peer
+BATCH_SIZE_CUSTOMER = 1000
 
 # stock
 RECORDS_NUM_STOCK = 10000   # 10,000 / peer
