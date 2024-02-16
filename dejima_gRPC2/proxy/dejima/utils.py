@@ -1,6 +1,7 @@
-import numpy as np
 import numbers
 import copy
+import numpy as np
+from collections import defaultdict
 
 # 便利関数
 def divide(x, y, d=None):
@@ -14,9 +15,9 @@ def round2(x):
 
 
 # 型判定の関数
-def is_dict(obj): return type(obj) is dict
+def is_dict(obj): return type(obj) in [dict, defaultdict]
 def is_list(obj): return type(obj) in [list, np.ndarray]
-def is_value(obj): return isinstance(obj, numbers.Number) or type(obj) is str
+def is_value(obj): return isinstance(obj, numbers.Number) or type(obj) is str   # isinstance also matches subclasses
 
 
 # objのvalue要素全てについてv=func(v)を実行する
@@ -40,26 +41,39 @@ def general_1obj_func(_obj, func, save=False):
 
 
 # obj1とobj2が共通で持っているvalue要素についてv1=func(v1,v2)を実行する
-def general_2obj_func(_obj1, obj2, func, save=False):
+# もしassign_v2_value=True ならv1の方に要素がない場合v2の要素を代入する
+def general_2obj_func(_obj1, obj2, func, save=False, assign_v2_value=False):
     if save == True: obj1 = _obj1
     else: obj1 = copy.deepcopy(_obj1)
     # obj2がvalue型
     if is_value(obj2):
         if is_dict(obj1): obj2 = {k: obj2 for k in obj1}
         if is_list(obj1): obj2 = [obj2 for _ in range(len(obj1))]
-        general_2obj_func(obj1, obj2, func, True)
+        general_2obj_func(obj1, obj2, func, True, assign_v2_value)
     # 辞書型
     elif is_dict(obj1):
-        keys = set(obj1.keys()) & set(obj2.keys())
+        if assign_v2_value:
+            keys = set(obj2.keys())
+        else:
+            keys = set(obj1.keys()) & set(obj2.keys())
         for k in keys:
-            if is_value(obj1[k]): obj1[k] = func(obj1[k], obj2[k])
-            else: general_2obj_func(obj1[k], obj2[k], func, True)
+            if k not in obj1:
+                obj1[k] = copy.deepcopy(obj2[k])
+            else:
+                if is_value(obj1[k]): obj1[k] = func(obj1[k], obj2[k])
+                else: general_2obj_func(obj1[k], obj2[k], func, True, assign_v2_value)
     # リスト型
     elif is_list(obj1):
-        index_list = range(min(len(obj1), len(obj2)))
+        if assign_v2_value:
+            index_list = range(len(obj2))
+        else:
+            index_list = range(min(len(obj1), len(obj2)))
         for i in index_list:
-            if is_value(obj1[i]): obj1[i] = func(obj1[i], obj2[i])
-            else: general_2obj_func(obj1[i], obj2[i], func, True)
+            if i >= len(obj1):
+                obj1.append(copy.deepcopy(obj2[i]))
+            else:
+                if is_value(obj1[i]): obj1[i] = func(obj1[i], obj2[i])
+                else: general_2obj_func(obj1[i], obj2[i], func, True, assign_v2_value)
     # 型エラー
     else:
         raise TypeError("general_2obj_func: {} is not supported".format(type(obj1)))

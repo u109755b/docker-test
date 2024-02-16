@@ -24,9 +24,6 @@ class GlobalBencher:
         self.params = copy.copy(params)
         self.params["timestamp"] = self.timestamp
 
-        self.timestamp.append(time.perf_counter())   # 0
-        self.result_measurement.start_tx()
-
         # propagation to other peers
         self.global_params = {
             "max_hop": 1,
@@ -43,7 +40,7 @@ class GlobalBencher:
             return False
         except errors.GlobalLockNotAvailable as e:
             # print(f"{os.path.basename(__file__)}: global lock failed")
-            self.result_measurement.abort_tx('global', 1)
+            self.result_measurement.abort_tx('global', hop=1)
             return False
         except Exception as e:
             # errors.out_err(e, "global bencher error", out_trace=True)

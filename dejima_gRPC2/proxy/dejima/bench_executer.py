@@ -10,6 +10,12 @@ class BenchExecuter(Executer):
         self.time_measurement = params["time_measurement"]
         self.timestamp_management = params["timestamp_management"]
         self.timestamp = params["timestamp"]
+        self.tx_type = None
+        if "tx_type" in params:
+            self.tx_type = params["tx_type"]
+
+        self.timestamp.append(time.perf_counter())   # 0
+        self.result_measurement.start_tx(self.tx_type)
 
     # get member variables
     def get_global_xid(self):
@@ -67,7 +73,7 @@ class BenchExecuter(Executer):
             dejimautils.termination_request("commit", self.global_xid, self.locking_method)
             self.time_measurement.stop_timer("global_commit", self.global_xid)
 
-            self.result_measurement.commit_tx('update', self.global_params["max_hop"])
+            self.result_measurement.commit_tx('update', hop=self.global_params["max_hop"])
             msg = "commited"
         else:
             self.time_measurement.start_timer("local_abort", self.global_xid)
@@ -78,7 +84,7 @@ class BenchExecuter(Executer):
             dejimautils.termination_request("abort", self.global_xid, self.locking_method)
             self.time_measurement.stop_timer("global_abort", self.global_xid)
 
-            self.result_measurement.abort_tx('global', self.global_params["max_hop"])
+            self.result_measurement.abort_tx('global', hop=self.global_params["max_hop"])
             msg = "aborted"
         del config.tx_dict[self.global_xid]
         self.timestamp.append(time.perf_counter())   # 5

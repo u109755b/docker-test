@@ -31,6 +31,7 @@ class Termination(data_pb2_grpc.TerminationServicer):
             dejimautils.termination_request("abort", global_xid, params["method"]) 
 
         del config.tx_dict[global_xid]
+        del config.prop_visited[global_xid]
 
         res_dic = {"result": "Ack"}
         return data_pb2.Response(json_str=json.dumps(res_dic))

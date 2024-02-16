@@ -1,5 +1,6 @@
 import time
 import threading
+from collections import defaultdict
 from dejima import utils
 
 # TimestampManagement
@@ -96,23 +97,28 @@ class ResultMeasurement:
         # コミット数 (Updateコミット数+Readコミット数)  コミットの合計時間 (Updateコミットの合計時間+Readコミットの合計時間)
         # アボート数 (Globalアボート数+Localアボート数)  アボートの合計時間 (Globalアボートの合計時間+Localアボートの合計時間)
         self.start_time = 0
-        
+        self.tx_type = None
+
         self.update_commit_num = 0
         self.read_commit_num = 0
+        self.tx_commit_num = defaultdict(lambda: 0)
         self.update_commit_time = 0
         self.read_commit_time = 0
+        self.tx_commit_time = defaultdict(lambda: 0)
         self.commit_hop = 0
-        
+
         self.global_abort_num = 0
         self.local_abort_num = 0
+        self.tx_abort_num = defaultdict(lambda: 0)
         self.global_abort_time = 0
         self.local_abort_time = 0
+        self.tx_abort_time = defaultdict(lambda: 0)
         self.abort_hop = 0
-        
+
         self.global_lock_start_time = 0
         self.global_lock_time = 0
         self.total_global_lock_time = 0
-        
+
     def get_result(self, display=False):
         # commit: 8 (2 6)  6.20 (4.10 2.10)[s],   abort: 8 (4 4)  6.20 (4.07 2.13)[s]
         # commit
@@ -123,7 +129,7 @@ class ResultMeasurement:
         abort_num = self.global_abort_num + self.local_abort_num
         abort_time = self.global_abort_time + self.local_abort_time
         abort_hop = utils.divide(self.abort_hop, self.global_abort_num)
-        
+
         result = {
             "commit": [commit_num,  self.update_commit_num,  self.read_commit_num],
             "abort": [abort_num,  self.global_abort_num,  self.local_abort_num],
@@ -131,9 +137,13 @@ class ResultMeasurement:
             "abort_time": [abort_time,  self.global_abort_time,  self.local_abort_time],
             "custom_commit": [self.update_commit_num*commit_hop,  self.update_commit_num,  commit_hop],
             "custom_abort": [self.global_abort_num*abort_hop,  self.global_abort_num,  abort_hop],
+            "tx_commit": self.tx_commit_num,
+            "tx_commit_time": self.tx_commit_time,
+            "tx_abort": self.tx_abort_num,
+            "tx_abort_time": self.tx_abort_time,
             "global_lock": [self.total_global_lock_time],
         }
-        
+
         if display:
             rounded_result = utils.general_1obj_func(result, utils.round2)
             # commit
@@ -148,19 +158,30 @@ class ResultMeasurement:
             abort_result += "{} ({} {})[s]".format(*rounded_result["abort_time"]) + ",   "
             abort_result += "{} = {} * {}".format(*rounded_result["custom_abort"])
             print(abort_result)
+            # each tx
+            tx_type_set = set()
+            tx_type_set |= set(rounded_result["tx_commit"].keys())
+            tx_type_set |= set(rounded_result["tx_abort"].keys())
+            for tx_type in sorted(tx_type_set):
+                tx_result = ""
+                tx_result += f"{tx_type}: "
+                tx_result += f"{rounded_result["tx_commit"][tx_type]} {rounded_result["tx_abort"][tx_type]}  "
+                tx_result += f"({rounded_result["tx_commit_time"][tx_type]} {rounded_result["tx_abort_time"][tx_type]})[s]"
+                print(tx_result)
             # global lock
             print("global lock: {}[s]".format(*rounded_result["global_lock"]))
         return result
-        
-    def start_tx(self):
+
+    def start_tx(self, tx_type=None):
         self.start_time = time.perf_counter()
-        
+        self.tx_type = tx_type
+
     def start_global_lock(self):
         self.global_lock_start_time = time.perf_counter()
-        
+
     def finish_global_lock(self):
         self.global_lock_time = time.perf_counter() - self.global_lock_start_time
-        
+
     def commit_tx(self, commit_type, hop=1):
         commit_time = time.perf_counter() - self.start_time
         if commit_type == 'update':
@@ -171,7 +192,11 @@ class ResultMeasurement:
         if commit_type == 'read':
             self.read_commit_num += 1
             self.read_commit_time += commit_time
-            
+        if self.tx_type:
+            self.tx_commit_num[self.tx_type] += 1
+            self.tx_commit_time[self.tx_type] += commit_time
+            self.tx_type = None
+
     def abort_tx(self, abort_type, hop=1):
         abort_time = time.perf_counter() - self.start_time
         if abort_type == 'global':
@@ -181,3 +206,7 @@ class ResultMeasurement:
         if abort_type == 'local':
             self.local_abort_num += 1
             self.local_abort_time += abort_time
+        if self.tx_type:
+            self.tx_abort_num[self.tx_type] += 1
+            self.tx_abort_time[self.tx_type] += abort_time
+            self.tx_type = None

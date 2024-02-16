@@ -1,4 +1,5 @@
 import json
+from collections import defaultdict
 
 import grpc
 from grpcdata import data_pb2
@@ -14,6 +15,7 @@ from opentelemetry.context import attach, detach, set_value
 
 from dejima import config
 from dejima import utils
+from dejima import color
 
 if config.trace_enabled:
     resource = Resource(attributes={"service.name": "dejima_client"})
@@ -66,6 +68,10 @@ class ExperimentBase():
                 "abort_time": [0, 0, 0],
                 "custom_commit": [0, 0, 0],
                 "custom_abort": [0, 0, 0],
+                "tx_commit": defaultdict(lambda: 0),
+                "tx_commit_time": defaultdict(lambda: 0),
+                "tx_abort": defaultdict(lambda: 0),
+                "tx_abort_time": defaultdict(lambda: 0),
                 "global_lock": [0],
             },
             "process_time": {k: 0 for k in process_time_keys},
@@ -80,6 +86,10 @@ class ExperimentBase():
                 "abort_time": [thread_num, thread_num, thread_num],
                 "custom_commit": [1, 1, 1],
                 "custom_abort": [1, 1, 1],
+                "tx_commit": 1,
+                "tx_commit_time": thread_num,
+                "tx_abort": 1,
+                "tx_abort_time": thread_num,
                 "global_lock": [thread_num],
             },
             "process_time": {k: thread_num for k in process_time_keys},
@@ -95,7 +105,7 @@ class ExperimentBase():
         for res in res_list:
             res = json.loads(res)
             plus = lambda x, y: x + y
-            utils.general_2obj_func(all_data, res, plus, save=True)
+            utils.general_2obj_func(all_data, res, plus, save=True, assign_v2_value=True)
 
         # 結果の割り算
         utils.general_2obj_func(all_data, divider_data, utils.divide, save=True)
@@ -123,7 +133,35 @@ class ExperimentBase():
 
         # 結果表示
         if show_result:
-            print("throughput: {} {},  ({} {})[s],  ({} {})[ms]".format(*overall_result))
-            print("commit:  {} ({} {})  {} ({} {})[s],   {} = {} * {}".format(*basic_res["commit"], *basic_res["commit_time"], *basic_res["custom_commit"]))
-            print("abort:  {} ({} {})  {} ({} {})[s],   {} = {} * {}".format(*basic_res["abort"], *basic_res["abort_time"], *basic_res["custom_abort"]))
+            """ overall result """
+            # print("throughput: {} {},  ({} {})[s],  ({} {})[ms]".format(*overall_result))
+            result = f"{color.BLUE}throughput{color.RESET}:  "
+            result += f"{color.PURPLE}{overall_result[0]}{color.RESET} {overall_result[1]},  "
+            result += "({} {})[s],  ({} {})[ms]".format(*overall_result[2:])
+            print(result)
+            """ commit result """
+            # commit_result = "commit:  {} ({} {})  {} ({} {})[s],   {} = {} * {}".format(*basic_res["commit"], *basic_res["commit_time"], *basic_res["custom_commit"])
+            commit_result = f"{color.LIGHT_BLUE}commit{color.RESET}:  "
+            commit_result += "{}{} ({} {}){}  ".format(color.GREEN, *basic_res["commit"], color.RESET)
+            commit_result += "{}{} ({} {})[s]{},   ".format(color.GREEN, *basic_res["commit_time"], color.RESET)
+            commit_result += "{} = {} * {}".format(*basic_res["custom_commit"])
+            print(commit_result)
+            """ abort result """
+            # abort_result = "abort:  {} ({} {})  {} ({} {})[s],   {} = {} * {}".format(*basic_res["abort"], *basic_res["abort_time"], *basic_res["custom_abort"])
+            abort_result = f"{color.LIGHT_BLUE}abort{color.RESET}:  "
+            abort_result += "{}{} ({} {}){}  ".format(color.RED, *basic_res["abort"], color.RESET)
+            abort_result += "{}{} ({} {})[s]{},   ".format(color.RED, *basic_res["abort_time"], color.RESET)
+            abort_result += "{} = {} * {}".format(*basic_res["custom_abort"])
+            print(abort_result)
+            """ tx result """
+            tx_type_set = set()
+            tx_type_set |= set(basic_res["tx_commit"].keys())
+            tx_type_set |= set(basic_res["tx_abort"].keys())
+            for tx_type in sorted(tx_type_set):
+                tx_result = ""
+                tx_result += f"{color.BLUE}{tx_type}{color.RESET}:  "
+                tx_result += color.set_green(f"{basic_res["tx_commit"][tx_type]}  ({basic_res["tx_commit_time"][tx_type]})[s]") + ",   "
+                tx_result += color.set_red(f"{basic_res["tx_abort"][tx_type]}  ({basic_res["tx_abort_time"][tx_type]})[s]")
+                print(tx_result)
+            """ lock process """
             print("{}, {}[ms]".format(process_time, utils.round2(lock_process[0])))

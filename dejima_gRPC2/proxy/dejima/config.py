@@ -7,6 +7,7 @@ sys.dont_write_bytecode = True
 
 # key: global_xid, value: Tx type object
 tx_dict = {}
+prop_visited = {}
 
 channels = {}
 

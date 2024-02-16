@@ -117,8 +117,6 @@ class Executer:
         # refresh dejima table
         try:
             local_xid = self.tx.get_local_xid()
-            # self.tx.cur.execute("SELECT txid_current()")
-            # local_xid, *_ = self.tx.cur.fetchone()
             for dt in config.dt_list:
                 target_peers = list(config.dejima_config_dict['dejima_table'][dt])
                 target_peers.remove(config.peer_name)
@@ -137,8 +135,6 @@ class Executer:
                 prop_dict[dt]['peers'] = target_peers
                 prop_dict[dt]['delta'] = delta
 
-                self.tx.extend_childs(target_peers)
-
         except Exception as e:
             self._restore()
             errors.out_err(e, "BIRDS execution error", out_trace=True)
@@ -151,6 +147,7 @@ class Executer:
         result = "Ack"
         if prop_dict != {}:
             result = dejimautils.prop_request(prop_dict, self.global_xid, self.locking_method, self.global_params)
+            self.tx.extend_childs(self.global_params["peer_names"])
 
         if result == "Ack" and self.status != self.status_error:
             self.status = self.status_proped

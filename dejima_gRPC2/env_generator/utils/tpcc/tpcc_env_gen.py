@@ -14,6 +14,30 @@ class TPCCEnvGenerator(EnvGenerator):
 
     # generate edges
     def generate_edges(self):
+        # # for straight line topology
+        # for i in range(1, self.N):
+        #     setting_list = {
+        #         "warehouse": [f"w_{i}_{i+1}", tpcc_env_data.datalog_warehouse],
+        #         "district": [f"d_{i}_{i+1}", tpcc_env_data.datalog_district],
+        #         "customer": [f"c_{i}_{i+1}", tpcc_env_data.datalog_customer],
+        #         "stock": [f"s_{i}_{i+1}", tpcc_env_data.datalog_stock],
+        #     }
+        #     for bt_name, setting in setting_list.items():
+        #         # dt
+        #         dt_name = setting[0]
+        #         self._add_dejima_table(dt_name)
+        #         # Peer{i} - dt
+        #         node_name = f"Peer{i}"
+        #         self._add_edge(dt_name, node_name, [bt_name])
+        #         datalog = setting[1].replace("dt_name", dt_name)
+        #         self._add_datalog(datalog, node_name, f"01_{dt_name}.dl")
+        #         # dt - Peer{i+1}
+        #         node_name = f"Peer{i+1}"
+        #         self._add_edge(dt_name, node_name, [bt_name])
+        #         datalog = setting[1].replace("dt_name", dt_name)
+        #         self._add_datalog(datalog, node_name, f"01_{dt_name}.dl")
+        # return
+
         # d_warehouse
         dt_name = "d_warehouse"
         self._add_dejima_table(dt_name)

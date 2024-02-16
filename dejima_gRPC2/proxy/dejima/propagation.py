@@ -20,23 +20,33 @@ class Propagation(data_pb2_grpc.PropagationServicer):
 
         params = json.loads(req.json_str)
 
+
         global_xid = params['xid']
+
         if global_xid in config.tx_dict:
-            is_first_time = False
             tx = config.tx_dict[global_xid]
             locked_flag = True
         else:
-            is_first_time = True
             tx = Tx(global_xid)
             config.tx_dict[global_xid] = tx
             locked_flag = False
 
+        if global_xid in config.prop_visited:
+            is_first_time = False
+        else:
+            is_first_time = True
+            config.prop_visited[global_xid] = True
+
+        res_dic = {"result": "Nak", "peer_name": config.peer_name}
+        if not is_first_time:
+            res_dic["peer_name"] = None
+
         tx.propagation_cnt += 1
         if 1 < tx.propagation_cnt:
-            pass
             # print(f"{global_xid}: A propagation was called {tx.propagation_cnt} times, from {params['parent_peer']}")
-            # res_dic = {"result": "Nak"}
             # return data_pb2.Response(json_str=json.dumps(res_dic))
+            pass
+
 
         # update dejima table and propagate to base tables
         local_xid = tx.get_local_xid()
@@ -55,14 +65,13 @@ class Propagation(data_pb2_grpc.PropagationServicer):
 
         except errors.LockNotAvailable as e:
             # print(f"{os.path.basename(__file__)}: global lock failed")
-            res_dic = {"result": "Nak"}
             return data_pb2.Response(json_str=json.dumps(res_dic))
         except Exception as e:
             if "stmt" in locals():
                 print(stmt)
             errors.out_err(e, "dejima table update error", out_trace=True)
-            res_dic = {"result": "Nak"}
             return data_pb2.Response(json_str=json.dumps(res_dic))
+
 
         try: 
             # propagation
@@ -99,8 +108,8 @@ class Propagation(data_pb2_grpc.PropagationServicer):
                 print("delta:", delta)
             # tx.reset_childs()
             errors.out_err(e, "BIRDS execution error", out_trace=True)
-            res_dic = {"result": "Nak"}
             return data_pb2.Response(json_str=json.dumps(res_dic))
+
 
         timestamp.append(time.perf_counter())   # 3
         if prop_dict != {}:

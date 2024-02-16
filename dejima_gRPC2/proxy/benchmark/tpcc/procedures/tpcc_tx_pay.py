@@ -35,6 +35,7 @@ class TPCCTxPay(GlobalBencher):
         # create executer
         executer = dejima.get_executer("bench")
         executer.create_tx()
+        self.params["tx_type"] = "payment"
         executer.set_params(self.params)
 
 
