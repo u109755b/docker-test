@@ -23,49 +23,45 @@ class Propagation(data_pb2_grpc.PropagationServicer):
 
         global_xid = params['xid']
 
-        if global_xid in config.tx_dict:
-            tx = config.tx_dict[global_xid]
-            locked_flag = True
-        else:
-            tx = Tx(global_xid)
+        if global_xid not in config.tx_dict:
+            tx = Tx(global_xid, params["start_time"])
             config.tx_dict[global_xid] = tx
             locked_flag = False
-
-        if global_xid in config.prop_visited:
-            is_first_time = False
         else:
+            tx = config.tx_dict[global_xid]
+            locked_flag = True
+
+        if global_xid not in config.prop_visited:
             is_first_time = True
             config.prop_visited[global_xid] = True
+        else:
+            is_first_time = False
 
         res_dic = {"result": "Nak", "peer_name": config.peer_name}
         if not is_first_time:
             res_dic["peer_name"] = None
 
-        tx.propagation_cnt += 1
-        if 1 < tx.propagation_cnt:
-            # print(f"{global_xid}: A propagation was called {tx.propagation_cnt} times, from {params['parent_peer']}")
-            # return data_pb2.Response(json_str=json.dumps(res_dic))
-            pass
 
-
-        # update dejima table and propagate to base tables
+        # update base tables according to updates to dt
         local_xid = tx.get_local_xid()
         try:
             # additional lock for peers out of lock scope
             # if not locked_flag:
-            lock_stmts = dejimautils.get_lock_stmts(params['delta'])
-            for lock_stmt in lock_stmts:
-                tx.cur.execute(lock_stmt)
+            for dt in params["delta"]:
+                lock_stmts = dejimautils.get_lock_stmts(params['delta'][dt])
+                for lock_stmt in lock_stmts:
+                    tx.cur.execute(lock_stmt)
             timestamp.append(time.perf_counter())   # 1
-
-            # execute stmt
-            stmt = dejimautils.get_execute_stmt(params['delta'], local_xid)
-            tx.cur.execute(stmt)
-            timestamp.append(time.perf_counter())   # 2
-
         except errors.LockNotAvailable as e:
             # print(f"{os.path.basename(__file__)}: global lock failed")
             return data_pb2.Response(json_str=json.dumps(res_dic))
+
+        try:
+            # execute stmt
+            for dt in params["delta"]:
+                stmt = dejimautils.get_execute_stmt(params['delta'][dt], local_xid)
+                tx.cur.execute(stmt)
+            timestamp.append(time.perf_counter())   # 2
         except Exception as e:
             if "stmt" in locals():
                 print(stmt)
@@ -73,8 +69,8 @@ class Propagation(data_pb2_grpc.PropagationServicer):
             return data_pb2.Response(json_str=json.dumps(res_dic))
 
 
+        # propagate to dejima table
         try: 
-            # propagation
             prop_dict = {}
             for dt in config.dt_list:
                 # if dt == updated_dt: continue
@@ -101,23 +97,22 @@ class Propagation(data_pb2_grpc.PropagationServicer):
                 prop_dict[dt]['peers'] = target_peers
                 prop_dict[dt]['delta'] = delta
 
-                # tx.extend_childs(target_peers)
-
         except Exception as e:
             if str(e).startswith("the JSON object must be str, bytes or bytearray"):
                 print("delta:", delta)
-            # tx.reset_childs()
             errors.out_err(e, "BIRDS execution error", out_trace=True)
             return data_pb2.Response(json_str=json.dumps(res_dic))
 
 
+        # propagate to other peers
         timestamp.append(time.perf_counter())   # 3
         if prop_dict != {}:
-            result = dejimautils.prop_request(prop_dict, global_xid, params["method"], params['global_params'])
+            result = dejimautils.prop_request(prop_dict, global_xid, params["start_time"], params["method"], params['global_params'])
             tx.extend_childs(params["global_params"]["peer_names"])
         else:
             result = "Ack"
         timestamp.append(time.perf_counter())   # 4
+
 
         if result != "Ack":
             res_dic = {"result": "Nak"}

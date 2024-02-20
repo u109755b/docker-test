@@ -14,33 +14,39 @@ from dejima import utils
 
 class TimestampManagement:
     def __init__(self):
-        self.duration_time = {'lock': 0, 'base_update': 0, 'prop_view_0': 0, 'view_update': 0, 'prop_view_k': 0, 'communication': 0, 'commit': 0}
-        self.data_num = {'lock': 0, 'base_update': 0, 'prop_view_0': 0, 'view_update': 0, 'prop_view_k': 0, 'communication': 0, 'commit': 0}
+        self.duration_time = defaultdict(lambda: defaultdict(int))
+        self.data_num = defaultdict(lambda: defaultdict(int))
 
-    def add_duration_time(self, time_name, duration_time):
-        self.duration_time[time_name] += duration_time
-        self.data_num[time_name] += 1
+    def add_duration_time(self, group_name, time_name, start_time, end_time):
+        self.duration_time[group_name][time_name] += end_time - start_time
+        self.data_num[group_name][time_name] += 1
 
     def add_timestamps(self, timestamps):
         timestamps = list(reversed(timestamps))
-        self.add_duration_time("commit", timestamps[0][-1]-timestamps[0][-2])
-        timestamps[0].pop()
         for i, timestamp in enumerate(timestamps):
-            self.add_duration_time("lock", timestamp[1]-timestamp[0])
             if i == 0:
-                self.add_duration_time('base_update', timestamp[2]-timestamp[1])
-                self.add_duration_time('prop_view_0', timestamp[3]-timestamp[2])
+                self.add_duration_time("local", "1_lock", timestamp[0], timestamp[1])
+                self.add_duration_time("local", '2_base_update', timestamp[1], timestamp[2])
+                self.add_duration_time("local", '3_prop_view', timestamp[2], timestamp[3])
+                self.add_duration_time("local", '4_prop_peer', timestamp[3], timestamp[4])
+                self.add_duration_time("local", "5_commit", timestamp[4], timestamp[5])
             else:
-                self.add_duration_time('view_update', timestamp[2]-timestamp[1])
-                self.add_duration_time('prop_view_k', timestamp[3]-timestamp[2])
+                self.add_duration_time("remote", "4-1_lock", timestamp[0], timestamp[1])
+                self.add_duration_time("remote", '4-2_base_update', timestamp[1], timestamp[2])
+                self.add_duration_time("remote", '4-3_prop_view', timestamp[2], timestamp[3])
+                self.add_duration_time("remote", '4-4_prop_peer', timestamp[3], timestamp[4])
             if i != len(timestamps)-1:
-                duration_time = (timestamps[i+1][0]-timestamps[i][-2]) + (timestamps[i][-1]-timestamps[i+1][-1])
-                self.add_duration_time('communication', duration_time)
+                self.add_duration_time("remote", '4-0_comm_before', timestamps[i][3], timestamps[i+1][0])
+                self.add_duration_time("remote", '4-5_comm_after', timestamps[i+1][4], timestamps[i][4])
+                # self.add_duration_time("remote", '4-5-0_comm_after0', timestamps[i+1][4], timestamps[i+1][5])
 
     def get_result(self, display=False):
         avg_ms = lambda x, y: utils.divide(1000*x, y)
         result = utils.general_2obj_func(self.duration_time, self.data_num, avg_ms)
-        if display == True: print(utils.general_round2(result), end='[ms]\n')
+        if display == True:
+            rounded_result = utils.general_round2(result)
+            sorted_result = dict(sorted(rounded_result.items()))
+            print(sorted_result, end='[ms]\n')
         return result
 
 

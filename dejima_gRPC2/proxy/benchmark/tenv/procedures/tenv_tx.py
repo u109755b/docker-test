@@ -40,7 +40,7 @@ def _execute(params):
 
     # termination
     result = executer.terminate()
-    print("commited?:", result)
+    print("committed?:", result)
     return {"result": execution_result}
 
 

@@ -57,7 +57,6 @@ class ExperimentBase():
 
     # integrate result
     def integrate_result(self, res_list, peer_num, threads, show_result=True):
-        process_time_keys = ['lock', 'base_update', 'prop_view_0', 'view_update', 'prop_view_k', 'communication', 'commit']
         thread_num = peer_num * threads
 
         all_data = {
@@ -68,13 +67,13 @@ class ExperimentBase():
                 "abort_time": [0, 0, 0],
                 "custom_commit": [0, 0, 0],
                 "custom_abort": [0, 0, 0],
-                "tx_commit": defaultdict(lambda: 0),
-                "tx_commit_time": defaultdict(lambda: 0),
-                "tx_abort": defaultdict(lambda: 0),
-                "tx_abort_time": defaultdict(lambda: 0),
+                "tx_commit": defaultdict(int),
+                "tx_commit_time": defaultdict(int),
+                "tx_abort": defaultdict(int),
+                "tx_abort_time": defaultdict(int),
                 "global_lock": [0],
             },
-            "process_time": {k: 0 for k in process_time_keys},
+            "process_time": defaultdict(int),
             "lock_process": [0],
         }
 
@@ -92,7 +91,7 @@ class ExperimentBase():
                 "tx_abort_time": thread_num,
                 "global_lock": [thread_num],
             },
-            "process_time": {k: thread_num for k in process_time_keys},
+            "process_time": thread_num,
             "lock_process": [thread_num],
         }
 
@@ -104,6 +103,8 @@ class ExperimentBase():
         # 結果の合計
         for res in res_list:
             res = json.loads(res)
+            if "result" in res:
+                del res["result"]
             plus = lambda x, y: x + y
             utils.general_2obj_func(all_data, res, plus, save=True, assign_v2_value=True)
 
@@ -164,4 +165,8 @@ class ExperimentBase():
                 tx_result += color.set_red(f"{basic_res["tx_abort"][tx_type]}  ({basic_res["tx_abort_time"][tx_type]})[s]")
                 print(tx_result)
             """ lock process """
-            print("{}, {}[ms]".format(process_time, utils.round2(lock_process[0])))
+            process_time_all = dict(sorted(process_time.items()))
+            for group_name, each_group in process_time_all.items():
+                each_group = dict(sorted(each_group.items()))
+                print(f"{group_name}: {each_group} {sum(each_group.values())}[ms]")
+            print(f"{utils.round2(lock_process[0])}[ms]")

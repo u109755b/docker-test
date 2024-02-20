@@ -71,8 +71,7 @@ class TPCCTxPay(GlobalBencher):
 
 
         # global lock
-        if self.locking_method == "frs":
-            executer.lock_global(lineages)
+        executer.lock_global(lineages, self.locking_method)
 
 
         # local execution

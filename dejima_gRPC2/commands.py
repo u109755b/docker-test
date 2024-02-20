@@ -40,7 +40,7 @@ def update():
     for root, dirs, _ in os.walk("."):
         for name in dirs:
             if name == '__pycache__':
-                shutil.rmtree(os.path.join(root, name))
+                subprocess.run(["sudo", "rm", "-r", os.path.join(root, name)])
 
     proxy_paths = ["./env_generator/src/TENV/", "./env_generator/src/TPCC/", "./env_generator/src/YCSB/"]
     for path in proxy_paths:

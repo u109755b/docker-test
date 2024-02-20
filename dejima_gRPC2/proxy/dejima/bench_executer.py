@@ -1,6 +1,8 @@
 import time
+import dejima.status
 from dejima import config
 from dejima import dejimautils
+from dejima import errors
 from dejima.executer import Executer
 
 class BenchExecuter(Executer):
@@ -24,22 +26,22 @@ class BenchExecuter(Executer):
         return self.tx
 
     # lock global records
-    def lock_global(self, lineages):
-        error_occurred = False
+    def lock_global(self, lineages, locking_method):
+        if locking_method == "2pl":
+            self.timestamp.append(time.perf_counter())   # 1
+            return "Ack"
+
         self.time_measurement.start_timer("global_lock", self.global_xid)
         self.result_measurement.start_global_lock()
+
         if config.prelock_request_invalid == False:
             try:
                 result = super().lock_global(lineages)
-            except Exception as e:
-                error_occurred = True
-                result = e
-        self.time_measurement.stop_timer("global_lock", self.global_xid)
-        self.result_measurement.finish_global_lock()
+            finally:
+                self.time_measurement.stop_timer("global_lock", self.global_xid)
+                self.result_measurement.finish_global_lock()
 
         self.timestamp.append(time.perf_counter())   # 1
-        if error_occurred:
-            raise result
         return result
 
 
@@ -60,11 +62,8 @@ class BenchExecuter(Executer):
         commit_status_list["2pl"] = [self.status_clean, self.status_dirty, self.status_proped]
         commit_status_list["frs"] = [self.status_clean, self.status_dirty, self.status_proped]
         commit_status_list = commit_status_list[self.locking_method]
-        result = False
-        if self.status in commit_status_list:
-            result = True
 
-        if result:
+        if self.status in commit_status_list:
             self.time_measurement.start_timer("local_commit", self.global_xid)
             self.tx.commit()
             self.time_measurement.stop_timer("local_commit", self.global_xid)
@@ -74,7 +73,8 @@ class BenchExecuter(Executer):
             self.time_measurement.stop_timer("global_commit", self.global_xid)
 
             self.result_measurement.commit_tx('update', hop=self.global_params["max_hop"])
-            msg = "commited"
+            result = dejima.status.COMMITTED
+            msg = "committed"
         else:
             self.time_measurement.start_timer("local_abort", self.global_xid)
             self.tx.abort()
@@ -85,13 +85,14 @@ class BenchExecuter(Executer):
             self.time_measurement.stop_timer("global_abort", self.global_xid)
 
             self.result_measurement.abort_tx('global', hop=self.global_params["max_hop"])
+            result = dejima.status.ABORTED
             msg = "aborted"
         del config.tx_dict[self.global_xid]
         self.timestamp.append(time.perf_counter())   # 5
 
         if DEBUG: print("termination:", msg)
         # save timestamps
-        if result:
+        if result == dejima.status.COMMITTED:
             self.global_params["timestamps"].append(self.timestamp)
             self.timestamp_management.add_timestamps(self.global_params["timestamps"])
 

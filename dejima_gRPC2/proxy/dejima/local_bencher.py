@@ -1,7 +1,7 @@
 import os
 import time
+from dejima import status
 from dejima import errors
-
 
 class LocalBencher:
     def _execute(self):
@@ -18,19 +18,18 @@ class LocalBencher:
         self.result_measurement.start_tx()
 
         try:
-            commit = self._execute()
+            result = self._execute()
         except errors.LocalLockNotAvailable as e:
-            print(f"{os.path.basename(__file__)}: local lock failed")
+            # print(f"{os.path.basename(__file__)}: local lock failed")
             self.result_measurement.abort_tx('local')
-            return False
+            return status.ABORTED
         except Exception as e:
             # errors.out_err(e, "global bencher error", out_trace=True)
             raise
 
-        if commit == "commited":
-            result = True
+        if result == status.COMMITTED:
             self.result_measurement.commit_tx("read")
         else:
-            result = False
+            self.result_measurement.abort_tx("local", hop=1)
 
         return result

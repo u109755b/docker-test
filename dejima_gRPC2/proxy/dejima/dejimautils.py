@@ -1,6 +1,8 @@
+import time
 import json
 import threading
 import uuid
+from collections import defaultdict
 from opentelemetry import trace
 from opentelemetry.instrumentation.grpc import GrpcInstrumentorClient
 from opentelemetry.context import attach, detach, set_value
@@ -13,10 +15,11 @@ if config.trace_enabled:
     GrpcInstrumentorClient().instrument()
 tracer = trace.get_tracer(__name__)
 
+
 def get_unique_id():
     return config.peer_name + '-' + str(uuid.uuid4())
 
-def lock_request(lineages, global_xid):
+def lock_request(lineages, global_xid, start_time):
     with tracer.start_as_current_span("lock_request") as span:
         ctx = set_value("current_span", span)
         thread_list = []
@@ -26,8 +29,9 @@ def lock_request(lineages, global_xid):
             peer_address = config.dejima_config_dict['peer_address'][peer]
             service_stub = data_pb2_grpc.LockStub
             data = {
+                "lineages": lineages,
                 "xid": global_xid,
-                "lineages": lineages
+                "start_time": start_time,
             }
             req = data_pb2.Request(json_str=json.dumps(data))
             args = ([peer_address, service_stub, req, results, lock, ctx])
@@ -72,7 +76,7 @@ def release_lock_request(global_xid):
     else:
         return "Nak"
 
-def prop_request(arg_dict, global_xid, method, global_params={}):
+def prop_request(arg_dict, global_xid, start_time, method, global_params={}):
     with tracer.start_as_current_span("prop_request") as span:
         ctx = set_value("current_span", span)
         thread_list = []
@@ -82,31 +86,35 @@ def prop_request(arg_dict, global_xid, method, global_params={}):
         if "max_hop" in global_params: params["max_hop"] = [0]
         if "timestamps" in global_params: params["timestamps"] = [[]]
         lock = threading.Lock()
+
+        peers = set()
+        dts_delta = defaultdict(dict)
         for dt in arg_dict.keys():
-            for peer in arg_dict[dt]['peers']:
-                peer_address = config.dejima_config_dict['peer_address'][peer]
-                service_stub = data_pb2_grpc.PropagationStub
-                data = {
-                    "xid": global_xid,
-                    "method": method,
-                    "dejima_table": dt,
-                    "delta": arg_dict[dt]['delta'],
-                    "parent_peer": config.peer_name,
-                    "global_params": global_params,
-                }
-                req = data_pb2.Request(json_str=json.dumps(data))
-                args = ([peer_address, service_stub, req, results, lock, ctx, params])
-                thread = threading.Thread(target=base_request, args=args)
-                thread_list.append(thread)
+            for peer in arg_dict[dt]["peers"]:
+                peers.add(peer)
+                dts_delta[peer][dt] = arg_dict[dt]["delta"]
 
-            for thread in thread_list:
-                thread.start()
+        for peer in peers:
+            peer_address = config.dejima_config_dict['peer_address'][peer]
+            service_stub = data_pb2_grpc.PropagationStub
+            data = {
+                "xid": global_xid,
+                "start_time": start_time,
+                "method": method,
+                "delta": dts_delta[peer],
+                "parent_peer": config.peer_name,
+                "global_params": global_params,
+            }
+            req = data_pb2.Request(json_str=json.dumps(data))
+            args = ([peer_address, service_stub, req, results, lock, ctx, params])
+            thread = threading.Thread(target=base_request, args=args)
+            thread_list.append(thread)
 
-            for thread in thread_list:
-                thread.join()
+        for thread in thread_list:
+            thread.start()
 
-            if not all(results): break
-            thread_list = []
+        for thread in thread_list:
+            thread.join()
 
         peer_names = set(params["peer_name"])
         peer_names.remove(None)
@@ -172,6 +180,7 @@ def base_request(peer_address, service_stub, req, results, lock, ctx=None, param
         if "max_hop" in res_dic:
             params["max_hop"].append(res_dic["max_hop"])
         if "timestamps" in res_dic:
+            res_dic["timestamps"][-1].append(time.perf_counter())   # 5
             params["timestamps"].append(res_dic["timestamps"])
 
         if ctx: detach(token)

@@ -1,5 +1,6 @@
 import os
 import json
+import dejima.status
 from dejima import config
 from dejima import dejimautils
 from dejima import errors
@@ -28,18 +29,18 @@ class Executer:
         self._init()
 
     # create new tx
-    def create_tx(self):
+    def create_tx(self, start_time=None):
         self.global_xid = dejimautils.get_unique_id()
-        self.tx = Tx(self.global_xid)
+        self.tx = Tx(self.global_xid, start_time)
         config.tx_dict[self.global_xid] = self.tx
 
     # set tx
-    def set_tx(self, global_xid):
+    def set_tx(self, global_xid, start_time):
         self.global_xid = global_xid
         if self.global_xid in config.tx_dict:
             self.tx = config.tx_dict[global_xid]
         else:
-            self.tx = Tx(self.global_xid)
+            self.tx = Tx(self.global_xid, start_time)
             config.tx_dict[self.global_xid] = self.tx
 
     # lock global records
@@ -48,7 +49,7 @@ class Executer:
             print("warn: lineages is empty, canceled global lock")
             return "Ack"
         self.locking_method = "frs"
-        result = dejimautils.lock_request(lineages, self.global_xid)
+        result = dejimautils.lock_request(lineages, self.global_xid, self.tx.start_time)
         if result != "Ack":
             self._restore()
             raise errors.GlobalLockNotAvailable("abort during global lock")
@@ -146,7 +147,7 @@ class Executer:
     def propagate_other_peer(self, prop_dict, DEBUG=False):
         result = "Ack"
         if prop_dict != {}:
-            result = dejimautils.prop_request(prop_dict, self.global_xid, self.locking_method, self.global_params)
+            result = dejimautils.prop_request(prop_dict, self.global_xid, self.tx.start_time, self.locking_method, self.global_params)
             self.tx.extend_childs(self.global_params["peer_names"])
 
         if result == "Ack" and self.status != self.status_error:
@@ -171,19 +172,18 @@ class Executer:
         commit_status_list["2pl"] = [self.status_clean, self.status_dirty, self.status_proped]
         commit_status_list["frs"] = [self.status_clean, self.status_dirty, self.status_proped]
         commit_status_list = commit_status_list[self.locking_method]
-        result = "abort"
-        if self.status in commit_status_list:
-            result = "commit"
 
-        if result == "commit":
+        if self.status in commit_status_list:
             self.tx.commit()
             dejimautils.termination_request("commit", self.global_xid, self.locking_method)
-            msg = "commited"
+            result = dejima.status.COMMITTED
+            msg = "committed"
         else:
             self.tx.abort()
             dejimautils.termination_request("abort", self.global_xid, self.locking_method)
+            result = dejima.status.ABORTED
             msg = "aborted"
         del config.tx_dict[self.global_xid]
 
         if DEBUG: print("termination:", msg)
-        return msg
+        return result

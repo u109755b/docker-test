@@ -3,6 +3,7 @@ import time
 import copy
 from opentelemetry import trace
 from dejima import config
+from dejima import status
 from dejima import errors
 
 tracer = trace.get_tracer(__name__)
@@ -33,17 +34,17 @@ class GlobalBencher:
 
 
         try:
-            commit = self._execute()
+            result = self._execute()
         except errors.LocalLockNotAvailable as e:
             # print(f"{os.path.basename(__file__)}: local lock failed")
             self.result_measurement.abort_tx('local')
-            return False
+            return status.ABORTED
         except errors.GlobalLockNotAvailable as e:
             # print(f"{os.path.basename(__file__)}: global lock failed")
             self.result_measurement.abort_tx('global', hop=1)
-            return False
+            return status.ABORTED
         except Exception as e:
             # errors.out_err(e, "global bencher error", out_trace=True)
             raise
 
-        return commit
+        return result
