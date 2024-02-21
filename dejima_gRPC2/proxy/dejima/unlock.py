@@ -20,7 +20,7 @@ class Unlock(data_pb2_grpc.UnlockServicer):
         if global_xid in config.tx_dict:
             tx = config.tx_dict[global_xid]
             tx.abort()
-            del config.tx_dict[global_xid]
+            tx.close()
         measurement.time_measurement.stop_timer("lock_process", global_xid)
 
         res_dic = {"result": "Ack"}

@@ -2,6 +2,7 @@ import time
 import dejima.status
 from dejima import config
 from dejima import dejimautils
+from dejima import requester
 from dejima import errors
 from dejima.executer import Executer
 
@@ -69,7 +70,7 @@ class BenchExecuter(Executer):
             self.time_measurement.stop_timer("local_commit", self.global_xid)
 
             self.time_measurement.start_timer("global_commit", self.global_xid)
-            dejimautils.termination_request("commit", self.global_xid, self.locking_method)
+            requester.termination_request("commit", self.global_xid, self.locking_method)
             self.time_measurement.stop_timer("global_commit", self.global_xid)
 
             self.result_measurement.commit_tx('update', hop=self.global_params["max_hop"])
@@ -81,13 +82,13 @@ class BenchExecuter(Executer):
             self.time_measurement.stop_timer("local_abort", self.global_xid)
 
             self.time_measurement.start_timer("global_abort", self.global_xid)
-            dejimautils.termination_request("abort", self.global_xid, self.locking_method)
+            requester.termination_request("abort", self.global_xid, self.locking_method)
             self.time_measurement.stop_timer("global_abort", self.global_xid)
 
             self.result_measurement.abort_tx('global', hop=self.global_params["max_hop"])
             result = dejima.status.ABORTED
             msg = "aborted"
-        del config.tx_dict[self.global_xid]
+        self.tx.close()
         self.timestamp.append(time.perf_counter())   # 5
 
         if DEBUG: print("termination:", msg)

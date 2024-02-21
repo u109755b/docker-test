@@ -6,6 +6,7 @@ from grpcdata import data_pb2_grpc
 from dejima import config
 from dejima import errors
 from dejima import dejimautils
+from dejima import requester
 from dejima.transaction import Tx
 
 class Propagation(data_pb2_grpc.PropagationServicer):
@@ -25,11 +26,8 @@ class Propagation(data_pb2_grpc.PropagationServicer):
 
         if global_xid not in config.tx_dict:
             tx = Tx(global_xid, params["start_time"])
-            config.tx_dict[global_xid] = tx
-            locked_flag = False
         else:
             tx = config.tx_dict[global_xid]
-            locked_flag = True
 
         if global_xid not in config.prop_visited:
             is_first_time = True
@@ -46,27 +44,26 @@ class Propagation(data_pb2_grpc.PropagationServicer):
         local_xid = tx.get_local_xid()
         try:
             # additional lock for peers out of lock scope
-            # if not locked_flag:
+            lock_stmts = []
             for dt in params["delta"]:
-                lock_stmts = dejimautils.get_lock_stmts(params['delta'][dt])
-                for lock_stmt in lock_stmts:
-                    tx.cur.execute(lock_stmt)
-            timestamp.append(time.perf_counter())   # 1
+                lock_stmts += dejimautils.get_lock_stmts(params['delta'][dt])
+            dejimautils.lock_records(tx, lock_stmts, max_retry_cnt=3, min_miss_cnt=1, wait_die=True)
         except errors.LockNotAvailable as e:
             # print(f"{os.path.basename(__file__)}: global lock failed")
             return data_pb2.Response(json_str=json.dumps(res_dic))
+        timestamp.append(time.perf_counter())   # 1
 
         try:
             # execute stmt
             for dt in params["delta"]:
                 stmt = dejimautils.get_execute_stmt(params['delta'][dt], local_xid)
                 tx.cur.execute(stmt)
-            timestamp.append(time.perf_counter())   # 2
         except Exception as e:
             if "stmt" in locals():
                 print(stmt)
             errors.out_err(e, "dejima table update error", out_trace=True)
             return data_pb2.Response(json_str=json.dumps(res_dic))
+        timestamp.append(time.perf_counter())   # 2
 
 
         # propagate to dejima table
@@ -107,7 +104,7 @@ class Propagation(data_pb2_grpc.PropagationServicer):
         # propagate to other peers
         timestamp.append(time.perf_counter())   # 3
         if prop_dict != {}:
-            result = dejimautils.prop_request(prop_dict, global_xid, params["start_time"], params["method"], params['global_params'])
+            result = requester.prop_request(prop_dict, global_xid, params["start_time"], params["method"], params['global_params'])
             tx.extend_childs(params["global_params"]["peer_names"])
         else:
             result = "Ack"

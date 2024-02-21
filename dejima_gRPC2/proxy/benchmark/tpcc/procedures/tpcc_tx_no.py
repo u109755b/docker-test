@@ -26,7 +26,9 @@ class TPCCTxNO(GlobalBencher):
                 ol_i_id = 111000
             else:
                 items_size = tpcc_consts.RECORDS_NUM_STOCK * tpccutils.get_group_peer_num(w_id)   # <= 100,000
-                ol_i_id = tpccutils.nurand(8191, 1, items_size, tpccutils.C_FOR_OL_I_ID)
+                while True:
+                    ol_i_id = tpccutils.nurand(8191, 1, items_size, tpccutils.C_FOR_OL_I_ID)
+                    if ol_i_id not in ol_i_id_list: break
             ol_i_id_list.append(ol_i_id)
             # ol_supply_w_id
             if random.randint(1, 100) == 1 and config.warehouse_num > 1:

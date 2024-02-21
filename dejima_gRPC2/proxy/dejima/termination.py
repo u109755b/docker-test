@@ -4,6 +4,7 @@ from grpcdata import data_pb2
 from grpcdata import data_pb2_grpc
 from dejima import config
 from dejima import dejimautils
+from dejima import requester
 
 class Termination(data_pb2_grpc.TerminationServicer):
     def __init__(self):
@@ -25,13 +26,11 @@ class Termination(data_pb2_grpc.TerminationServicer):
         # termination 
         if commit:
             tx.commit()
-            dejimautils.termination_request("commit", global_xid, params["method"]) 
+            requester.termination_request("commit", global_xid, params["method"]) 
         else:
             tx.abort()
-            dejimautils.termination_request("abort", global_xid, params["method"]) 
-
-        del config.tx_dict[global_xid]
-        del config.prop_visited[global_xid]
+            requester.termination_request("abort", global_xid, params["method"]) 
+        tx.close()
 
         res_dic = {"result": "Ack"}
         return data_pb2.Response(json_str=json.dumps(res_dic))

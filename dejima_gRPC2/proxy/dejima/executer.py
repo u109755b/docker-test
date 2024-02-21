@@ -3,6 +3,7 @@ import json
 import dejima.status
 from dejima import config
 from dejima import dejimautils
+from dejima import requester
 from dejima import errors
 from dejima.transaction import Tx
 
@@ -18,21 +19,19 @@ class Executer:
     def _init(self):
         self.locking_method = "2pl"
         self.status = self.status_clean
-        self.fetchone_result = None
 
     # _restore
     def _restore(self):
         if self.locking_method == "frs":
-            dejimautils.release_lock_request(self.global_xid) 
+            requester.release_lock_request(self.global_xid) 
         self.tx.abort()
-        del config.tx_dict[self.global_xid]
+        self.tx.close()
         self._init()
 
     # create new tx
     def create_tx(self, start_time=None):
         self.global_xid = dejimautils.get_unique_id()
         self.tx = Tx(self.global_xid, start_time)
-        config.tx_dict[self.global_xid] = self.tx
 
     # set tx
     def set_tx(self, global_xid, start_time):
@@ -41,7 +40,6 @@ class Executer:
             self.tx = config.tx_dict[global_xid]
         else:
             self.tx = Tx(self.global_xid, start_time)
-            config.tx_dict[self.global_xid] = self.tx
 
     # lock global records
     def lock_global(self, lineages):
@@ -49,7 +47,7 @@ class Executer:
             print("warn: lineages is empty, canceled global lock")
             return "Ack"
         self.locking_method = "frs"
-        result = dejimautils.lock_request(lineages, self.global_xid, self.tx.start_time)
+        result = requester.lock_request(lineages, self.global_xid, self.tx.start_time)
         if result != "Ack":
             self._restore()
             raise errors.GlobalLockNotAvailable("abort during global lock")
@@ -58,21 +56,7 @@ class Executer:
     # execution
     def execute_stmt(self, stmt, max_retry_cnt=0, DEBUG=False):
         try:
-            self.fetchone_result = None
-            self.tx.cur.execute(stmt)
-            if max_retry_cnt:
-                result = self.fetchone()
-                retry_cnt = 0
-                while not result and retry_cnt < max_retry_cnt:
-                    self.tx.cur.execute(stmt)
-                    result = self.fetchone()
-                    retry_cnt += 1
-                self.fetchone_result = result
-                if retry_cnt:
-                    if self.fetchone_result:
-                        print(f'"{stmt}": retried {retry_cnt} out of {max_retry_cnt} times to get a result')
-                    else:
-                        print(f'"{stmt}": failed to fetch a result after trying {retry_cnt} times')
+            self.tx.execute(stmt, max_retry_cnt)
         except errors.LockNotAvailable as e:
             if DEBUG: print(f"{os.path.basename(__file__)}: local lock failed")
             self._restore()
@@ -87,30 +71,13 @@ class Executer:
             raise
         self.status = self.status_dirty
 
-    # fetch
+    # fetchone
     def fetchone(self):
-        """Returns:
-        - success -> psycopg2.extras.DictRow   ex) [val1, val2, ...]
-        - select non-existent record -> None
-        - no result (INSERT, UPDATE, DELETE) -> raise psycopg2.ProgrammingError: no results to fetch
-        """
-        if self.fetchone_result:
-            result = self.fetchone_result
-            self.fetchone_result = None
-        else:
-            result = self.tx.cur.fetchone()
-        return result
+        return self.tx.fetchone()
+
+    # fetchall
     def fetchall(self):
-        """Returns:
-        - success -> list   ex) [DictRow, DictRow, ...]
-        - select non-existent record -> []
-        """
-        if self.fetchone_result:
-            result = [self.fetchone_result] + self.tx.cur.fetchall()
-            self.fetchone_result = None
-        else:
-            result = self.tx.cur.fetchall()
-        return result
+        return self.tx.fetchall()
 
     # propagate to dejima table
     def propagate_dejima_table(self):
@@ -147,7 +114,7 @@ class Executer:
     def propagate_other_peer(self, prop_dict, DEBUG=False):
         result = "Ack"
         if prop_dict != {}:
-            result = dejimautils.prop_request(prop_dict, self.global_xid, self.tx.start_time, self.locking_method, self.global_params)
+            result = requester.prop_request(prop_dict, self.global_xid, self.tx.start_time, self.locking_method, self.global_params)
             self.tx.extend_childs(self.global_params["peer_names"])
 
         if result == "Ack" and self.status != self.status_error:
@@ -175,15 +142,15 @@ class Executer:
 
         if self.status in commit_status_list:
             self.tx.commit()
-            dejimautils.termination_request("commit", self.global_xid, self.locking_method)
+            requester.termination_request("commit", self.global_xid, self.locking_method)
             result = dejima.status.COMMITTED
             msg = "committed"
         else:
             self.tx.abort()
-            dejimautils.termination_request("abort", self.global_xid, self.locking_method)
+            requester.termination_request("abort", self.global_xid, self.locking_method)
             result = dejima.status.ABORTED
             msg = "aborted"
-        del config.tx_dict[self.global_xid]
+        self.tx.close()
 
         if DEBUG: print("termination:", msg)
         return result

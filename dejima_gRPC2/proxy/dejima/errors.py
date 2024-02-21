@@ -14,6 +14,13 @@ class LocalLockNotAvailable(LockNotAvailable):
 class GlobalLockNotAvailable(LockNotAvailable):
     pass
 
+# RecordsNotFound
+class RecordsNotFound(Exception):
+    pass
+
+# QueryCanceled
+QueryCanceled = psycopg2.errors.QueryCanceled
+
 # UniqueViolation
 UniqueViolation = psycopg2.errors.UniqueViolation
 

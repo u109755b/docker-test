@@ -168,5 +168,6 @@ class ExperimentBase():
             process_time_all = dict(sorted(process_time.items()))
             for group_name, each_group in process_time_all.items():
                 each_group = dict(sorted(each_group.items()))
-                print(f"{group_name}: {each_group} {sum(each_group.values())}[ms]")
+                total_time = utils.round2(sum(each_group.values()))
+                print(f"{group_name}: {each_group} {total_time}[ms]")
             print(f"{utils.round2(lock_process[0])}[ms]")

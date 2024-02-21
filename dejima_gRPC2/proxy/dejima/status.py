@@ -1,3 +1,5 @@
 COMMITTED = "committed"
 ABORTED = "aborted"
-MISSED = "miss"
+LOCKED = "locked"
+MISSED = "missed"
+DIED = "died"
