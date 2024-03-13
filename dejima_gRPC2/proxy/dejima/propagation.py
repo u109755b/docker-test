@@ -47,7 +47,12 @@ class Propagation(data_pb2_grpc.PropagationServicer):
             lock_stmts = []
             for dt in params["delta"]:
                 lock_stmts += dejimautils.get_lock_stmts(params['delta'][dt])
-            dejimautils.lock_records(tx, lock_stmts, max_retry_cnt=3, min_miss_cnt=1, wait_die=True)
+            if params["method"] == "2pl":
+                dejimautils.lock_records(tx, lock_stmts, max_retry_cnt=3, min_miss_cnt=1, wait_die=True)
+            else:
+                dejimautils.lock_records(tx, lock_stmts, max_retry_cnt=3, min_miss_cnt=1)
+        except errors.RecordsNotFound as e:
+            return data_pb2.Response(json_str=json.dumps(res_dic))
         except errors.LockNotAvailable as e:
             # print(f"{os.path.basename(__file__)}: global lock failed")
             return data_pb2.Response(json_str=json.dumps(res_dic))

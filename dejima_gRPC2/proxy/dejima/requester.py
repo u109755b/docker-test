@@ -108,7 +108,7 @@ def prop_request(arg_dict, global_xid, start_time, method, global_params={}):
             if config.hop_mode: global_params["max_hop"] = max(params["max_hop"]) + 1
             else: global_params["max_hop"] = sum(params["max_hop"]) + 1
         if "timestamps" in global_params:
-            global_params["timestamps"] = max(params["timestamps"], key=len)
+            global_params["timestamps"] = max(reversed(params["timestamps"]), key=len)
 
         if all(results):
             return "Ack"
