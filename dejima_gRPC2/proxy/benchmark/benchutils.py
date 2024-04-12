@@ -1,5 +1,6 @@
 import string
 import random
+from dejima import utils
 
 # generate random string with length n
 def randomname(n):
@@ -39,3 +40,18 @@ class ZipfGenerator:
         for i in range(1,n+1):
             sum += 1 / pow(i, theta)
         return sum
+
+
+# divide items with item_size into batches
+def divide_into_batch(item_size, batch_size, offset=0):
+    batch_offset_list = list(range(offset, item_size+offset, batch_size))
+    batch_size_list = [batch_size] * (item_size // batch_size)
+    if item_size % batch_size:
+        batch_size_list += [item_size % batch_size]
+    return batch_offset_list, batch_size_list
+
+# divide items with N size into K, and select item size of k
+def divide_into_k(N, K, k):
+    k_divider = utils.BaseDivider(N, K)
+    k_size = k_divider.get_range_size(k)
+    return k_size

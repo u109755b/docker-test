@@ -1,12 +1,13 @@
 import random
 import string
 from datetime import datetime
+from dejima import utils
 from dejima import config
 from benchmark import benchutils
 from benchmark.tpcc import tpcc_consts
 
 COND_N = 10
-WAREHOUSE_NUM = 1
+# WAREHOUSE_NUM = 1
 NAME_TOKENS = ["BAR", "OUGHT", "ABLE", "PRI", "PRES", "ESE", "ANTI", "CALLY", "ATION", "EING"]
 random.seed(0)
 C_FOR_C_LAST = random.randint(0, 255)
@@ -24,13 +25,33 @@ def get_last(num):
     return NAME_TOKENS[int(num/100)] + NAME_TOKENS[int(num/10) % 10] + NAME_TOKENS[num % 10]
 
 def get_remote_w_id(w_id):
-    if config.warehouse_num == 1: return 1
-    remote_w_id_list = list(range(1, w_id)) + list(range(w_id+1, config.warehouse_num+1))
+    if config.w_n == 1: return 1
+    remote_w_id_list = list(range(1, w_id)) + list(range(w_id+1, config.w_n+1))
     return random.choice(remote_w_id_list)
 
-def get_group_peer_num(w_id):
-    if w_id < config.warehouse_num: return 10
-    return config.peer_num - 10 * (w_id-1)
+def get_w_id(p_id):
+    W_P_N = tpcc_consts.W_P_N
+    return (p_id-1) // W_P_N + 1
+
+def get_w_p_n(w_id):
+    W_P_N = tpcc_consts.W_P_N
+    if w_id < config.w_n: return W_P_N
+    return (config.p_n-1) % W_P_N + 1
+
+def get_w_p_id(p_id):
+    W_P_N = tpcc_consts.W_P_N
+    return (p_id-1) % W_P_N + 1
+
+def get_d_id_p_id_list(p_id):
+    w_id = get_w_id(p_id)
+    w_p_n = get_w_p_n(w_id)
+    offset = (w_id-1) * tpcc_consts.W_P_N
+    w_p_id = p_id - offset
+
+    divider = utils.NDivider(10, w_p_n)
+    d_id_list, p_id_list = divider.get_both_range(w_p_id, k_offset=offset)
+    return d_id_list, p_id_list
+
 
 # warehouse
 def get_loadstmt_for_warehouse(w_id):
@@ -78,7 +99,7 @@ def get_loadstmt_for_district(w_id, d_id):
 
 # customer
 # history
-def get_loadstmt_for_customer_history(w_id, d_id, batch_offset=1, items_num=tpcc_consts.RECORDS_NUM_CUSTOMER+1):
+def get_loadstmt_for_customer_history(w_id, d_id, batch_offset=1, items_num=tpcc_consts.RECORDS_NUM_CUSTOMER):
     random.seed(w_id+d_id)
     # customer_loadstmt = "INSERT INTO customer (c_w_id, c_d_id, c_id, c_discount, c_credit, c_last, c_first, c_credit_lim, c_balance, c_ytd_payment, c_payment_cnt, c_delivery_cnt, c_street_1, c_street_2, c_city, c_state, c_zip, c_phone, c_middle, c_data, c_lineage, c_cond01, c_cond02, c_cond03, c_cond04, c_cond05, c_cond06, c_cond07, c_cond08, c_cond09, c_cond10) VALUES "
     customer_loadstmt = "INSERT INTO customer (c_w_id, c_d_id, c_id, c_discount, c_credit, c_last, c_first, c_credit_lim, c_balance, c_ytd_payment, c_payment_cnt, c_delivery_cnt, c_street_1, c_street_2, c_city, c_state, c_zip, c_phone, c_middle, c_data, c_lineage) VALUES "

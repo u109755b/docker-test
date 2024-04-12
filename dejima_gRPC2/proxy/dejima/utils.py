@@ -86,3 +86,83 @@ def general_round2(obj, save=False):
     if isinstance(obj, numbers.Number): return round2(obj)
     if is_dict(obj) or is_list(obj): return general_1obj_func(obj, round2, save)
     raise TypeError("general_round2: {} is not supported".format(type(obj)))
+
+
+# NをK人で分ける
+class BaseDivider:
+    def __init__(self, N, K):
+        self.N = N
+        self.K = K
+        self.k_quotient = N // K
+        self.k_remainder = N % K
+        self.n_quotient = K // N
+        self.n_remainder = K % N
+
+    def check_k_validity(self, k):
+        if k < 1 or self.K < k:
+            raise IndexError("BaseDiviser: k must be 1 <= k <= K")
+
+    def get_range_size(self, k):
+        if self.N >= self.K:
+            n_range_size = self.k_quotient + (self.k_remainder >= k)
+        else:
+            n_range_size = 1
+        return n_range_size
+
+    def get_start(self, k, offset=0):
+        self.check_k_validity(k)
+        if self.N >= self.K:
+            start_n = self.k_quotient * (k-1) + min(self.k_remainder, k-1) + 1
+        else:
+            if k <= (self.n_quotient+1) * self.n_remainder:
+                start_n = (k-1) // (self.n_quotient+1) + 1
+            else:
+                k2 = k - (self.n_quotient+1) * self.n_remainder
+                start_n = (k2-1) // self.n_quotient + 1 + self.n_remainder
+        return start_n + offset
+
+    def get_end(self, k, offset=0):
+        end_n = self.get_start(k) + self.get_range_size(k)
+        return end_n + offset
+
+    def get_range(self, k, offset=0):
+        start_n = self.get_start(k, offset)
+        end_n = self.get_end(k, offset)
+        n_range = list(range(start_n, end_n))
+        return n_range
+
+
+# NをK人で分ける
+class NDivider:
+    def __init__(self, N, K):
+        self.N, self.K = N, K
+        self.divider = BaseDivider(N, K)
+        self.rdivider = BaseDivider(K, N)
+
+    def get_n_range_size(self, k):
+        return self.divider.get_range_size(k)
+
+    def get_start_n(self, k, offset=0):
+        return self.divider.get_start(k, offset)
+
+    def get_end_n(self, k, offset=0):
+        return self.divider.get_end(k, offset)
+
+    def get_n_range(self, k, offset=0):
+        return self.divider.get_range(k, offset)
+
+    def get_k_range(self, n, offset=0):
+        return self.rdivider.get_range(n, offset)
+
+    def get_both_range(self, k, n_offset=0, k_offset=0):
+        """
+        return n_range, k_range
+        - n_range: list of n which the specified k corresponds to
+        - k_range: list of k which n_range corresponds to
+        """
+        n_range = self.get_n_range(k, n_offset)
+        if self.N >= self.K:
+            k_range = [k+k_offset]
+        else:
+            k_range = self.get_k_range(n_range[0]-n_offset, k_offset)
+        return n_range, k_range

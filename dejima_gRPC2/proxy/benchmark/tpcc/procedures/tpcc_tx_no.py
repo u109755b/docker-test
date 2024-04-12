@@ -10,7 +10,7 @@ class TPCCTxNO(GlobalBencher):
     def _execute(self):
         # prepare parameters
         w_id = config.w_id   # home w_id
-        d_id = random.randint(1, tpccutils.get_group_peer_num(w_id))
+        d_id = random.randint(1, 10)
         c_id = tpccutils.nurand(1023, 1, 3000, tpccutils.C_FOR_C_ID)
         # c_id = next(tpccutils.zipf_gen)
         ol_cnt = random.randint(5, 15)
@@ -25,13 +25,13 @@ class TPCCTxNO(GlobalBencher):
             if i == ol_cnt and rbk == 1:
                 ol_i_id = 111000
             else:
-                items_size = tpcc_consts.RECORDS_NUM_STOCK * tpccutils.get_group_peer_num(w_id)   # <= 100,000
+                item_size = tpcc_consts.RECORDS_NUM_STOCK
                 while True:
-                    ol_i_id = tpccutils.nurand(8191, 1, items_size, tpccutils.C_FOR_OL_I_ID)
+                    ol_i_id = tpccutils.nurand(8191, 1, item_size, tpccutils.C_FOR_OL_I_ID)
                     if ol_i_id not in ol_i_id_list: break
             ol_i_id_list.append(ol_i_id)
             # ol_supply_w_id
-            if random.randint(1, 100) == 1 and config.warehouse_num > 1:
+            if random.randint(1, 100) == 1 and config.w_n > 1:
                 o_all_local = 0
                 ol_supply_w_id = tpccutils.get_remote_w_id(w_id)
             else:

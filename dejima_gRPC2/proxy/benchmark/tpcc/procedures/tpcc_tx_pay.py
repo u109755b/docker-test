@@ -10,13 +10,13 @@ class TPCCTxPay(GlobalBencher):
     def _execute(self):
         # prepare parameters
         w_id = config.w_id   # home w_id
-        d_id = random.randint(1, tpccutils.get_group_peer_num(w_id))
+        d_id = random.randint(1, 10)
         if random.randint(1, 100) <= 85:
             c_w_id = w_id
             c_d_id = d_id
         else:
             c_w_id = tpccutils.get_remote_w_id(w_id)
-            c_d_id = random.randint(1, tpccutils.get_group_peer_num(c_w_id))
+            c_d_id = random.randint(1, 10)
         if random.randint(1, 100) <= 40:
             c_id = tpccutils.nurand(1023, 1, 3000, tpccutils.C_FOR_C_ID)
             select_with_c_id_flag = True
