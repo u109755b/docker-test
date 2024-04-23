@@ -34,6 +34,10 @@ elif command_name == 1:
     experiment.initialize()
     experiment.execute_benchmark("frs")
 
+    print("")
+    experiment.initialize()
+    experiment.execute_benchmark("hybrid")
+
 # 2  (tenv)
 elif command_name == 2:
     # experiment.set_parameters()

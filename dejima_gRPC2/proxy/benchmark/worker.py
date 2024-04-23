@@ -50,8 +50,8 @@ class Worker():
         # hybrid
         elif METHOD == "hybrid":
             current_method = "2pl"
-            check_time = 30
-            check_interval = 300
+            check_time = 3
+            check_interval = 30
             next_check = random.randint(0,check_interval - check_time * 2)   # determine first check timing
 
             temp_commit = {"before": defaultdict(lambda: 0), "after": defaultdict(lambda: 0)}
