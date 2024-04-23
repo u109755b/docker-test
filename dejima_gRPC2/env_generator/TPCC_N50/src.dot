@@ -1,0 +1,328 @@
+graph {
+	graph [rankdir=BT]
+	{
+		{
+			rank=same rankdir=LR
+			cond1 [label=COND1 shape=plaintext]
+			ph_cond1 [label="" shape=plaintext]
+			cond1 -- ph_cond1 [color="#332288" style=bold]
+		}
+		{
+			rank=same rankdir=LR
+			cond2 [label=COND2 shape=plaintext]
+			ph_cond2 [label="" shape=plaintext]
+			cond2 -- ph_cond2 [color="#88CCEE" style=bold]
+		}
+		{
+			rank=same rankdir=LR
+			cond3 [label=COND3 shape=plaintext]
+			ph_cond3 [label="" shape=plaintext]
+			cond3 -- ph_cond3 [color="#44AA99" style=bold]
+		}
+		{
+			rank=same rankdir=LR
+			cond4 [label=COND4 shape=plaintext]
+			ph_cond4 [label="" shape=plaintext]
+			cond4 -- ph_cond4 [color="#117733" style=bold]
+		}
+		{
+			rank=same rankdir=LR
+			cond5 [label=COND5 shape=plaintext]
+			ph_cond5 [label="" shape=plaintext]
+			cond5 -- ph_cond5 [color="#999933" style=bold]
+		}
+		{
+			rank=same rankdir=LR
+			cond6 [label=COND6 shape=plaintext]
+			ph_cond6 [label="" shape=plaintext]
+			cond6 -- ph_cond6 [color="#DDCC77" style=bold]
+		}
+		{
+			rank=same rankdir=LR
+			cond7 [label=COND7 shape=plaintext]
+			ph_cond7 [label="" shape=plaintext]
+			cond7 -- ph_cond7 [color="#CC6677" style=bold]
+		}
+		{
+			rank=same rankdir=LR
+			cond8 [label=COND8 shape=plaintext]
+			ph_cond8 [label="" shape=plaintext]
+			cond8 -- ph_cond8 [color="#882255" style=bold]
+		}
+		{
+			rank=same rankdir=LR
+			cond9 [label=COND9 shape=plaintext]
+			ph_cond9 [label="" shape=plaintext]
+			cond9 -- ph_cond9 [color="#AA4499" style=bold]
+		}
+		{
+			rank=same rankdir=LR
+			cond10 [label=COND10 shape=plaintext]
+			ph_cond10 [label="" shape=plaintext]
+			cond10 -- ph_cond10 [color="#DDDDDD" style=bold]
+		}
+		cond1 -- cond2 [style=invis]
+		cond2 -- cond3 [style=invis]
+		cond3 -- cond4 [style=invis]
+		cond4 -- cond5 [style=invis]
+		cond5 -- cond6 [style=invis]
+		cond6 -- cond7 [style=invis]
+		cond7 -- cond8 [style=invis]
+		cond8 -- cond9 [style=invis]
+		cond9 -- cond10 [style=invis]
+	}
+	Peer1
+	Peer2
+	Peer3
+	Peer4
+	Peer5
+	Peer6
+	Peer7
+	Peer8
+	Peer9
+	Peer10
+	Peer11
+	Peer12
+	Peer13
+	Peer14
+	Peer15
+	Peer16
+	Peer17
+	Peer18
+	Peer19
+	Peer20
+	Peer21
+	Peer22
+	Peer23
+	Peer24
+	Peer25
+	Peer26
+	Peer27
+	Peer28
+	Peer29
+	Peer30
+	Peer31
+	Peer32
+	Peer33
+	Peer34
+	Peer35
+	Peer36
+	Peer37
+	Peer38
+	Peer39
+	Peer40
+	Peer41
+	Peer42
+	Peer43
+	Peer44
+	Peer45
+	Peer46
+	Peer47
+	Peer48
+	Peer49
+	Peer50
+	d_warehouse
+	d_warehouse -- Peer1 [color="#DDDDDD" style=bold]
+	d_warehouse -- Peer2 [color="#999933" style=bold]
+	d_warehouse -- Peer3 [color="#DDDDDD" style=bold]
+	d_warehouse -- Peer4 [color="#DDCC77" style=bold]
+	d_warehouse -- Peer5 [color="#DDDDDD" style=bold]
+	d_warehouse -- Peer6 [color="#332288" style=bold]
+	d_warehouse -- Peer7 [color="#117733" style=bold]
+	d_warehouse -- Peer8 [color="#88CCEE" style=bold]
+	d_warehouse -- Peer9 [color="#882255" style=bold]
+	d_warehouse -- Peer10 [color="#44AA99" style=bold]
+	d_warehouse -- Peer11 [color="#88CCEE" style=bold]
+	d_warehouse -- Peer12 [color="#117733" style=bold]
+	d_warehouse -- Peer13 [color="#AA4499" style=bold]
+	d_warehouse -- Peer14 [color="#332288" style=bold]
+	d_warehouse -- Peer15 [color="#44AA99" style=bold]
+	d_warehouse -- Peer16 [color="#999933" style=bold]
+	d_warehouse -- Peer17 [color="#DDDDDD" style=bold]
+	d_warehouse -- Peer18 [color="#117733" style=bold]
+	d_warehouse -- Peer19 [color="#DDDDDD" style=bold]
+	d_warehouse -- Peer20 [color="#882255" style=bold]
+	d_warehouse -- Peer21 [color="#117733" style=bold]
+	d_warehouse -- Peer22 [color="#882255" style=bold]
+	d_warehouse -- Peer23 [color="#117733" style=bold]
+	d_warehouse -- Peer24 [color="#DDCC77" style=bold]
+	d_warehouse -- Peer25 [color="#CC6677" style=bold]
+	d_warehouse -- Peer26 [color="#DDCC77" style=bold]
+	d_warehouse -- Peer27 [color="#CC6677" style=bold]
+	d_warehouse -- Peer28 [color="#88CCEE" style=bold]
+	d_warehouse -- Peer29 [color="#DDCC77" style=bold]
+	d_warehouse -- Peer30 [color="#44AA99" style=bold]
+	d_warehouse -- Peer31 [color="#DDDDDD" style=bold]
+	d_warehouse -- Peer32 [color="#882255" style=bold]
+	d_warehouse -- Peer33 [color="#CC6677" style=bold]
+	d_warehouse -- Peer34 [color="#CC6677" style=bold]
+	d_warehouse -- Peer35 [color="#CC6677" style=bold]
+	d_warehouse -- Peer36 [color="#44AA99" style=bold]
+	d_warehouse -- Peer37 [color="#DDDDDD" style=bold]
+	d_warehouse -- Peer38 [color="#AA4499" style=bold]
+	d_warehouse -- Peer39 [color="#332288" style=bold]
+	d_warehouse -- Peer40 [color="#DDDDDD" style=bold]
+	d_warehouse -- Peer41 [color="#DDCC77" style=bold]
+	d_warehouse -- Peer42 [color="#117733" style=bold]
+	d_warehouse -- Peer43 [color="#DDCC77" style=bold]
+	d_warehouse -- Peer44 [color="#999933" style=bold]
+	d_warehouse -- Peer45 [color="#999933" style=bold]
+	d_warehouse -- Peer46 [color="#44AA99" style=bold]
+	d_warehouse -- Peer47 [color="#CC6677" style=bold]
+	d_warehouse -- Peer48 [color="#882255" style=bold]
+	d_warehouse -- Peer49 [color="#882255" style=bold]
+	d_warehouse -- Peer50 [color="#332288" style=bold]
+	d_district
+	d_district -- Peer1 [color="#88CCEE" style=bold]
+	d_district -- Peer2 [color="#332288" style=bold]
+	d_district -- Peer3 [color="#882255" style=bold]
+	d_district -- Peer4 [color="#CC6677" style=bold]
+	d_district -- Peer5 [color="#88CCEE" style=bold]
+	d_district -- Peer6 [color="#332288" style=bold]
+	d_district -- Peer7 [color="#88CCEE" style=bold]
+	d_district -- Peer8 [color="#AA4499" style=bold]
+	d_district -- Peer9 [color="#117733" style=bold]
+	d_district -- Peer10 [color="#999933" style=bold]
+	d_district -- Peer11 [color="#CC6677" style=bold]
+	d_district -- Peer12 [color="#882255" style=bold]
+	d_district -- Peer13 [color="#999933" style=bold]
+	d_district -- Peer14 [color="#CC6677" style=bold]
+	d_district -- Peer15 [color="#CC6677" style=bold]
+	d_district -- Peer16 [color="#117733" style=bold]
+	d_district -- Peer17 [color="#88CCEE" style=bold]
+	d_district -- Peer18 [color="#882255" style=bold]
+	d_district -- Peer19 [color="#117733" style=bold]
+	d_district -- Peer20 [color="#DDDDDD" style=bold]
+	d_district -- Peer21 [color="#999933" style=bold]
+	d_district -- Peer22 [color="#882255" style=bold]
+	d_district -- Peer23 [color="#DDDDDD" style=bold]
+	d_district -- Peer24 [color="#117733" style=bold]
+	d_district -- Peer25 [color="#44AA99" style=bold]
+	d_district -- Peer26 [color="#44AA99" style=bold]
+	d_district -- Peer27 [color="#999933" style=bold]
+	d_district -- Peer28 [color="#44AA99" style=bold]
+	d_district -- Peer29 [color="#882255" style=bold]
+	d_district -- Peer30 [color="#CC6677" style=bold]
+	d_district -- Peer31 [color="#88CCEE" style=bold]
+	d_district -- Peer32 [color="#44AA99" style=bold]
+	d_district -- Peer33 [color="#CC6677" style=bold]
+	d_district -- Peer34 [color="#332288" style=bold]
+	d_district -- Peer35 [color="#CC6677" style=bold]
+	d_district -- Peer36 [color="#88CCEE" style=bold]
+	d_district -- Peer37 [color="#88CCEE" style=bold]
+	d_district -- Peer38 [color="#DDCC77" style=bold]
+	d_district -- Peer39 [color="#999933" style=bold]
+	d_district -- Peer40 [color="#DDCC77" style=bold]
+	d_district -- Peer41 [color="#CC6677" style=bold]
+	d_district -- Peer42 [color="#882255" style=bold]
+	d_district -- Peer43 [color="#DDCC77" style=bold]
+	d_district -- Peer44 [color="#999933" style=bold]
+	d_district -- Peer45 [color="#CC6677" style=bold]
+	d_district -- Peer46 [color="#332288" style=bold]
+	d_district -- Peer47 [color="#999933" style=bold]
+	d_district -- Peer48 [color="#44AA99" style=bold]
+	d_district -- Peer49 [color="#88CCEE" style=bold]
+	d_district -- Peer50 [color="#117733" style=bold]
+	d_customer
+	d_customer -- Peer1 [color="#DDDDDD" style=bold]
+	d_customer -- Peer2 [color="#44AA99" style=bold]
+	d_customer -- Peer3 [color="#882255" style=bold]
+	d_customer -- Peer4 [color="#44AA99" style=bold]
+	d_customer -- Peer5 [color="#DDCC77" style=bold]
+	d_customer -- Peer6 [color="#CC6677" style=bold]
+	d_customer -- Peer7 [color="#88CCEE" style=bold]
+	d_customer -- Peer8 [color="#44AA99" style=bold]
+	d_customer -- Peer9 [color="#332288" style=bold]
+	d_customer -- Peer10 [color="#AA4499" style=bold]
+	d_customer -- Peer11 [color="#117733" style=bold]
+	d_customer -- Peer12 [color="#117733" style=bold]
+	d_customer -- Peer13 [color="#332288" style=bold]
+	d_customer -- Peer14 [color="#44AA99" style=bold]
+	d_customer -- Peer15 [color="#117733" style=bold]
+	d_customer -- Peer16 [color="#88CCEE" style=bold]
+	d_customer -- Peer17 [color="#88CCEE" style=bold]
+	d_customer -- Peer18 [color="#44AA99" style=bold]
+	d_customer -- Peer19 [color="#44AA99" style=bold]
+	d_customer -- Peer20 [color="#999933" style=bold]
+	d_customer -- Peer21 [color="#88CCEE" style=bold]
+	d_customer -- Peer22 [color="#CC6677" style=bold]
+	d_customer -- Peer23 [color="#CC6677" style=bold]
+	d_customer -- Peer24 [color="#88CCEE" style=bold]
+	d_customer -- Peer25 [color="#AA4499" style=bold]
+	d_customer -- Peer26 [color="#117733" style=bold]
+	d_customer -- Peer27 [color="#882255" style=bold]
+	d_customer -- Peer28 [color="#999933" style=bold]
+	d_customer -- Peer29 [color="#DDDDDD" style=bold]
+	d_customer -- Peer30 [color="#44AA99" style=bold]
+	d_customer -- Peer31 [color="#AA4499" style=bold]
+	d_customer -- Peer32 [color="#DDDDDD" style=bold]
+	d_customer -- Peer33 [color="#88CCEE" style=bold]
+	d_customer -- Peer34 [color="#AA4499" style=bold]
+	d_customer -- Peer35 [color="#117733" style=bold]
+	d_customer -- Peer36 [color="#88CCEE" style=bold]
+	d_customer -- Peer37 [color="#DDCC77" style=bold]
+	d_customer -- Peer38 [color="#AA4499" style=bold]
+	d_customer -- Peer39 [color="#AA4499" style=bold]
+	d_customer -- Peer40 [color="#CC6677" style=bold]
+	d_customer -- Peer41 [color="#DDCC77" style=bold]
+	d_customer -- Peer42 [color="#CC6677" style=bold]
+	d_customer -- Peer43 [color="#999933" style=bold]
+	d_customer -- Peer44 [color="#DDDDDD" style=bold]
+	d_customer -- Peer45 [color="#332288" style=bold]
+	d_customer -- Peer46 [color="#DDCC77" style=bold]
+	d_customer -- Peer47 [color="#AA4499" style=bold]
+	d_customer -- Peer48 [color="#882255" style=bold]
+	d_customer -- Peer49 [color="#44AA99" style=bold]
+	d_customer -- Peer50 [color="#882255" style=bold]
+	d_stock
+	d_stock -- Peer1 [color="#88CCEE" style=bold]
+	d_stock -- Peer2 [color="#332288" style=bold]
+	d_stock -- Peer3 [color="#AA4499" style=bold]
+	d_stock -- Peer4 [color="#DDDDDD" style=bold]
+	d_stock -- Peer5 [color="#AA4499" style=bold]
+	d_stock -- Peer6 [color="#DDCC77" style=bold]
+	d_stock -- Peer7 [color="#999933" style=bold]
+	d_stock -- Peer8 [color="#AA4499" style=bold]
+	d_stock -- Peer9 [color="#332288" style=bold]
+	d_stock -- Peer10 [color="#CC6677" style=bold]
+	d_stock -- Peer11 [color="#CC6677" style=bold]
+	d_stock -- Peer12 [color="#882255" style=bold]
+	d_stock -- Peer13 [color="#44AA99" style=bold]
+	d_stock -- Peer14 [color="#117733" style=bold]
+	d_stock -- Peer15 [color="#88CCEE" style=bold]
+	d_stock -- Peer16 [color="#332288" style=bold]
+	d_stock -- Peer17 [color="#332288" style=bold]
+	d_stock -- Peer18 [color="#999933" style=bold]
+	d_stock -- Peer19 [color="#DDCC77" style=bold]
+	d_stock -- Peer20 [color="#DDCC77" style=bold]
+	d_stock -- Peer21 [color="#DDCC77" style=bold]
+	d_stock -- Peer22 [color="#332288" style=bold]
+	d_stock -- Peer23 [color="#AA4499" style=bold]
+	d_stock -- Peer24 [color="#AA4499" style=bold]
+	d_stock -- Peer25 [color="#88CCEE" style=bold]
+	d_stock -- Peer26 [color="#88CCEE" style=bold]
+	d_stock -- Peer27 [color="#117733" style=bold]
+	d_stock -- Peer28 [color="#882255" style=bold]
+	d_stock -- Peer29 [color="#117733" style=bold]
+	d_stock -- Peer30 [color="#117733" style=bold]
+	d_stock -- Peer31 [color="#DDCC77" style=bold]
+	d_stock -- Peer32 [color="#999933" style=bold]
+	d_stock -- Peer33 [color="#332288" style=bold]
+	d_stock -- Peer34 [color="#88CCEE" style=bold]
+	d_stock -- Peer35 [color="#882255" style=bold]
+	d_stock -- Peer36 [color="#882255" style=bold]
+	d_stock -- Peer37 [color="#88CCEE" style=bold]
+	d_stock -- Peer38 [color="#88CCEE" style=bold]
+	d_stock -- Peer39 [color="#DDDDDD" style=bold]
+	d_stock -- Peer40 [color="#DDCC77" style=bold]
+	d_stock -- Peer41 [color="#88CCEE" style=bold]
+	d_stock -- Peer42 [color="#DDCC77" style=bold]
+	d_stock -- Peer43 [color="#44AA99" style=bold]
+	d_stock -- Peer44 [color="#117733" style=bold]
+	d_stock -- Peer45 [color="#AA4499" style=bold]
+	d_stock -- Peer46 [color="#88CCEE" style=bold]
+	d_stock -- Peer47 [color="#882255" style=bold]
+	d_stock -- Peer48 [color="#DDCC77" style=bold]
+	d_stock -- Peer49 [color="#DDDDDD" style=bold]
+	d_stock -- Peer50 [color="#999933" style=bold]
+}

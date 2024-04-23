@@ -1,0 +1,32 @@
+% schema
+source warehouse(
+'w_id': int,
+	'w_ytd': string,
+	'w_tax': string,
+	'w_name': string,
+	'w_street_1': string,
+	'w_street_2': string,
+	'w_city': string,
+	'w_state': string,
+	'w_zip': string,
+	'lineage': string
+).
+view d_warehouse(
+'w_id': int,
+	'w_ytd': string,
+	'w_tax': string,
+	'w_name': string,
+	'w_street_1': string,
+	'w_street_2': string,
+	'w_city': string,
+	'w_state': string,
+	'w_zip': string,
+	'lineage': string
+).
+
+% view definition
+d_warehouse(W_ID, W_YTD, W_TAX, W_NAME, W_STREET_1, W_STREET_2, W_CITY, W_STATE, W_ZIP, LINEAGE) :- warehouse(W_ID, W_YTD, W_TAX, W_NAME, W_STREET_1, W_STREET_2, W_CITY, W_STATE, W_ZIP, LINEAGE).
+
+% rules for update strategy
+-warehouse(W_ID, W_YTD, W_TAX, W_NAME, W_STREET_1, W_STREET_2, W_CITY, W_STATE, W_ZIP, LINEAGE) :- warehouse(W_ID, W_YTD, W_TAX, W_NAME, W_STREET_1, W_STREET_2, W_CITY, W_STATE, W_ZIP, LINEAGE), NOT d_warehouse(W_ID, W_YTD, W_TAX, W_NAME, W_STREET_1, W_STREET_2, W_CITY, W_STATE, W_ZIP, LINEAGE).
++warehouse(W_ID, W_YTD, W_TAX, W_NAME, W_STREET_1, W_STREET_2, W_CITY, W_STATE, W_ZIP, LINEAGE) :- NOT warehouse(W_ID, W_YTD, W_TAX, W_NAME, W_STREET_1, W_STREET_2, W_CITY, W_STATE, W_ZIP, LINEAGE), d_warehouse(W_ID, W_YTD, W_TAX, W_NAME, W_STREET_1, W_STREET_2, W_CITY, W_STATE, W_ZIP, LINEAGE).

@@ -1,0 +1,36 @@
+% schema
+source district(
+'d_w_id': int,
+	'd_id': int,
+	'd_ytd': string,
+	'd_tax': string,
+	'd_next_o_id': int,
+	'd_name': string,
+	'd_street_1': string,
+	'd_street_2': string,
+	'd_city': string,
+	'd_state': string,
+	'd_zip': string,
+	'lineage': string
+).
+view d_district(
+'d_w_id': int,
+	'd_id': int,
+	'd_ytd': string,
+	'd_tax': string,
+	'd_next_o_id': int,
+	'd_name': string,
+	'd_street_1': string,
+	'd_street_2': string,
+	'd_city': string,
+	'd_state': string,
+	'd_zip': string,
+	'lineage': string
+).
+
+% view definition
+d_district(D_W_ID, D_ID, D_YTD, D_TAX, D_NEXT_O_ID, D_NAME, D_STREET_1, D_STREET_2, D_CITY, D_STATE, D_ZIP, LINEAGE) :- district(D_W_ID, D_ID, D_YTD, D_TAX, D_NEXT_O_ID, D_NAME, D_STREET_1, D_STREET_2, D_CITY, D_STATE, D_ZIP, LINEAGE).
+
+% rules for update strategy
+-district(D_W_ID, D_ID, D_YTD, D_TAX, D_NEXT_O_ID, D_NAME, D_STREET_1, D_STREET_2, D_CITY, D_STATE, D_ZIP, LINEAGE) :- district(D_W_ID, D_ID, D_YTD, D_TAX, D_NEXT_O_ID, D_NAME, D_STREET_1, D_STREET_2, D_CITY, D_STATE, D_ZIP, LINEAGE), NOT d_district(D_W_ID, D_ID, D_YTD, D_TAX, D_NEXT_O_ID, D_NAME, D_STREET_1, D_STREET_2, D_CITY, D_STATE, D_ZIP, LINEAGE).
++district(D_W_ID, D_ID, D_YTD, D_TAX, D_NEXT_O_ID, D_NAME, D_STREET_1, D_STREET_2, D_CITY, D_STATE, D_ZIP, LINEAGE) :- NOT district(D_W_ID, D_ID, D_YTD, D_TAX, D_NEXT_O_ID, D_NAME, D_STREET_1, D_STREET_2, D_CITY, D_STATE, D_ZIP, LINEAGE), d_district(D_W_ID, D_ID, D_YTD, D_TAX, D_NEXT_O_ID, D_NAME, D_STREET_1, D_STREET_2, D_CITY, D_STATE, D_ZIP, LINEAGE).
