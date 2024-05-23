@@ -10,6 +10,7 @@ class YCSBTx(GlobalBencher):
         # create executer
         executer = dejima.get_executer("bench")
         executer.create_tx()
+        self.params["tx_type"] = "read5_update5"
         executer.set_params(self.params)
 
 
@@ -43,8 +44,8 @@ class YCSBTx(GlobalBencher):
             lineages.append(record[0])
 
         # global lock
-        if self.locking_method == "frs":
-            executer.lock_global(lineages)
+        # if self.locking_method == "frs":
+        executer.lock_global(lineages, self.locking_method)
 
         # local execution
         for stmt in stmts:

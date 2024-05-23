@@ -84,6 +84,7 @@ class Worker():
                     before_commit_num = temp_commit["before"][status.COMMITTED]
                     after_commit_num = temp_commit["after"][status.COMMITTED]
 
+                    print(f"before: {before_commit_num}, after: {after_commit_num}")
                     if before_commit_num < after_commit_num:
                         print(f"{current_method}: {current_method} ({before_commit_num}) -> {switch_method(current_method)} ({after_commit_num})")
                         current_method = switch_method(current_method)

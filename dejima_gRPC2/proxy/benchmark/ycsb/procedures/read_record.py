@@ -1,12 +1,16 @@
 import dejima
 from benchmark.ycsb import ycsbutils
 from dejima import LocalBencher
+from dejima import GlobalBencher
 
-class ReadRecord(LocalBencher):
+class ReadRecord(GlobalBencher):
     def _execute(self):
         # create executer
-        executer = dejima.get_executer()
+        executer = dejima.get_executer("bench")
         executer.create_tx()
+        self.params["tx_type"] = "read_tx"
+        executer.set_params(self.params)
+
 
         stmt = self.get_stmt()
         lock_stmt = f"{stmt} FOR SHARE NOWAIT"
@@ -26,12 +30,13 @@ class ReadRecord(LocalBencher):
         # global lock
         # if self.locking_method == "frs":
         #     executer.lock_global(lineages)
+        executer.lock_global(lineages, self.locking_method)
 
         # local execution
         executer.execute_stmt(stmt)
 
         # propagation
-        # executer.propagate(self.global_params)
+        executer.propagate(self.global_params)
 
         # termination
         commit = executer.terminate()
