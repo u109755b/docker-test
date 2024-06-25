@@ -1,5 +1,6 @@
 import os
 import json
+from datetime import datetime
 import dejima.status
 from dejima import config
 from dejima import dejimautils
@@ -51,6 +52,91 @@ class Executer:
         if result != "Ack":
             self._restore()
             raise errors.GlobalLockNotAvailable("abort during global lock")
+        return result
+
+    # fetch global records
+    def fetch_global(self, lineages):
+        if config.peer_name in config.adr_peers:
+            return "Ack"
+
+        # check latest timestamps
+        global_params = {}
+        result = requester.check_latest_request(lineages, self.global_xid, self.tx.start_time, global_params)
+        if result != "Ack":
+            self._restore()
+            raise errors.GlobalLockNotAvailable("abort during global fetch")
+        self.tx.extend_childs(global_params["peer_names"])
+
+        # check which is old data
+        lineages = []
+        for lineage, latest_timestamp in global_params["latest_timestamps"].items():
+            if not latest_timestamp:
+                continue
+            for dt in config.dt_list:
+                if dt == "d_customer":
+                    lineage_col_name = "c_lineage"   # hardcode (lineage name)
+                else:
+                    lineage_col_name = "lineage"
+                self.execute_stmt(f"SELECT updated_at FROM {dt} WHERE {lineage_col_name} = '{lineage}'")
+                local_timestamp, *_ = self.fetchone()
+                if not local_timestamp: continue
+                latest_timestamp = datetime.fromisoformat(latest_timestamp)
+                if local_timestamp != latest_timestamp:
+                    lineages.append(lineage)
+                break
+
+        if not lineages: return "Ack"
+
+        # lock for update
+        bt_list = config.dejima_config_dict['base_table'][config.peer_name]
+        bt_list = sum(bt_list.values(), [])
+        lock_stmts = []
+        for bt in bt_list:
+            if bt == "customer":
+                lineage_col_name = "c_lineage"   # hardcode (lineage name)
+            else:
+                lineage_col_name = "lineage"
+            conditions = " OR ".join([f"{lineage_col_name} = '{lineage}'" for lineage in lineages])
+            lock_stmt = f"SELECT {lineage_col_name} FROM {bt} WHERE {conditions} FOR UPDATE"
+            lock_stmts.append(lock_stmt)
+
+        try:
+            dejimautils.lock_records(self.tx, lock_stmts, max_retry_cnt=0, min_miss_cnt=-1, wait_die=True)
+        except errors.LockNotAvailable as e:
+            return "Nak"
+
+        # propagate latest data from other peers
+        global_params = {}
+        result = requester.fetch_request(lineages, self.global_xid, self.tx.start_time, global_params)
+        if result != "Ack":
+            return "Nak"
+
+        local_xid = self.tx.get_local_xid()
+        # for latest_data_dict in global_params["latest_data_dict"]:
+        for dt, latest_data_list in global_params["latest_data_dict"].items():
+            if dt not in config.dt_list: continue
+            if type(latest_data_list) is list:
+                for latest_data in latest_data_list:
+                    lineage = latest_data[-3]
+                    if dt == "d_customer":
+                        lineage_col_name = "c_lineage"   # hardcode (lineage name)
+                    else:
+                        lineage_col_name = "lineage"
+                    self.execute_stmt(f"DELETE FROM {dt} WHERE {lineage_col_name} = '{lineage}'")
+                    values = ", ".join(repr(value) for value in latest_data)
+                    self.execute_stmt(f"INSERT INTO {dt} VALUES ({values})")
+                self.execute_stmt(f"SELECT {dt}_propagate({local_xid})")
+            else:
+                stmt = dejimautils.get_execute_stmt(latest_data_list, local_xid)
+                self.execute_stmt(stmt)
+
+        # propagate to dejima table
+        prop_dict = {}
+        for dt in config.dt_list:
+            for bt in config.bt_list[dt]:
+                self.execute_stmt("SELECT {}_propagates_to_{}({})".format(bt, dt, local_xid))
+            self.execute_stmt("SELECT public.{}_get_detected_update_data({})".format(dt, local_xid))
+            self.execute_stmt("SELECT public.remove_dummy_{}({})".format(dt, local_xid))
         return result
 
     # execution
@@ -126,8 +212,9 @@ class Executer:
         return result
 
     # propagation
-    def propagate(self, global_params={}, DEBUG=False):
+    def propagate(self, global_params={}, is_load=False, DEBUG=False):
         self.global_params = global_params
+        if is_load: self.global_params["is_load"] = True
         prop_dict = self.propagate_dejima_table()
         result = self.propagate_other_peer(prop_dict, DEBUG)
         return result

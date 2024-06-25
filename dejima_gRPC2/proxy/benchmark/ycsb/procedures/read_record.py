@@ -1,6 +1,6 @@
 import dejima
 from benchmark.ycsb import ycsbutils
-from dejima import LocalBencher
+from dejima import config
 from dejima import GlobalBencher
 
 class ReadRecord(GlobalBencher):
@@ -30,7 +30,10 @@ class ReadRecord(GlobalBencher):
         # global lock
         # if self.locking_method == "frs":
         #     executer.lock_global(lineages)
-        executer.lock_global(lineages, self.locking_method)
+        executer.lock_global(lineages, locking_method="2pl")
+
+        if config.adr_mode:
+            executer.fetch_global(lineages)
 
         # local execution
         executer.execute_stmt(stmt)
@@ -47,5 +50,5 @@ class ReadRecord(GlobalBencher):
 
     # create statement and return it
     def get_stmt(self):
-        stmt = "SELECT * FROM bt WHERE id={}".format(next(ycsbutils.zipf_gen))
+        stmt = "SELECT lineage FROM bt WHERE id={}".format(next(ycsbutils.zipf_gen))
         return stmt

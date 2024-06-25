@@ -10,7 +10,9 @@ CREATE TABLE BT (
 	COL8	varchar,
 	COL9	varchar,
 	COL10	varchar,
-	LINEAGE	varchar
+	LINEAGE	varchar,
+    CREATED_AT timestamp default current_timestamp,
+    UPDATED_AT timestamp default current_timestamp
 );
 
 CREATE INDEX ON bt (lineage);

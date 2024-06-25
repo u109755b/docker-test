@@ -35,6 +35,12 @@ server = grpc.server(ThreadPoolExecutor(max_workers=2000))
 from dejima.lock import Lock
 data_pb2_grpc.add_LockServicer_to_server(Lock(), server)
 
+from dejima.check_latest import CheckLatest
+data_pb2_grpc.add_CheckLatestServicer_to_server(CheckLatest(), server)
+
+from dejima.fetch import Fetch
+data_pb2_grpc.add_FetchServicer_to_server(Fetch(), server)
+
 from dejima.unlock import Unlock
 data_pb2_grpc.add_UnlockServicer_to_server(Unlock(), server)
 

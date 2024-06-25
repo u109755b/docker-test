@@ -30,13 +30,15 @@ elif command_name == 1:
     experiment.initialize()
     experiment.execute_benchmark("2pl")
 
-    print("")
-    experiment.initialize()
-    experiment.execute_benchmark("frs")
+    # print("")
+    # experiment.initialize()
+    # experiment.execute_benchmark("frs")
 
-    print("")
-    experiment.initialize()
-    experiment.execute_benchmark("hybrid")
+    # print("")
+    # experiment.initialize()
+    # experiment.execute_benchmark("hybrid")
+
+    experiment.show_remaining_locks()
 
 # 2  (tenv)
 elif command_name == 2:

@@ -60,6 +60,17 @@ class Experiment(ExperimentBase):
                 self.base_request(peer_name, data, service_stub, save_result=False, show_result=False)
 
 
+    def show_remaining_locks(self):
+        print("show remaining locks")
+        for i in range(self.peer_num):
+            peer_name = f"Peer{i+1}"
+            data = {
+                "about": "show_lock",
+            }
+            service_stub = data_pb2_grpc.ValChangeStub
+            self.base_request(peer_name, data, service_stub, save_result=False, show_result=False)
+
+
     # load
     def base_load(self, peer_name, data, service_stub=None, save_result=False, show_result=True):
         if not service_stub:

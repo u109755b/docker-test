@@ -1,18 +1,20 @@
 # bt
 # columns
 columns = {
-    "ID":	    "int",
-	"COL1":	    "string",
-	"COL2":	    "string",
-	"COL3":	    "string",
-	"COL4":	    "string",
-	"COL5":	    "string",
-	"COL6":	    "string",
-	"COL7":	    "string",
-	"COL8":	    "string",
-	"COL9":	    "string",
-	"COL10":	"string",
-	"LINEAGE":	"string",
+    "ID":	        "int",
+	"COL1":	        "string",
+	"COL2":	        "string",
+	"COL3":	        "string",
+	"COL4":	        "string",
+	"COL5":	        "string",
+	"COL6":	        "string",
+	"COL7":	        "string",
+	"COL8":	        "string",
+	"COL9":	        "string",
+	"COL10":	    "string",
+	"LINEAGE":	    "string",
+    "CREATED_AT":   "string",
+    "UPDATED_AT":   "string",
 }
 
 # column_definitions

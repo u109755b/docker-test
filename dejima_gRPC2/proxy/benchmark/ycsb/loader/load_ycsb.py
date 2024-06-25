@@ -23,7 +23,7 @@ class YCSBLoader(Loader):
         executer.execute_stmt(stmt)
 
         # propagation
-        executer.propagate(DEBUG=True)
+        executer.propagate(is_load=True, DEBUG=True)
 
         # termination
         result = executer.terminate(DEBUG=True)

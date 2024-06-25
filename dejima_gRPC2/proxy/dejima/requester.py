@@ -65,6 +65,92 @@ def release_lock_request(global_xid):
     else:
         return "Nak"
 
+def check_latest_request(lineages, global_xid, start_time, global_params={}):
+    with tracer.start_as_current_span("fetch_request") as span:
+        ctx = set_value("current_span", span)
+        thread_list = []
+        results = []
+        params = {}
+        params["peer_name"] = [None]
+        params["latest_timestamps"] = []
+        lock = threading.Lock()
+
+        parent_peer = None
+        if "parent_peer" in global_params:
+            parent_peer = global_params["parent_peer"]
+        global_params["parent_peer"] = config.peer_name
+
+        for peer in config.neighbor_peers:
+            if peer == parent_peer: continue
+            peer_address = config.dejima_config_dict['peer_address'][peer]
+            service_stub = data_pb2_grpc.CheckLatestStub
+            data = {
+                "lineages": lineages,
+                "xid": global_xid,
+                "start_time": start_time,
+                "global_params": global_params,
+            }
+            req = data_pb2.Request(json_str=json.dumps(data))
+            args = ([peer_address, service_stub, req, results, lock, ctx, params])
+            thread = threading.Thread(target=base_request, args=args)
+            thread_list.append(thread)
+
+        dejimautils.execute_threads(thread_list)
+
+        peer_names = set(params["peer_name"])
+        peer_names.remove(None)
+        global_params["peer_names"] = list(peer_names)
+        if params["latest_timestamps"]:
+            global_params["latest_timestamps"] = params["latest_timestamps"][0]
+
+        if all(results):
+            return "Ack"
+        else:
+            return "Nak"
+
+def fetch_request(lineages, global_xid, start_time, global_params={}):
+    with tracer.start_as_current_span("fetch_request") as span:
+        ctx = set_value("current_span", span)
+        thread_list = []
+        results = []
+        params = {}
+        params["peer_name"] = [None]
+        params["latest_data_dict"] = []
+        lock = threading.Lock()
+
+        parent_peer = None
+        if "parent_peer" in global_params:
+            parent_peer = global_params["parent_peer"]
+        global_params["parent_peer"] = config.peer_name
+
+        for peer in config.tx_dict[global_xid].child_peers:
+            if peer == parent_peer: continue
+            peer_address = config.dejima_config_dict['peer_address'][peer]
+            service_stub = data_pb2_grpc.FetchStub
+            data = {
+                "lineages": lineages,
+                "xid": global_xid,
+                "start_time": start_time,
+                "global_params": global_params,
+            }
+            req = data_pb2.Request(json_str=json.dumps(data))
+            args = ([peer_address, service_stub, req, results, lock, ctx, params])
+            thread = threading.Thread(target=base_request, args=args)
+            thread_list.append(thread)
+
+        dejimautils.execute_threads(thread_list)
+
+        peer_names = set(params["peer_name"])
+        peer_names.remove(None)
+        global_params["peer_names"] = list(peer_names)
+        if params["latest_data_dict"]:
+            global_params["latest_data_dict"] = params["latest_data_dict"][0]
+
+        if all(results):
+            return "Ack"
+        else:
+            return "Nak"
+
 def prop_request(arg_dict, global_xid, start_time, method, global_params={}):
     with tracer.start_as_current_span("prop_request") as span:
         ctx = set_value("current_span", span)
@@ -80,6 +166,10 @@ def prop_request(arg_dict, global_xid, start_time, method, global_params={}):
         dts_delta = defaultdict(dict)
         for dt in arg_dict.keys():
             for peer in arg_dict[dt]["peers"]:
+                if config.adr_mode:
+                    if "is_load" not in global_params or global_params["is_load"] == False:
+                        if config.peer_name in config.adr_peers and peer not in config.adr_peers:
+                            continue
                 peers.add(peer)
                 dts_delta[peer][dt] = arg_dict[dt]["delta"]
 
@@ -161,6 +251,10 @@ def base_request(peer_address, service_stub, req, results, lock, ctx=None, param
             params["peer_name"].append(res_dic["peer_name"])
         if "max_hop" in res_dic:
             params["max_hop"].append(res_dic["max_hop"])
+        if "latest_data_dict" in res_dic:
+            params["latest_data_dict"].append(res_dic["latest_data_dict"])
+        if "latest_timestamps" in res_dic:
+            params["latest_timestamps"].append(res_dic["latest_timestamps"])
         if "timestamps" in res_dic:
             res_dic["timestamps"][-1].append(time.perf_counter())   # 5
             params["timestamps"].append(res_dic["timestamps"])

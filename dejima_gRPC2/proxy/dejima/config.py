@@ -21,6 +21,13 @@ prelock_invalid = False
 hop_mode = False
 include_getting_tx_time = True
 getting_tx = True
+adr_mode = True
+
+adr_peers = ["Peer3"]
+# adr_peers = ["Peer2", "Peer3"]
+# adr_peers = ["Peer2", "Peer3", "Peer4"]
+# adr_peers = ["Peer1", "Peer2", "Peer3", "Peer4"]
+# adr_peers = ["Peer1", "Peer2", "Peer3", "Peer4", "Peer5"]
 
 # sleep time
 SLEEP_MS = 0
@@ -44,3 +51,10 @@ for i in range(neighbor_hop):
             next_target_peers = next_target_peers | peerset_for_each_dt
     target_peers = target_peers | next_target_peers
 target_peers.remove(peer_name)
+
+neighbor_peers = set()
+for peerlist_for_each_dt in dejima_config_dict["dejima_table"].values():
+    peerset_for_each_dt = set(peerlist_for_each_dt)
+    if peer_name in peerlist_for_each_dt:
+        neighbor_peers |= peerset_for_each_dt
+neighbor_peers.remove(peer_name)

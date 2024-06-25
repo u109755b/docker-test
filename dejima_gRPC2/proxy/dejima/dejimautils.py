@@ -1,6 +1,7 @@
 import time
 import threading
 import uuid
+from datetime import datetime
 from dejima import status
 from dejima import errors
 from dejima import config
@@ -16,6 +17,11 @@ def execute_threads(thread_list):
     
     for thread in thread_list:
         thread.join()
+
+def datetime_converter(o):
+    if isinstance(o, datetime):
+        return o.isoformat()
+    raise TypeError(f'Object of type {o.__class__.__name__} is not JSON serializable')
 
 
 # base lock
@@ -139,6 +145,7 @@ def get_lock_stmts(json_data):
     for delete in json_dict["deletions"]:
         where = []
         for column, value in delete.items():
+            if column != "lineage": continue
             if column=='txid': continue
             if not value and value != 0: continue   # NULL
             if type(value) is str:
@@ -157,6 +164,7 @@ def get_execute_stmt(json_data, local_xid):
     for delete in json_dict["deletions"]:
         where = []
         for column, value in delete.items():
+            if column != "lineage": continue
             if column=='txid': continue
             if not value and value != 0: continue   # NULL
             if type(value) is str:

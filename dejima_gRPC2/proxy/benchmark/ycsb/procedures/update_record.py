@@ -53,5 +53,5 @@ class UpdateRecord(GlobalBencher):
         target_col = 'col{}'.format(random.randint(1,ycsbutils.COL_N))
         target_val = benchutils.randomname(10)
         ycsb_id = next(ycsbutils.zipf_gen)
-        stmt = "UPDATE bt SET {}='{}' WHERE id={}".format(target_col, target_val, ycsb_id)
+        stmt = "UPDATE bt SET {}='{}', updated_at=current_timestamp WHERE id={}".format(target_col, target_val, ycsb_id)
         return stmt
