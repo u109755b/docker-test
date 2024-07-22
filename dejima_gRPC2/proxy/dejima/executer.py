@@ -111,6 +111,8 @@ class Executer:
         if result != "Ack":
             return "Nak"
 
+        if "latest_data_dict" not in global_params: return result
+
         local_xid = self.tx.get_local_xid()
         # for latest_data_dict in global_params["latest_data_dict"]:
         for dt, latest_data_list in global_params["latest_data_dict"].items():

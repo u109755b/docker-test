@@ -58,7 +58,7 @@ class BenchExecuter(Executer):
 
 
     # terminate
-    def terminate(self, DEBUG=False):
+    def terminate(self, store_timestamps=True, DEBUG=False):
         commit_status_list = {}
         commit_status_list["2pl"] = [self.status_clean, self.status_dirty, self.status_proped]
         commit_status_list["frs"] = [self.status_clean, self.status_dirty, self.status_proped]
@@ -93,7 +93,7 @@ class BenchExecuter(Executer):
 
         if DEBUG: print("termination:", msg)
         # save timestamps
-        if result == dejima.status.COMMITTED:
+        if result == dejima.status.COMMITTED and store_timestamps:
             self.global_params["timestamps"].append(self.timestamp)
             self.timestamp_management.add_timestamps(self.global_params["timestamps"])
 
