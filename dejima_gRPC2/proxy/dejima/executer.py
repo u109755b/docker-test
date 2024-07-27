@@ -48,6 +48,8 @@ class Executer:
             print("warn: lineages is empty, canceled global lock")
             return "Ack"
         self.locking_method = "frs"
+        if config.adr_mode:
+            config.countup_request(lineages, "update", config.peer_name)
         result = requester.lock_request(lineages, self.global_xid, self.tx.start_time)
         if result != "Ack":
             self._restore()
@@ -56,7 +58,12 @@ class Executer:
 
     # fetch global records
     def fetch_global(self, lineages):
-        if config.peer_name in config.adr_peers:
+        config.countup_request(lineages, "read", config.peer_name)
+        local_read = True
+        for lineage in lineages:
+            if not config.get_is_r_peer(lineage):
+                local_read = False
+        if local_read:
             return "Ack"
 
         # check latest timestamps

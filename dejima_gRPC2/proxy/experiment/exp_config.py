@@ -1,4 +1,4 @@
-peer_num = 5
+peer_num = 10
 threads = 1   # num of threads for each peer
 tx_t = 10
 test_time = 600

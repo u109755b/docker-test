@@ -1,6 +1,7 @@
 import os
 import json
 import time
+from collections import deque
 from grpcdata import data_pb2
 from grpcdata import data_pb2_grpc
 from dejima import config
@@ -39,6 +40,22 @@ class Propagation(data_pb2_grpc.PropagationServicer):
         if not is_first_time:
             res_dic["peer_name"] = None
 
+
+        # count up update request
+        if config.adr_mode:
+            deletion_set = set()
+            insertion_set = set()
+            for dt in params["delta"]:
+                deletion_set |= set([deletion["lineage"] for deletion in params["delta"][dt]["deletions"]])
+                insertion_set |= set([insertion["lineage"] for insertion in params["delta"][dt]["insertions"]])
+            contraction_lineages = config.countup_request(deletion_set & insertion_set, "update", params["parent_peer"])
+            for lineage in contraction_lineages:
+                config.is_r_peer[lineage] = False
+                config.is_edge_r_peer[lineage] = False
+                config.request_count[lineage] = deque()
+            if contraction_lineages:
+                params["delta"] = []
+                res_dic["contraction_data"] = {"peer": config.peer_name, "lineages": contraction_lineages}
 
         # update base tables according to updates to dt
         local_xid = tx.get_local_xid()
@@ -132,4 +149,7 @@ class Propagation(data_pb2_grpc.PropagationServicer):
         if "timestamps" in params["global_params"] and result == "Ack":
             res_dic["timestamps"] = params["global_params"]["timestamps"]
             res_dic["timestamps"].append(timestamp)
+        # contraction_data
+        if contraction_lineages:
+            res_dic["contraction_data"] = {"peer": config.peer_name, "lineages": contraction_lineages}
         return data_pb2.Response(json_str=json.dumps(res_dic))

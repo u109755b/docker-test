@@ -30,6 +30,8 @@ class BenchExecuter(Executer):
     def lock_global(self, lineages, locking_method):
         if locking_method == "2pl":
             self.timestamp.append(time.perf_counter())   # 1
+            # if config.adr_mode:
+            #     config.countup_request(lineages, "update", config.peer_name)
             return "Ack"
 
         self.time_measurement.start_timer("global_lock", self.global_xid)

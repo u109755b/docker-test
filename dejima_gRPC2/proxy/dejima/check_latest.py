@@ -25,7 +25,13 @@ class CheckLatest(data_pb2_grpc.LockServicer):
         global_xid = params['xid']
 
         # at a non-adr peer
-        if config.peer_name not in config.adr_peers:
+        # if config.peer_name not in config.adr_peers:
+        is_r_peer = config.get_is_r_peer(list(params["lineages"])[0])
+        for lineage in params["lineages"]:
+            if config.get_is_r_peer(lineage) != is_r_peer:
+                print(f"{os.path.basename(__file__)}: error lineage set")
+                raise Exception
+        if not is_r_peer:
             result = requester.check_latest_request(params["lineages"], params["xid"], params["start_time"], params["global_params"])
             res_dic = {"result": result}
             if result == "Ack" and params["global_params"]["peer_names"]:
