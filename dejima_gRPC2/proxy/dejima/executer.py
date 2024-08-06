@@ -198,6 +198,11 @@ class Executer:
                 prop_dict[dt]['peers'] = target_peers
                 prop_dict[dt]['delta'] = delta
 
+                for insertion in delta["insertions"]:
+                    lineage = insertion["lineage"]
+                    if lineage not in config.is_r_peer:
+                        config.init_adr_setting(lineage)
+
         except Exception as e:
             self._restore()
             errors.out_err(e, "BIRDS execution error", out_trace=True)

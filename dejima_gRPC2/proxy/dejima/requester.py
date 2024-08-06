@@ -82,7 +82,11 @@ def check_latest_request(lineages, global_xid, start_time, global_params={}):
             parent_peer = global_params["parent_peer"]
         global_params["parent_peer"] = config.peer_name
 
-        for peer in config.neighbor_peers:
+        look_peers = set()
+        for lineage in lineages:
+            look_peers |= config.get_r_direction(lineage)
+
+        for peer in look_peers:
             if peer == parent_peer: continue
             peer_address = config.dejima_config_dict['peer_address'][peer]
             service_stub = data_pb2_grpc.CheckLatestStub
@@ -102,8 +106,13 @@ def check_latest_request(lineages, global_xid, start_time, global_params={}):
         peer_names = set(params["peer_name"])
         peer_names.remove(None)
         global_params["peer_names"] = list(peer_names)
+        latest_timestamps = {}
         if params["latest_timestamps"]:
-            global_params["latest_timestamps"] = params["latest_timestamps"][0]
+            for latest_timestamp in params["latest_timestamps"]:
+                latest_timestamps.update(latest_timestamp)
+        if all(results) and not latest_timestamps:
+            print(f"latest_timestamps not found {results} {latest_timestamps} {len(thread_list)}")
+        global_params["latest_timestamps"] = latest_timestamps
 
         if all(results):
             return "Ack"
@@ -156,7 +165,7 @@ def fetch_request(lineages, global_xid, start_time, global_params={}):
                     config.is_edge_r_peer[lineage] = True
                     config.r_direction[lineage] = set([expansion_data["peer"]])
                     config.request_count[lineage] = deque()
-                    print(f"expansion {lineage}: {expansion_data["peer"]} -> {config.peer_name}")
+                    # print(f"expansion {lineage}: {expansion_data["peer"]} -> {config.peer_name}")
 
         if all(results):
             return "Ack"
@@ -222,7 +231,7 @@ def prop_request(arg_dict, global_xid, start_time, method, global_params={}):
                     if len(config.r_direction[lineage]) <= 1:
                         config.is_edge_r_peer[lineage] = True
                     config.request_count[lineage] = deque()
-                    print(f"contraction {lineage}: {contraction_data["peer"]} -> {config.peer_name}")
+                    # print(f"contraction {lineage}: {contraction_data["peer"]} -> {config.peer_name}")
 
         peer_names = set(params["peer_name"])
         peer_names.remove(None)

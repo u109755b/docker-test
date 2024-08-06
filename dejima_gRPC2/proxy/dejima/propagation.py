@@ -48,6 +48,9 @@ class Propagation(data_pb2_grpc.PropagationServicer):
             for dt in params["delta"]:
                 deletion_set |= set([deletion["lineage"] for deletion in params["delta"][dt]["deletions"]])
                 insertion_set |= set([insertion["lineage"] for insertion in params["delta"][dt]["insertions"]])
+            for lineage in insertion_set:
+                if lineage not in config.is_r_peer:
+                    config.init_adr_setting(lineage)
             contraction_lineages = config.countup_request(deletion_set & insertion_set, "update", params["parent_peer"])
             for lineage in contraction_lineages:
                 config.is_r_peer[lineage] = False
