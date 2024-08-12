@@ -1,6 +1,7 @@
 import time
 import threading
 import uuid
+import json
 from datetime import datetime
 from dejima import status
 from dejima import errors
@@ -138,6 +139,17 @@ def lock_records(tx, lock_stmts, max_retry_cnt=0, min_miss_cnt=1, wait_die=False
 
 
 
+# get condition
+def get_where_condition(table_name, lineages):
+    if type(lineages) is str:
+        lineages = [lineages]
+    if table_name == "d_customer":
+        lineage_col_name = "c_lineage"   # hardcode (lineage name)
+    else:
+        lineage_col_name = "lineage"
+    condition = " OR ".join([f"{lineage_col_name} = '{lineage}'" for lineage in lineages])
+    return lineage_col_name, condition
+
 # get lock statements for lock records of dejima tables
 def get_lock_stmts(json_data):
     lock_stmts = []
@@ -204,3 +216,55 @@ def get_execute_stmt(json_data, local_xid):
     execute_stmt = update_stmts + union_stmts
 
     return execute_stmt
+
+
+# lock with lineages
+def lock_with_lineages(tx, lineages, for_what="SHARE"):
+    # bt_list
+    bt_list = config.dejima_config_dict['base_table'][config.peer_name]
+    bt_list = sum(bt_list.values(), [])
+
+    # lineage_set
+    if type(lineages) is str:
+        lineages = [lineages]
+    lineage_set = set(lineages)
+    lineage_set.discard("dummy")
+    if not lineage_set: return
+
+    # lock_stmts
+    lock_stmts = []
+    for bt in bt_list:
+        lineage_col_name, condition = get_where_condition(bt, lineage_set)
+        lock_stmt = f"SELECT {lineage_col_name} FROM {bt} WHERE {condition} FOR {for_what}"
+        lock_stmts.append(lock_stmt)
+
+    # lock with lineages
+    lock_records(tx, lock_stmts, max_retry_cnt=0, min_miss_cnt=-1, wait_die=True)
+
+
+# execute fetch
+def execute_fetch(local_xid, latest_data_dict, execute):
+    for dt, latest_data_list in latest_data_dict.items():
+        if dt not in config.dt_list: continue
+        if type(latest_data_list) is list:
+            for latest_data in latest_data_list:
+                lineage = latest_data[-3]
+                lineage_col_name, condition =  get_where_condition(dt, lineage)
+                execute(f"DELETE FROM {dt} WHERE {condition}")
+                values = ", ".join(repr(value) for value in latest_data)
+                execute(f"INSERT INTO {dt} VALUES ({values})")
+            execute(f"SELECT {dt}_propagate({local_xid})")
+        else:
+            stmt = get_execute_stmt(latest_data_list, local_xid)
+            execute(stmt)
+
+
+# propagate to dt
+def propagate_to_dt(dt, local_xid, cur):
+    for bt in config.bt_list[dt]:
+        cur.execute("SELECT {}_propagates_to_{}({})".format(bt, dt, local_xid))
+    cur.execute("SELECT public.{}_get_detected_update_data({})".format(dt, local_xid))
+    delta, *_ = cur.fetchone()
+    cur.execute("SELECT public.remove_dummy_{}({})".format(dt, local_xid))
+    if delta == None: return {}
+    return json.loads(delta)

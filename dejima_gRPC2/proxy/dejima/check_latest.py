@@ -24,6 +24,10 @@ class CheckLatest(data_pb2_grpc.LockServicer):
         params = json.loads(req.json_str)
         global_xid = params['xid']
 
+        lineage_set = set(params["lineages"])
+        lineage_set.discard("dummy")
+
+
         # at a non-adr peer
         # if config.peer_name not in config.adr_peers:
         is_r_peer = config.get_is_r_peer(list(params["lineages"])[0])
@@ -41,31 +45,15 @@ class CheckLatest(data_pb2_grpc.LockServicer):
                 res_dic["peer_name"] = config.peer_name
             return data_pb2.Response(json_str=json.dumps(res_dic, default=dejimautils.datetime_converter))
 
+
+        # at an adr peer
         if config.getting_tx:
             tx = Tx(global_xid, params["start_time"])
-
-        # create lock statements
-        bt_list = config.dejima_config_dict['base_table'][config.peer_name]
-        bt_list = sum(bt_list.values(), [])
-        lineage_set = set(params["lineages"])
-        lineage_set.discard("dummy")
-        lock_stmts = []
-
-        for bt in bt_list:
-            if bt == "customer":
-                lineage_col_name = "c_lineage"   # hardcode (lineage name)
-            else:
-                lineage_col_name = "lineage"
-            if not lineage_set: break
-            conditions = " OR ".join([f"{lineage_col_name} = '{lineage}'" for lineage in lineage_set])
-            lock_stmt = f"SELECT {lineage_col_name} FROM {bt} WHERE {conditions} FOR SHARE"
-            lock_stmts.append(lock_stmt)
-
 
         # lock with lineages
         res_dic = {"result": "Nak"}
         try:
-            dejimautils.lock_records(tx, lock_stmts, max_retry_cnt=0, min_miss_cnt=-1, wait_die=True)
+            dejimautils.lock_with_lineages(tx, params["lineages"], for_what="SHARE")
 
         except errors.RecordsNotFound as e:
             print(f"{os.path.basename(__file__)}: global lock failed (Not Found)")
@@ -84,12 +72,9 @@ class CheckLatest(data_pb2_grpc.LockServicer):
 
         latest_timestamps = {}
         for dt in config.dt_list:
-            if dt == "d_customer":
-                lineage_col_name = "c_lineage"   # hardcode (lineage name)
-            else:
-                lineage_col_name = "lineage"
             for lineage in lineage_set:
-                tx.cur.execute(f"SELECT updated_at FROM {dt} WHERE {lineage_col_name} = '{lineage}'")
+                lineage_col_name, condition =  dejimautils.get_where_condition(dt, lineage)
+                tx.cur.execute(f"SELECT updated_at FROM {dt} WHERE {condition}")
                 latest_timestamp, *_ = tx.cur.fetchone()
                 latest_timestamps[lineage] = latest_timestamp
 

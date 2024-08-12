@@ -102,18 +102,8 @@ class Propagation(data_pb2_grpc.PropagationServicer):
                 if target_peers == []: 
                     continue
 
-                for bt in config.bt_list[dt]:
-                    tx.cur.execute("SELECT {}_propagates_to_{}({})".format(bt, dt, local_xid))
-                tx.cur.execute("SELECT public.{}_get_detected_update_data({})".format(dt, local_xid))
-                try:
-                    delta, *_ = tx.cur.fetchone()
-                except Exception as e:
-                    if str(e) == "no results to fetch":
-                        delta = None
-                tx.cur.execute("SELECT public.remove_dummy_{}({})".format(dt, local_xid))
-
-                if delta == None: continue
-                delta = json.loads(delta)
+                delta = dejimautils.propagate_to_dt(dt, local_xid, tx.cur)
+                if not delta: continue
 
                 prop_dict[dt] = {}
                 prop_dict[dt]['peers'] = target_peers

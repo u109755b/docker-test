@@ -34,28 +34,10 @@ class Lock(data_pb2_grpc.LockServicer):
             measurement.time_measurement.start_timer("lock_process", global_xid)
 
 
-        # create lock statements
-        bt_list = config.dejima_config_dict['base_table'][config.peer_name]
-        bt_list = sum(bt_list.values(), [])
-        lineage_set = set(params["lineages"])
-        lineage_set.discard("dummy")
-        lock_stmts = []
-
-        for bt in bt_list:
-            if bt == "customer":
-                lineage_col_name = "c_lineage"   # hardcode (lineage name)
-            else:
-                lineage_col_name = "lineage"
-            if not lineage_set: break
-            conditions = " OR ".join([f"{lineage_col_name} = '{lineage}'" for lineage in lineage_set])
-            lock_stmt = f"SELECT {lineage_col_name} FROM {bt} WHERE {conditions} FOR UPDATE"
-            lock_stmts.append(lock_stmt)
-
-
         # lock with lineages
         res_dic = {"result": "Nak"}
         try:
-            dejimautils.lock_records(tx, lock_stmts, max_retry_cnt=0, min_miss_cnt=-1, wait_die=True)
+            dejimautils.lock_with_lineages(tx, params["lineages"], for_what="UPDATE")
 
         except errors.RecordsNotFound as e:
             return data_pb2.Response(json_str=json.dumps(res_dic))

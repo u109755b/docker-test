@@ -30,15 +30,11 @@ class Fetch(data_pb2_grpc.LockServicer):
         else:
             tx = config.tx_dict[global_xid]
 
-        # create lock statements
-        bt_list = config.dejima_config_dict['base_table'][config.peer_name]
-        bt_list = sum(bt_list.values(), [])
         lineage_set = set(params["lineages"])
         lineage_set.discard("dummy")
-        lock_stmts = []
 
 
-        # at a adr peer
+        # at an adr peer
         res_dic = {"result": "Ack"}
         res_dic["peer_name"] = config.peer_name
 
@@ -58,35 +54,21 @@ class Fetch(data_pb2_grpc.LockServicer):
                 res_dic["expansion_data"] = {"peer": config.peer_name, "lineages": expansion_lineages}
             latest_data_dict = {}
             for dt in config.dt_list:
-                if dt == "d_customer":
-                    lineage_col_name = "c_lineage"   # hardcode (lineage name)
-                else:
-                    lineage_col_name = "lineage"
                 if not lineage_set: break
-                conditions = " OR ".join([f"{lineage_col_name} = '{lineage}'" for lineage in lineage_set])
-                tx.cur.execute(f"SELECT * FROM {dt} WHERE {conditions} FOR SHARE")
+                lineage_col_name, condition =  dejimautils.get_where_condition(dt, lineage_set)
+                tx.cur.execute(f"SELECT * FROM {dt} WHERE {condition} FOR SHARE")
                 latest_data = tx.cur.fetchall()
                 latest_data_dict[dt] = latest_data
             res_dic["latest_data_dict"] = latest_data_dict
             return data_pb2.Response(json_str=json.dumps(res_dic, default=dejimautils.datetime_converter))
 
 
+        # at a non-adr peer
         # lock with lineages
         res_dic = {"result": "Nak"}
         res_dic["peer_name"] = config.peer_name
-
-        for bt in bt_list:
-            if bt == "customer":
-                lineage_col_name = "c_lineage"   # hardcode (lineage name)
-            else:
-                lineage_col_name = "lineage"
-            if not lineage_set: break
-            conditions = " OR ".join([f"{lineage_col_name} = '{lineage}'" for lineage in lineage_set])
-            lock_stmt = f"SELECT {lineage_col_name} FROM {bt} WHERE {conditions} FOR UPDATE"
-            lock_stmts.append(lock_stmt)
-
         try:
-            dejimautils.lock_records(tx, lock_stmts, max_retry_cnt=0, min_miss_cnt=-1, wait_die=True)
+            dejimautils.lock_with_lineages(tx, params["lineages"], for_what="UPDATE")
 
         except errors.RecordsNotFound as e:
             print(f"{os.path.basename(__file__)}: global lock failed (Not Found)")
@@ -106,33 +88,13 @@ class Fetch(data_pb2_grpc.LockServicer):
         latest_data_dict = params["global_params"]["latest_data_dict"]
 
         local_xid = tx.get_local_xid()
-        for dt, latest_data_list in latest_data_dict.items():
-            if dt not in config.dt_list: continue
-            if type(latest_data_list) is list:
-                for latest_data in latest_data_list:
-                    lineage = latest_data[-3]
-                    if dt == "d_customer":
-                        lineage_col_name = "c_lineage"   # hardcode (lineage name)
-                    else:
-                        lineage_col_name = "lineage"
-                    tx.cur.execute(f"DELETE FROM {dt} WHERE {lineage_col_name} = '{lineage}'")
-                    values = ", ".join(repr(value) for value in latest_data)
-                    tx.cur.execute(f"INSERT INTO {dt} VALUES ({values})")
-                tx.cur.execute(f"SELECT {dt}_propagate({local_xid})")
-            else:
-                stmt = dejimautils.get_execute_stmt(latest_data_list, local_xid)
-                tx.cur.execute(stmt)
+        dejimautils.execute_fetch(local_xid, latest_data_dict, tx.cur.execute)
 
         # propagate to dejima table
         prop_dict = {}
         for dt in config.dt_list:
-            for bt in config.bt_list[dt]:
-                tx.cur.execute("SELECT {}_propagates_to_{}({})".format(bt, dt, local_xid))
-            tx.cur.execute("SELECT public.{}_get_detected_update_data({})".format(dt, local_xid))
-            delta, *_ = tx.cur.fetchone()
-            tx.cur.execute("SELECT public.remove_dummy_{}({})".format(dt, local_xid))
-            if delta == None: continue
-            delta = json.loads(delta)
+            delta = dejimautils.propagate_to_dt(dt, local_xid, tx.cur)
+            if not delta: continue
             prop_dict[dt] = delta
         res_dic["latest_data_dict"] = prop_dict
 

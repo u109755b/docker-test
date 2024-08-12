@@ -80,11 +80,8 @@ class Executer:
             if not latest_timestamp:
                 continue
             for dt in config.dt_list:
-                if dt == "d_customer":
-                    lineage_col_name = "c_lineage"   # hardcode (lineage name)
-                else:
-                    lineage_col_name = "lineage"
-                self.execute_stmt(f"SELECT updated_at FROM {dt} WHERE {lineage_col_name} = '{lineage}'")
+                lineage_col_name, condition =  dejimautils.get_where_condition(dt, lineage)
+                self.execute_stmt(f"SELECT updated_at FROM {dt} WHERE {condition}")
                 local_timestamp, *_ = self.fetchone()
                 if not local_timestamp: continue
                 latest_timestamp = datetime.fromisoformat(latest_timestamp)
@@ -95,21 +92,9 @@ class Executer:
         if not lineages: return "Ack"
 
         # lock for update
-        bt_list = config.dejima_config_dict['base_table'][config.peer_name]
-        bt_list = sum(bt_list.values(), [])
-        lock_stmts = []
-        for bt in bt_list:
-            if bt == "customer":
-                lineage_col_name = "c_lineage"   # hardcode (lineage name)
-            else:
-                lineage_col_name = "lineage"
-            conditions = " OR ".join([f"{lineage_col_name} = '{lineage}'" for lineage in lineages])
-            lock_stmt = f"SELECT {lineage_col_name} FROM {bt} WHERE {conditions} FOR UPDATE"
-            lock_stmts.append(lock_stmt)
-
         try:
-            dejimautils.lock_records(self.tx, lock_stmts, max_retry_cnt=0, min_miss_cnt=-1, wait_die=True)
-        except errors.LockNotAvailable as e:
+            dejimautils.lock_with_lineages(self.tx, lineages, for_what="UPDATE")
+        except (errors.RecordsNotFound, errors.LockNotAvailable) as e:
             return "Nak"
 
         # propagate latest data from other peers
@@ -117,35 +102,15 @@ class Executer:
         result = requester.fetch_request(lineages, self.global_xid, self.tx.start_time, global_params)
         if result != "Ack":
             return "Nak"
-
         if "latest_data_dict" not in global_params: return result
 
+        # fetch to local
         local_xid = self.tx.get_local_xid()
-        # for latest_data_dict in global_params["latest_data_dict"]:
-        for dt, latest_data_list in global_params["latest_data_dict"].items():
-            if dt not in config.dt_list: continue
-            if type(latest_data_list) is list:
-                for latest_data in latest_data_list:
-                    lineage = latest_data[-3]
-                    if dt == "d_customer":
-                        lineage_col_name = "c_lineage"   # hardcode (lineage name)
-                    else:
-                        lineage_col_name = "lineage"
-                    self.execute_stmt(f"DELETE FROM {dt} WHERE {lineage_col_name} = '{lineage}'")
-                    values = ", ".join(repr(value) for value in latest_data)
-                    self.execute_stmt(f"INSERT INTO {dt} VALUES ({values})")
-                self.execute_stmt(f"SELECT {dt}_propagate({local_xid})")
-            else:
-                stmt = dejimautils.get_execute_stmt(latest_data_list, local_xid)
-                self.execute_stmt(stmt)
+        dejimautils.execute_fetch(local_xid, global_params["latest_data_dict"], self.execute_stmt)
 
         # propagate to dejima table
-        prop_dict = {}
         for dt in config.dt_list:
-            for bt in config.bt_list[dt]:
-                self.execute_stmt("SELECT {}_propagates_to_{}({})".format(bt, dt, local_xid))
-            self.execute_stmt("SELECT public.{}_get_detected_update_data({})".format(dt, local_xid))
-            self.execute_stmt("SELECT public.remove_dummy_{}({})".format(dt, local_xid))
+            dejimautils.propagate_to_dt(dt, local_xid, self.tx.cur)
         return result
 
     # execution
@@ -185,14 +150,8 @@ class Executer:
                 target_peers.remove(config.peer_name)
                 if target_peers == []: continue
 
-                for bt in config.bt_list[dt]:
-                    self.tx.cur.execute("SELECT {}_propagates_to_{}({})".format(bt, dt, local_xid))
-                self.tx.cur.execute("SELECT public.{}_get_detected_update_data({})".format(dt, local_xid))
-                delta, *_ = self.tx.cur.fetchone()
-                self.tx.cur.execute("SELECT public.remove_dummy_{}({})".format(dt, local_xid))
-
-                if delta == None: continue
-                delta = json.loads(delta)
+                delta = dejimautils.propagate_to_dt(dt, local_xid, self.tx.cur)
+                if not delta: continue
 
                 prop_dict[dt] = {}
                 prop_dict[dt]['peers'] = target_peers
