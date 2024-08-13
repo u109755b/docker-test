@@ -4,6 +4,7 @@ from datetime import datetime
 import dejima.status
 from dejima import config
 from dejima import dejimautils
+from dejima import adrutils
 from dejima import requester
 from dejima import errors
 from dejima.transaction import Tx
@@ -49,7 +50,7 @@ class Executer:
             return "Ack"
         self.locking_method = "frs"
         if config.adr_mode:
-            config.countup_request(lineages, "update", config.peer_name)
+            adrutils.countup_request(lineages, "update", config.peer_name)
         result = requester.lock_request(lineages, self.global_xid, self.tx.start_time)
         if result != "Ack":
             self._restore()
@@ -58,10 +59,10 @@ class Executer:
 
     # fetch global records
     def fetch_global(self, lineages):
-        config.countup_request(lineages, "read", config.peer_name)
+        adrutils.countup_request(lineages, "read", config.peer_name)
         local_read = True
         for lineage in lineages:
-            if not config.get_is_r_peer(lineage):
+            if not adrutils.get_is_r_peer(lineage):
                 local_read = False
         if local_read:
             return "Ack"
@@ -146,21 +147,19 @@ class Executer:
         try:
             local_xid = self.tx.get_local_xid()
             for dt in config.dt_list:
-                target_peers = list(config.dejima_config_dict['dejima_table'][dt])
-                target_peers.remove(config.peer_name)
-                if target_peers == []: continue
+                target_peers = [peer for peer in config.dejima_config_dict["dejima_table"][dt] 
+                                if peer != config.peer_name]
+                if not target_peers: continue
 
                 delta = dejimautils.propagate_to_dt(dt, local_xid, self.tx.cur)
                 if not delta: continue
 
-                prop_dict[dt] = {}
-                prop_dict[dt]['peers'] = target_peers
-                prop_dict[dt]['delta'] = delta
+                prop_dict[dt] = {"peers": target_peers, "delta": delta}
 
                 for insertion in delta["insertions"]:
                     lineage = insertion["lineage"]
-                    if lineage not in config.is_r_peer:
-                        config.init_adr_setting(lineage)
+                    if lineage not in adrutils.is_r_peer:
+                        adrutils.init_adr_setting(lineage)
 
         except Exception as e:
             self._restore()

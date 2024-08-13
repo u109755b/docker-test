@@ -5,6 +5,7 @@ from collections import deque
 from grpcdata import data_pb2
 from grpcdata import data_pb2_grpc
 from dejima import config
+from dejima import adrutils
 from dejima import errors
 from dejima import dejimautils
 from dejima import requester
@@ -49,13 +50,10 @@ class Propagation(data_pb2_grpc.PropagationServicer):
                 deletion_set |= set([deletion["lineage"] for deletion in params["delta"][dt]["deletions"]])
                 insertion_set |= set([insertion["lineage"] for insertion in params["delta"][dt]["insertions"]])
             for lineage in insertion_set:
-                if lineage not in config.is_r_peer:
-                    config.init_adr_setting(lineage)
-            contraction_lineages = config.countup_request(deletion_set & insertion_set, "update", params["parent_peer"])
-            for lineage in contraction_lineages:
-                config.is_r_peer[lineage] = False
-                config.is_edge_r_peer[lineage] = False
-                config.request_count[lineage] = deque()
+                if lineage not in adrutils.is_r_peer:
+                    adrutils.init_adr_setting(lineage)
+            contraction_lineages = adrutils.countup_request(deletion_set & insertion_set, "update", params["parent_peer"])
+            adrutils.ec_execute(contraction_lineages, "contraction", "old")
             if contraction_lineages:
                 params["delta"] = []
                 res_dic["contraction_data"] = {"peer": config.peer_name, "lineages": contraction_lineages}
@@ -95,19 +93,14 @@ class Propagation(data_pb2_grpc.PropagationServicer):
         try: 
             prop_dict = {}
             for dt in config.dt_list:
-                # if dt == updated_dt: continue
-                target_peers = list(config.dejima_config_dict['dejima_table'][dt])
-                target_peers.remove(config.peer_name)
-                if params['parent_peer'] in target_peers: target_peers.remove(params["parent_peer"])
-                if target_peers == []: 
-                    continue
+                target_peers = [peer for peer in config.dejima_config_dict["dejima_table"][dt] 
+                                if peer != config.peer_name and peer != params["parent_peer"]]
+                if not target_peers: continue
 
                 delta = dejimautils.propagate_to_dt(dt, local_xid, tx.cur)
-                if not delta: continue
 
-                prop_dict[dt] = {}
-                prop_dict[dt]['peers'] = target_peers
-                prop_dict[dt]['delta'] = delta
+                if delta:
+                    prop_dict[dt] = {"peers": target_peers, "delta": delta}
 
         except Exception as e:
             if str(e).startswith("the JSON object must be str, bytes or bytearray"):

@@ -7,12 +7,14 @@ import grpc
 from grpcdata import data_pb2
 from grpcdata import data_pb2_grpc
 from dejima import config
+from dejima import adrutils
 from dejima import dejimautils
 
 
+# lock request
 def lock_request(lineages, global_xid, start_time):
-    params = {"results": []}
     thread_list = []
+    params = {"results": []}
 
     for peer in config.target_peers:
         data = {
@@ -23,15 +25,15 @@ def lock_request(lineages, global_xid, start_time):
         }
         args = ([peer, data_pb2_grpc.LockStub, data, params])
         thread_list.append(threading.Thread(target=base_request, args=args))
-
     dejimautils.execute_threads(thread_list)
 
     return "Ack" if all(params["results"]) else "Nak"
 
 
+# release lock request
 def release_lock_request(global_xid):
-    params = {"results": []}
     thread_list = []
+    params = {"results": []}
 
     for peer in config.target_peers:
         data = {
@@ -39,22 +41,22 @@ def release_lock_request(global_xid):
         }
         args = ([peer, data_pb2_grpc.UnlockStub, data, params])
         thread_list.append(threading.Thread(target=base_request, args=args))
-
     dejimautils.execute_threads(thread_list)
 
     return "Ack" if all(params["results"]) else "Nak"
 
 
+# check latest request
 def check_latest_request(lineages, global_xid, start_time, global_params={}):
-    params = {"results": []}
     thread_list = []
+    params = {"results": []}
     params["peer_name"] = [None]
     params["latest_timestamps"] = []
 
     parent_peer = global_params.get("parent_peer")
     global_params["parent_peer"] = config.peer_name
 
-    look_peers = [peer for lineage in lineages for peer in config.get_r_direction(lineage)]
+    look_peers = [peer for lineage in lineages for peer in adrutils.get_r_direction(lineage)]
 
     for peer in look_peers:
         if peer == parent_peer: continue
@@ -66,7 +68,6 @@ def check_latest_request(lineages, global_xid, start_time, global_params={}):
         }
         args = ([peer, data_pb2_grpc.CheckLatestStub, data, params])
         thread_list.append(threading.Thread(target=base_request, args=args))
-
     dejimautils.execute_threads(thread_list)
 
     global_params["peer_names"] = [peer for peer in params["peer_name"] if peer]
@@ -80,16 +81,15 @@ def check_latest_request(lineages, global_xid, start_time, global_params={}):
     return "Ack" if all(params["results"]) else "Nak"
 
 
+# fetch request
 def fetch_request(lineages, global_xid, start_time, global_params={}):
-    params = {"results": []}
     thread_list = []
+    params = {"results": []}
     params["peer_name"] = [None]
     params["latest_data_dict"] = []
     params["expansion_data"] = []
 
-    parent_peer = None
-    if "parent_peer" in global_params:
-        parent_peer = global_params["parent_peer"]
+    parent_peer = global_params.get("parent_peer")
     global_params["parent_peer"] = config.peer_name
 
     for peer in config.tx_dict[global_xid].child_peers:
@@ -103,28 +103,21 @@ def fetch_request(lineages, global_xid, start_time, global_params={}):
         }
         args = ([peer, data_pb2_grpc.FetchStub, data, params])
         thread_list.append(threading.Thread(target=base_request, args=args))
-
     dejimautils.execute_threads(thread_list)
 
-    peer_names = set(params["peer_name"])
-    peer_names.remove(None)
-    global_params["peer_names"] = list(peer_names)
+    global_params["peer_names"] = [peer for peer in params["peer_name"] if peer]
     if params["latest_data_dict"]:
         global_params["latest_data_dict"] = params["latest_data_dict"][0]
     for expansion_data in params["expansion_data"]:
-        for lineage in expansion_data["lineages"]:
-            config.is_r_peer[lineage] = True
-            config.is_edge_r_peer[lineage] = True
-            config.r_direction[lineage] = set([expansion_data["peer"]])
-            config.request_count[lineage] = deque()
-            # print(f"expansion {lineage}: {expansion_data["peer"]} -> {config.peer_name}")
+        adrutils.ec_execute(expansion_data, "expansion", old_new="new")
 
     return "Ack" if all(params["results"]) else "Nak"
 
 
+# prop request
 def prop_request(arg_dict, global_xid, start_time, method, global_params={}):
-    params = {"results": []}
     thread_list = []
+    params = {"results": []}
     params["peer_name"] = [None]
     params["contraction_data"] = []
     if "max_hop" in global_params: params["max_hop"] = [0]
@@ -139,9 +132,9 @@ def prop_request(arg_dict, global_xid, start_time, method, global_params={}):
                 delta = {
                     "view": arg_dict[dt]["delta"]["view"],
                     "insertions": [insertion for insertion in arg_dict[dt]["delta"]["insertions"]
-                                   if peer in config.get_r_direction(insertion["lineage"])],
+                                   if peer in adrutils.get_r_direction(insertion["lineage"])],
                     "deletions": [deletion for deletion in arg_dict[dt]["delta"]["deletions"]
-                                  if peer in config.get_r_direction(deletion["lineage"])]
+                                  if peer in adrutils.get_r_direction(deletion["lineage"])]
                 }
             if not delta["insertions"] and not delta["deletions"]: continue
             peers.add(peer)
@@ -158,20 +151,12 @@ def prop_request(arg_dict, global_xid, start_time, method, global_params={}):
         }
         args = ([peer, data_pb2_grpc.PropagationStub, data, params])
         thread_list.append(threading.Thread(target=base_request, args=args))
-
     dejimautils.execute_threads(thread_list)
 
     for contraction_data in params["contraction_data"]:
-        for lineage in contraction_data["lineages"]:
-            config.r_direction[lineage].remove(contraction_data["peer"])
-            if len(config.r_direction[lineage]) <= 1:
-                config.is_edge_r_peer[lineage] = True
-            config.request_count[lineage] = deque()
-            # print(f"contraction {lineage}: {contraction_data["peer"]} -> {config.peer_name}")
+        adrutils.ec_execute(contraction_data, "contraction", old_new="new")
 
-    peer_names = set(params["peer_name"])
-    peer_names.remove(None)
-    global_params["peer_names"] = list(peer_names)
+    global_params["peer_names"] = [peer for peer in params["peer_name"] if peer]
     if "max_hop" in global_params:
         if config.hop_mode: global_params["max_hop"] = max(params["max_hop"]) + 1
         else: global_params["max_hop"] = sum(params["max_hop"]) + 1
@@ -181,9 +166,10 @@ def prop_request(arg_dict, global_xid, start_time, method, global_params={}):
     return "Ack" if all(params["results"]) else "Nak"
 
 
+# termination request
 def termination_request(result, current_xid, method):
-    params = {"results": []}
     thread_list = []
+    params = {"results": []}
 
     for peer in config.tx_dict[current_xid].child_peers:
         data = {
@@ -193,12 +179,12 @@ def termination_request(result, current_xid, method):
         }
         args = ([peer, data_pb2_grpc.TerminationStub, data, params])
         thread_list.append(threading.Thread(target=base_request, args=args))
-
     dejimautils.execute_threads(thread_list)
 
     return "Ack" if all(params["results"]) else "Nak"
 
 
+# base request
 def base_request(peer, service_stub, data, params={}):
     try:
         peer_address = config.dejima_config_dict['peer_address'][peer]

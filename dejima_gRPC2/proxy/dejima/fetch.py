@@ -6,6 +6,7 @@ from opentelemetry import trace
 from grpcdata import data_pb2
 from grpcdata import data_pb2_grpc
 from dejima import config
+from dejima import adrutils
 from dejima import errors
 from dejima import dejimautils
 from dejima import requester
@@ -39,17 +40,14 @@ class Fetch(data_pb2_grpc.LockServicer):
         res_dic["peer_name"] = config.peer_name
 
         # if config.peer_name in config.adr_peers:
-        is_r_peer = config.get_is_r_peer(list(params["lineages"])[0])
+        is_r_peer = adrutils.get_is_r_peer(list(params["lineages"])[0])
         for lineage in params["lineages"]:
-            if config.get_is_r_peer(lineage) != is_r_peer:
+            if adrutils.get_is_r_peer(lineage) != is_r_peer:
                 print(f"{os.path.basename(__file__)}: error lineage set")
                 raise Exception
         if is_r_peer:
-            expansion_lineages = config.countup_request(lineage_set, "read", params["parent_peer"])
-            for lineage in expansion_lineages:
-                config.is_edge_r_peer[lineage] = False
-                config.r_direction[lineage].add(params["parent_peer"])
-                config.request_count[lineage] = deque()
+            expansion_lineages = adrutils.countup_request(lineage_set, "read", params["parent_peer"])
+            adrutils.ec_execute({"lineages": expansion_lineages, "parent_peer": params["parent_peer"]}, "expansion", "old")
             if expansion_lineages:
                 res_dic["expansion_data"] = {"peer": config.peer_name, "lineages": expansion_lineages}
             latest_data_dict = {}
@@ -94,8 +92,8 @@ class Fetch(data_pb2_grpc.LockServicer):
         prop_dict = {}
         for dt in config.dt_list:
             delta = dejimautils.propagate_to_dt(dt, local_xid, tx.cur)
-            if not delta: continue
-            prop_dict[dt] = delta
+            if delta:
+                prop_dict[dt] = delta
         res_dic["latest_data_dict"] = prop_dict
 
         return data_pb2.Response(json_str=json.dumps(res_dic, default=dejimautils.datetime_converter))

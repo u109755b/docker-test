@@ -3,7 +3,7 @@ import dejima.status
 from dejima import config
 from dejima import dejimautils
 from dejima import requester
-from dejima import errors
+from dejima import adrutils
 from dejima.executer import Executer
 
 class BenchExecuter(Executer):
@@ -31,7 +31,7 @@ class BenchExecuter(Executer):
         if locking_method == "2pl":
             self.timestamp.append(time.perf_counter())   # 1
             if config.adr_mode:
-                config.countup_request(lineages, "update", config.peer_name)
+                adrutils.countup_request(lineages, "update", config.peer_name)
             return "Ack"
 
         self.time_measurement.start_timer("global_lock", self.global_xid)

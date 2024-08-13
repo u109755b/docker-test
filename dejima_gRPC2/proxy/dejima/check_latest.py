@@ -5,6 +5,7 @@ from opentelemetry import trace
 from grpcdata import data_pb2
 from grpcdata import data_pb2_grpc
 from dejima import config
+from dejima import adrutils
 from dejima import errors
 from dejima import dejimautils
 from dejima import requester
@@ -30,9 +31,9 @@ class CheckLatest(data_pb2_grpc.LockServicer):
 
         # at a non-adr peer
         # if config.peer_name not in config.adr_peers:
-        is_r_peer = config.get_is_r_peer(list(params["lineages"])[0])
+        is_r_peer = adrutils.get_is_r_peer(list(params["lineages"])[0])
         for lineage in params["lineages"]:
-            if config.get_is_r_peer(lineage) != is_r_peer:
+            if adrutils.get_is_r_peer(lineage) != is_r_peer:
                 print(f"{os.path.basename(__file__)}: error lineage set")
                 raise Exception
         if not is_r_peer:
