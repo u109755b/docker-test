@@ -30,13 +30,8 @@ class CheckLatest(data_pb2_grpc.LockServicer):
 
 
         # at a non-adr peer
-        # if config.peer_name not in config.adr_peers:
-        is_r_peer = adrutils.get_is_r_peer(list(params["lineages"])[0])
-        for lineage in params["lineages"]:
-            if adrutils.get_is_r_peer(lineage) != is_r_peer:
-                print(f"{os.path.basename(__file__)}: error lineage set")
-                raise Exception
-        if not is_r_peer:
+        is_r_peers = adrutils.get_is_r_peers(params["lineages"])
+        if not is_r_peers:
             result = requester.check_latest_request(params["lineages"], params["xid"], params["start_time"], params["global_params"])
             res_dic = {"result": result}
             if result == "Ack" and params["global_params"]["peer_names"]:
@@ -72,12 +67,9 @@ class CheckLatest(data_pb2_grpc.LockServicer):
         res_dic["peer_name"] = config.peer_name
 
         latest_timestamps = {}
-        for dt in config.dt_list:
-            for lineage in lineage_set:
-                lineage_col_name, condition =  dejimautils.get_where_condition(dt, lineage)
-                tx.cur.execute(f"SELECT updated_at FROM {dt} WHERE {condition}")
-                latest_timestamp, *_ = tx.cur.fetchone()
-                latest_timestamps[lineage] = latest_timestamp
+        for lineage in lineage_set:
+            latest_timestamp = dejimautils.get_timestamp(tx, lineage)
+            latest_timestamps[lineage] = latest_timestamp
 
         if not latest_timestamps:
             print("latest_timestamps is empty")

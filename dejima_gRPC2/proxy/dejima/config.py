@@ -56,6 +56,7 @@ with open('dejima_config.json') as f:
 # prepare dt_list, bt_list
 dt_list = [dt for dt in dejima_config_dict['dejima_table'].keys() if peer_name in dejima_config_dict['dejima_table'][dt]]
 bt_list = dejima_config_dict['base_table'][peer_name]
+bt_list_all = list(set(sum(bt_list.values(), [])))
 
 def get_neighbor_peers(peer):
     peer_set = set()

@@ -39,13 +39,8 @@ class Fetch(data_pb2_grpc.LockServicer):
         res_dic = {"result": "Ack"}
         res_dic["peer_name"] = config.peer_name
 
-        # if config.peer_name in config.adr_peers:
-        is_r_peer = adrutils.get_is_r_peer(list(params["lineages"])[0])
-        for lineage in params["lineages"]:
-            if adrutils.get_is_r_peer(lineage) != is_r_peer:
-                print(f"{os.path.basename(__file__)}: error lineage set")
-                raise Exception
-        if is_r_peer:
+        is_r_peers = adrutils.get_is_r_peers(params["lineages"])
+        if is_r_peers:
             adrutils.countup_request(lineage_set, "read", params["parent_peer"])
             expansion_lineages = adrutils.get_expansion_lineages(lineage_set, params["parent_peer"])
             adrutils.expansion_old(expansion_lineages, params["parent_peer"])
@@ -55,8 +50,8 @@ class Fetch(data_pb2_grpc.LockServicer):
             for dt in config.dt_list:
                 if not lineage_set: break
                 lineage_col_name, condition =  dejimautils.get_where_condition(dt, lineage_set)
-                tx.cur.execute(f"SELECT * FROM {dt} WHERE {condition} FOR SHARE")
-                latest_data = tx.cur.fetchall()
+                tx.execute(f"SELECT * FROM {dt} WHERE {condition} FOR SHARE")
+                latest_data = tx.fetchall()
                 latest_data_dict[dt] = latest_data
             res_dic["latest_data_dict"] = latest_data_dict
             return data_pb2.Response(json_str=json.dumps(res_dic, default=dejimautils.datetime_converter))
@@ -87,12 +82,12 @@ class Fetch(data_pb2_grpc.LockServicer):
         latest_data_dict = params["global_params"]["latest_data_dict"]
 
         local_xid = tx.get_local_xid()
-        dejimautils.execute_fetch(local_xid, latest_data_dict, tx.cur.execute)
+        dejimautils.execute_fetch(tx.execute, local_xid, latest_data_dict)
 
         # propagate to dejima table
         prop_dict = {}
         for dt in config.dt_list:
-            delta = dejimautils.propagate_to_dt(dt, local_xid, tx.cur)
+            delta = dejimautils.propagate_to_dt(tx, dt, local_xid)
             if delta:
                 prop_dict[dt] = delta
         res_dic["latest_data_dict"] = prop_dict

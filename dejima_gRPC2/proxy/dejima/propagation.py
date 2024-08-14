@@ -79,7 +79,7 @@ class Propagation(data_pb2_grpc.PropagationServicer):
             # execute stmt
             for dt in params["delta"]:
                 stmt = dejimautils.get_execute_stmt(params['delta'][dt], local_xid)
-                tx.cur.execute(stmt)
+                tx.execute(stmt)
         except Exception as e:
             if "stmt" in locals():
                 print(stmt)
@@ -96,7 +96,7 @@ class Propagation(data_pb2_grpc.PropagationServicer):
                                 if peer != config.peer_name and peer != params["parent_peer"]]
                 if not target_peers: continue
 
-                delta = dejimautils.propagate_to_dt(dt, local_xid, tx.cur)
+                delta = dejimautils.propagate_to_dt(tx, dt, local_xid)
 
                 if delta:
                     prop_dict[dt] = {"peers": target_peers, "delta": delta}

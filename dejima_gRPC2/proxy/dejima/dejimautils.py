@@ -73,8 +73,8 @@ def check_to_kill(th_lock, results, tx, attempting_tx):
         with th_lock:
             if len(results): break
 
-        tx.cur.execute(f"SELECT pg_blocking_pids({attempting_tx.get_pid()})")   # 0.2[ms] ~ 2[ms]
-        pid_list = tx.cur.fetchone()[0]   # ~ 0.1[ms]
+        tx.execute(f"SELECT pg_blocking_pids({attempting_tx.get_pid()})")   # 0.2[ms] ~ 2[ms]
+        pid_list = tx.fetchone()[0]   # ~ 0.1[ms]
 
         with th_lock:   # 0[ms]
             if len(results): break
@@ -87,7 +87,7 @@ def check_to_kill(th_lock, results, tx, attempting_tx):
                 break
 
     if kill:
-        tx.cur.execute(f"SELECT pg_cancel_backend({attempting_tx.get_pid()})")
+        tx.execute(f"SELECT pg_cancel_backend({attempting_tx.get_pid()})")
         with th_lock: results.append("kill_requested")
     else:
         with th_lock: results.append("finished")
@@ -220,20 +220,15 @@ def get_execute_stmt(json_data, local_xid):
 
 # lock with lineages
 def lock_with_lineages(tx, lineages, for_what="SHARE"):
-    # bt_list
-    bt_list = config.dejima_config_dict['base_table'][config.peer_name]
-    bt_list = sum(bt_list.values(), [])
-
     # lineage_set
     if type(lineages) is str:
         lineages = [lineages]
-    lineage_set = set(lineages)
-    lineage_set.discard("dummy")
+    lineage_set = set(lineages) - {"dummy"}
     if not lineage_set: return
 
     # lock_stmts
     lock_stmts = []
-    for bt in bt_list:
+    for bt in config.bt_list_all:
         lineage_col_name, condition = get_where_condition(bt, lineage_set)
         lock_stmt = f"SELECT {lineage_col_name} FROM {bt} WHERE {condition} FOR {for_what}"
         lock_stmts.append(lock_stmt)
@@ -242,8 +237,19 @@ def lock_with_lineages(tx, lineages, for_what="SHARE"):
     lock_records(tx, lock_stmts, max_retry_cnt=0, min_miss_cnt=-1, wait_die=True)
 
 
+# get timestamp
+def get_timestamp(tx, lineage):
+    for bt in config.bt_list_all:
+        lineage_col_name, condition =  get_where_condition(bt, lineage)
+        tx.execute(f"SELECT updated_at FROM {bt} WHERE {condition}")
+        local_timestamp, *_ = tx.fetchone()
+        if local_timestamp:
+            return local_timestamp
+    print("get_timestamp failed")
+
+
 # execute fetch
-def execute_fetch(local_xid, latest_data_dict, execute):
+def execute_fetch(execute, local_xid, latest_data_dict):
     for dt, latest_data_list in latest_data_dict.items():
         if dt not in config.dt_list: continue
         if type(latest_data_list) is list:
@@ -260,11 +266,11 @@ def execute_fetch(local_xid, latest_data_dict, execute):
 
 
 # propagate to dt
-def propagate_to_dt(dt, local_xid, cur):
+def propagate_to_dt(tx, dt, local_xid):
     for bt in config.bt_list[dt]:
-        cur.execute("SELECT {}_propagates_to_{}({})".format(bt, dt, local_xid))
-    cur.execute("SELECT public.{}_get_detected_update_data({})".format(dt, local_xid))
-    delta, *_ = cur.fetchone()
-    cur.execute("SELECT public.remove_dummy_{}({})".format(dt, local_xid))
+        tx.execute("SELECT {}_propagates_to_{}({})".format(bt, dt, local_xid))
+    tx.execute("SELECT public.{}_get_detected_update_data({})".format(dt, local_xid))
+    delta, *_ = tx.fetchone()
+    tx.execute("SELECT public.remove_dummy_{}({})".format(dt, local_xid))
     if delta == None: return {}
     return json.loads(delta)

@@ -75,17 +75,11 @@ class Executer:
         # check which is old data
         lineages = []
         for lineage, latest_timestamp in global_params["latest_timestamps"].items():
-            if not latest_timestamp:
-                continue
-            for dt in config.dt_list:
-                lineage_col_name, condition =  dejimautils.get_where_condition(dt, lineage)
-                self.execute_stmt(f"SELECT updated_at FROM {dt} WHERE {condition}")
-                local_timestamp, *_ = self.fetchone()
-                if not local_timestamp: continue
-                latest_timestamp = datetime.fromisoformat(latest_timestamp)
-                if local_timestamp != latest_timestamp:
-                    lineages.append(lineage)
-                break
+            if not latest_timestamp: continue
+            latest_timestamp = datetime.fromisoformat(latest_timestamp)
+            local_timestamp = dejimautils.get_timestamp(self.tx, lineage)
+            if local_timestamp != latest_timestamp:
+                lineages.append(lineage)
 
         if not lineages: return "Ack"
 
@@ -104,11 +98,11 @@ class Executer:
 
         # fetch to local
         local_xid = self.tx.get_local_xid()
-        dejimautils.execute_fetch(local_xid, global_params["latest_data_dict"], self.execute_stmt)
+        dejimautils.execute_fetch(self.execute_stmt, local_xid, global_params["latest_data_dict"])
 
         # propagate to dejima table
         for dt in config.dt_list:
-            dejimautils.propagate_to_dt(dt, local_xid, self.tx.cur)
+            dejimautils.propagate_to_dt(self.tx, dt, local_xid)
         return result
 
     # execution
@@ -148,7 +142,7 @@ class Executer:
                                 if peer != config.peer_name]
                 if not target_peers: continue
 
-                delta = dejimautils.propagate_to_dt(dt, local_xid, self.tx.cur)
+                delta = dejimautils.propagate_to_dt(self.tx, dt, local_xid)
                 if not delta: continue
 
                 prop_dict[dt] = {"peers": target_peers, "delta": delta}
