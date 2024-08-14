@@ -46,8 +46,9 @@ class Fetch(data_pb2_grpc.LockServicer):
                 print(f"{os.path.basename(__file__)}: error lineage set")
                 raise Exception
         if is_r_peer:
-            expansion_lineages = adrutils.countup_request(lineage_set, "read", params["parent_peer"])
-            adrutils.ec_execute({"lineages": expansion_lineages, "parent_peer": params["parent_peer"]}, "expansion", "old")
+            adrutils.countup_request(lineage_set, "read", params["parent_peer"])
+            expansion_lineages = adrutils.get_expansion_lineages(lineage_set, params["parent_peer"])
+            adrutils.expansion_old(expansion_lineages, params["parent_peer"])
             if expansion_lineages:
                 res_dic["expansion_data"] = {"peer": config.peer_name, "lineages": expansion_lineages}
             latest_data_dict = {}

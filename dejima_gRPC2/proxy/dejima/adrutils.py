@@ -39,19 +39,24 @@ def init_adr_setting(lineage):
     else:
         is_edge_r_peer[lineage] = False
 
+def init_adr_setting_if_not(lineages):
+    if type(lineages) is str:
+        lineages = [lineages]
+    for lineage in set(lineages):
+        if lineage not in is_r_peer:
+            init_adr_setting(lineage)
+    return lineages
+
 def get_is_r_peer(lineage):
-    if lineage not in is_r_peer:
-        init_adr_setting(lineage)
+    init_adr_setting_if_not(lineage)
     return is_r_peer[lineage]
 
 def get_is_edge_r_peer(lineage):
-    if lineage not in is_edge_r_peer:
-        init_adr_setting(lineage)
+    init_adr_setting_if_not(lineage)
     return is_edge_r_peer[lineage]
 
 def get_r_direction(lineage):
-    if lineage not in r_direction:
-        init_adr_setting(lineage)
+    init_adr_setting_if_not(lineage)
     return r_direction[lineage]
 
 
@@ -100,71 +105,73 @@ ec_manager = ECManager()
 
 
 def countup_request(lineages, request_type, parent_peer):
-    expansion_lineages = []
-    contraction_lineages = []
-    if type(lineages) is str:
-        lineages = [lineages]
+    lineages = init_adr_setting_if_not(lineages)
     for lineage in set(lineages):
-        if lineage not in is_r_peer:
-            init_adr_setting(lineage)
         if not get_is_edge_r_peer(lineage): continue
         request_count[lineage].appendleft((request_type, parent_peer))
+        if len(request_count[lineage]) > ec_manager.default_log_look_range + 5:
+            request_count[lineage].pop()
+
+
+
+def ec_test(lineages, request_type, parent_peer):
+    if parent_peer == config.peer_name: return []
+    lineages = init_adr_setting_if_not(lineages)
+    res_lineages = []
+    for lineage in set(lineages):
+        if not get_is_edge_r_peer(lineage): continue
+        update_count = 0
+        read_count = 0
         log_look_range = ec_manager.get_log_look_range(request_type)
-        if parent_peer == config.peer_name: continue
         # expansion test
         if request_type == "read" and parent_peer not in get_r_direction(lineage):
-            update_count = 0
-            read_count = 0
             for _, req in zip(range(log_look_range), request_count[lineage]):
                 if req[0] == "update" and req[1] != parent_peer: update_count += 1
                 if req[0] == "read" and req[1] == parent_peer: read_count += 1
             if read_count > update_count:
-                expansion_lineages.append(lineage)
-                ec_manager.add_log("expansion")
-            # print(f"read {lineage}: {read_count} {update_count} {request_count[lineage]}")
+                res_lineages.append(lineage)
         # contraction test
         if request_type == "update" and parent_peer in get_r_direction(lineage):
-            if parent_peer not in get_r_direction(lineage): continue
-            update_count = 0
-            read_count = 0
             for _, req in zip(range(log_look_range), request_count[lineage]):
                 if req[0] == "update" and req[1] == parent_peer: update_count += 1
                 if req[0] == "read" and req[1] != parent_peer: read_count += 1
             if read_count < update_count:
-                contraction_lineages.append(lineage)
-                ec_manager.add_log("contraction")
-            # print(f"update {lineage}: {read_count} {update_count} {request_count[lineage]}")
+                res_lineages.append(lineage)
     # return []
-    if not expansion_lineages and not contraction_lineages: return []
-    if expansion_lineages: return expansion_lineages
-    if contraction_lineages: return contraction_lineages
+    return res_lineages
+
+def get_expansion_lineages(lineages, parent_peer):
+    return ec_test(lineages, "read", parent_peer)
+
+def get_contraction_lineages(lineages, parent_peer):
+    return ec_test(lineages, "update", parent_peer)
 
 
-def ec_execute(ec_data, ec_type, old_new):
-    if ec_type == "expansion" and old_new == "old":
-        for lineage in ec_data["lineages"]:
-            is_edge_r_peer[lineage] = False
-            r_direction[lineage].add(ec_data["parent_peer"])
-            request_count[lineage] = deque()
 
-    elif ec_type == "expansion" and old_new == "new":
-        for lineage in ec_data["lineages"]:
-            is_r_peer[lineage] = True
+def expansion_old(lineages, parent_peer):
+    for lineage in lineages:
+        is_edge_r_peer[lineage] = False
+        r_direction[lineage].add(parent_peer)
+        request_count[lineage] = deque()
+        ec_manager.add_log("expansion")
+
+def expansion_new(lineages, r_direction_peer):
+    for lineage in lineages:
+        is_r_peer[lineage] = True
+        is_edge_r_peer[lineage] = True
+        r_direction[lineage] = set([r_direction_peer])
+        request_count[lineage] = deque()
+
+def contraction_old(lineages):
+    for lineage in lineages:
+        is_r_peer[lineage] = False
+        is_edge_r_peer[lineage] = False
+        request_count[lineage] = deque()
+        ec_manager.add_log("contraction")
+
+def contraction_new(lineages, non_r_peer):
+    for lineage in lineages:
+        r_direction[lineage].remove(non_r_peer)
+        if len(r_direction[lineage]) <= 1:
             is_edge_r_peer[lineage] = True
-            r_direction[lineage] = set([ec_data["peer"]])
-            request_count[lineage] = deque()
-
-    elif ec_type == "contraction" and old_new == "old":
-        for lineage in ec_data:
-            is_r_peer[lineage] = False
-            is_edge_r_peer[lineage] = False
-            request_count[lineage] = deque()
-
-    elif ec_type == "contraction" and old_new == "new":
-        for lineage in ec_data["lineages"]:
-            r_direction[lineage].remove(ec_data["peer"])
-            if len(r_direction[lineage]) <= 1:
-                is_edge_r_peer[lineage] = True
-            request_count[lineage] = deque()
-
-    else: print(f"ec_execute: no match {ec_type} {old_new}")
+        request_count[lineage] = deque()

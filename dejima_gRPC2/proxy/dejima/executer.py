@@ -59,13 +59,10 @@ class Executer:
 
     # fetch global records
     def fetch_global(self, lineages):
+        if not lineages: return "Ack"
         adrutils.countup_request(lineages, "read", config.peer_name)
-        local_read = True
-        for lineage in lineages:
-            if not adrutils.get_is_r_peer(lineage):
-                local_read = False
-        if local_read:
-            return "Ack"
+        lineages = [lineage for lineage in lineages if not adrutils.get_is_r_peer(lineage)]
+        if not lineages: return "Ack"
 
         # check latest timestamps
         global_params = {}
@@ -156,10 +153,8 @@ class Executer:
 
                 prop_dict[dt] = {"peers": target_peers, "delta": delta}
 
-                for insertion in delta["insertions"]:
-                    lineage = insertion["lineage"]
-                    if lineage not in adrutils.is_r_peer:
-                        adrutils.init_adr_setting(lineage)
+                lineages = [insertion["lineage"] for insertion in delta["insertions"]]
+                adrutils.init_adr_setting_if_not(lineages)
 
         except Exception as e:
             self._restore()

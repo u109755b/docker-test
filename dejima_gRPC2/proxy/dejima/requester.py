@@ -109,7 +109,7 @@ def fetch_request(lineages, global_xid, start_time, global_params={}):
     if params["latest_data_dict"]:
         global_params["latest_data_dict"] = params["latest_data_dict"][0]
     for expansion_data in params["expansion_data"]:
-        adrutils.ec_execute(expansion_data, "expansion", old_new="new")
+        adrutils.expansion_new(expansion_data["lineages"], expansion_data["peer"])
 
     return "Ack" if all(params["results"]) else "Nak"
 
@@ -154,7 +154,7 @@ def prop_request(arg_dict, global_xid, start_time, method, global_params={}):
     dejimautils.execute_threads(thread_list)
 
     for contraction_data in params["contraction_data"]:
-        adrutils.ec_execute(contraction_data, "contraction", old_new="new")
+        adrutils.contraction_new(contraction_data["lineages"], contraction_data["peer"])
 
     global_params["peer_names"] = [peer for peer in params["peer_name"] if peer]
     if "max_hop" in global_params:

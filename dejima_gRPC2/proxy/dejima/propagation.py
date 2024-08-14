@@ -49,11 +49,10 @@ class Propagation(data_pb2_grpc.PropagationServicer):
             for dt in params["delta"]:
                 deletion_set |= set([deletion["lineage"] for deletion in params["delta"][dt]["deletions"]])
                 insertion_set |= set([insertion["lineage"] for insertion in params["delta"][dt]["insertions"]])
-            for lineage in insertion_set:
-                if lineage not in adrutils.is_r_peer:
-                    adrutils.init_adr_setting(lineage)
-            contraction_lineages = adrutils.countup_request(deletion_set & insertion_set, "update", params["parent_peer"])
-            adrutils.ec_execute(contraction_lineages, "contraction", "old")
+            adrutils.init_adr_setting_if_not(insertion_set)
+            adrutils.countup_request(deletion_set & insertion_set, "update", params["parent_peer"])
+            contraction_lineages = adrutils.get_contraction_lineages(deletion_set & insertion_set, params["parent_peer"])
+            adrutils.contraction_old(contraction_lineages)
             if contraction_lineages:
                 params["delta"] = []
                 res_dic["contraction_data"] = {"peer": config.peer_name, "lineages": contraction_lineages}
