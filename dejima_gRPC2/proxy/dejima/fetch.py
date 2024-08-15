@@ -26,31 +26,29 @@ class Fetch(data_pb2_grpc.LockServicer):
         params = json.loads(req.json_str)
 
         global_xid = params['xid']
+        global_params = params["global_params"]
         if global_xid not in config.tx_dict:
             tx = Tx(global_xid, params["start_time"])
         else:
             tx = config.tx_dict[global_xid]
 
-        lineage_set = set(params["lineages"])
-        lineage_set.discard("dummy")
-
 
         # at an adr peer
         res_dic = {"result": "Ack"}
-        res_dic["peer_name"] = config.peer_name
 
         is_r_peers = adrutils.get_is_r_peers(params["lineages"])
         if is_r_peers:
-            adrutils.countup_request(lineage_set, "read", params["parent_peer"])
-            expansion_lineages = adrutils.get_expansion_lineages(lineage_set, params["parent_peer"])
+            # expansion test & expansion
+            adrutils.countup_request(params["lineages"], "read", params["parent_peer"])
+            expansion_lineages = adrutils.get_expansion_lineages(params["lineages"], params["parent_peer"])
             adrutils.expansion_old(expansion_lineages, params["parent_peer"])
             if expansion_lineages:
                 res_dic["expansion_data"] = {"peer": config.peer_name, "lineages": expansion_lineages}
+            # get latest_data_dict
             latest_data_dict = {}
             for dt in config.dt_list:
-                if not lineage_set: break
-                lineage_col_name, condition =  dejimautils.get_where_condition(dt, lineage_set)
-                tx.execute(f"SELECT * FROM {dt} WHERE {condition} FOR SHARE")
+                lineage_col_name, condition =  dejimautils.get_where_condition(dt, params["lineages"])
+                tx.execute(f"SELECT * FROM {dt} WHERE {condition}")
                 latest_data = tx.fetchall()
                 latest_data_dict[dt] = latest_data
             res_dic["latest_data_dict"] = latest_data_dict
@@ -60,7 +58,6 @@ class Fetch(data_pb2_grpc.LockServicer):
         # at a non-adr peer
         # lock with lineages
         res_dic = {"result": "Nak"}
-        res_dic["peer_name"] = config.peer_name
         try:
             dejimautils.lock_with_lineages(tx, params["lineages"], for_what="UPDATE")
 
@@ -73,18 +70,17 @@ class Fetch(data_pb2_grpc.LockServicer):
 
 
         # propagate latest data from other peers
-        res_dic = {"result": "Ack"}
-        res_dic["peer_name"] = config.peer_name
-
-        result = requester.fetch_request(params["lineages"], params["xid"], params["start_time"], params["global_params"])
-        if "latest_data_dict" not in params["global_params"]:
+        result = requester.fetch_request(params["lineages"], params["xid"], params["start_time"], global_params)
+        if result != "Ack":
             return data_pb2.Response(json_str=json.dumps(res_dic))
-        latest_data_dict = params["global_params"]["latest_data_dict"]
 
         local_xid = tx.get_local_xid()
+        latest_data_dict = global_params["latest_data_dict"]
         dejimautils.execute_fetch(tx.execute, local_xid, latest_data_dict)
 
+
         # propagate to dejima table
+        res_dic = {"result": "Ack"}
         prop_dict = {}
         for dt in config.dt_list:
             delta = dejimautils.propagate_to_dt(tx, dt, local_xid)

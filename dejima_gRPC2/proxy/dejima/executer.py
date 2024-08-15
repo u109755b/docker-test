@@ -61,11 +61,14 @@ class Executer:
     def fetch_global(self, lineages):
         if not lineages: return "Ack"
         adrutils.countup_request(lineages, "read", config.peer_name)
+        lineages = set(lineages) - {"dummy"}
         lineages = [lineage for lineage in lineages if not adrutils.get_is_r_peer(lineage)]
         if not lineages: return "Ack"
 
         # check latest timestamps
         global_params = {}
+        global_params["latest_timestamps"] = {lineage: dejimautils.get_timestamp(self.tx, lineage, to_isoformat=True)
+                                              for lineage in lineages}
         result = requester.check_latest_request(lineages, self.global_xid, self.tx.start_time, global_params)
         if result != "Ack":
             self._restore()
@@ -75,9 +78,7 @@ class Executer:
         # check which is old data
         lineages = []
         for lineage, latest_timestamp in global_params["latest_timestamps"].items():
-            if not latest_timestamp: continue
-            latest_timestamp = datetime.fromisoformat(latest_timestamp)
-            local_timestamp = dejimautils.get_timestamp(self.tx, lineage)
+            local_timestamp = dejimautils.get_timestamp(self.tx, lineage, to_isoformat=True)
             if local_timestamp != latest_timestamp:
                 lineages.append(lineage)
 

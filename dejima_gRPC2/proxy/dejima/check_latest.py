@@ -24,39 +24,31 @@ class CheckLatest(data_pb2_grpc.LockServicer):
 
         params = json.loads(req.json_str)
         global_xid = params['xid']
-
-        lineage_set = set(params["lineages"])
-        lineage_set.discard("dummy")
+        global_params = params["global_params"]
 
 
         # at a non-adr peer
         is_r_peers = adrutils.get_is_r_peers(params["lineages"])
         if not is_r_peers:
-            result = requester.check_latest_request(params["lineages"], params["xid"], params["start_time"], params["global_params"])
+            result = requester.check_latest_request(params["lineages"], params["xid"], params["start_time"], global_params)
             res_dic = {"result": result}
-            if result == "Ack" and params["global_params"]["peer_names"]:
+            if result == "Ack":
                 tx = Tx(global_xid, params["start_time"])
-                tx.extend_childs(params["global_params"]["peer_names"])
-                res_dic["latest_timestamps"] = params["global_params"]["latest_timestamps"]
+                tx.extend_childs(global_params["peer_names"])
+                res_dic["latest_timestamps"] = global_params["latest_timestamps"]
                 res_dic["peer_name"] = config.peer_name
             return data_pb2.Response(json_str=json.dumps(res_dic, default=dejimautils.datetime_converter))
 
 
         # at an adr peer
-        if config.getting_tx:
-            tx = Tx(global_xid, params["start_time"])
+        tx = Tx(global_xid, params["start_time"])
 
         # lock with lineages
         res_dic = {"result": "Nak"}
         try:
             dejimautils.lock_with_lineages(tx, params["lineages"], for_what="SHARE")
 
-        except errors.RecordsNotFound as e:
-            print(f"{os.path.basename(__file__)}: global lock failed (Not Found)")
-            tx.abort()
-            tx.close()
-            return data_pb2.Response(json_str=json.dumps(res_dic))
-        except errors.LockNotAvailable as e:
+        except (errors.RecordsNotFound, errors.LockNotAvailable) as e:
             print(f"{os.path.basename(__file__)}: global lock failed")
             tx.abort()
             tx.close()
@@ -67,8 +59,8 @@ class CheckLatest(data_pb2_grpc.LockServicer):
         res_dic["peer_name"] = config.peer_name
 
         latest_timestamps = {}
-        for lineage in lineage_set:
-            latest_timestamp = dejimautils.get_timestamp(tx, lineage)
+        for lineage in params["lineages"]:
+            latest_timestamp = dejimautils.get_timestamp(tx, lineage, to_isoformat=True)
             latest_timestamps[lineage] = latest_timestamp
 
         if not latest_timestamps:

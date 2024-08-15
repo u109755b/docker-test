@@ -238,14 +238,17 @@ def lock_with_lineages(tx, lineages, for_what="SHARE"):
 
 
 # get timestamp
-def get_timestamp(tx, lineage):
+def get_timestamp(tx, lineage, to_isoformat=False):
     for bt in config.bt_list_all:
         lineage_col_name, condition =  get_where_condition(bt, lineage)
         tx.execute(f"SELECT updated_at FROM {bt} WHERE {condition}")
         local_timestamp, *_ = tx.fetchone()
-        if local_timestamp:
-            return local_timestamp
+        if not local_timestamp: continue
+        if to_isoformat:
+            local_timestamp = local_timestamp.isoformat()
+        return local_timestamp
     print("get_timestamp failed")
+    raise Exception("get_timestamp failed")
 
 
 # execute fetch

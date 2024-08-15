@@ -25,6 +25,7 @@ class Propagation(data_pb2_grpc.PropagationServicer):
 
 
         global_xid = params['xid']
+        global_params = params['global_params']
 
         if global_xid not in config.tx_dict:
             tx = Tx(global_xid, params["start_time"])
@@ -51,11 +52,6 @@ class Propagation(data_pb2_grpc.PropagationServicer):
                 insertion_set |= set([insertion["lineage"] for insertion in params["delta"][dt]["insertions"]])
             adrutils.init_adr_setting_if_not(insertion_set)
             adrutils.countup_request(deletion_set & insertion_set, "update", params["parent_peer"])
-            contraction_lineages = adrutils.get_contraction_lineages(deletion_set & insertion_set, params["parent_peer"])
-            adrutils.contraction_old(contraction_lineages)
-            if contraction_lineages:
-                params["delta"] = []
-                res_dic["contraction_data"] = {"peer": config.peer_name, "lineages": contraction_lineages}
 
         # update base tables according to updates to dt
         local_xid = tx.get_local_xid()
@@ -74,6 +70,13 @@ class Propagation(data_pb2_grpc.PropagationServicer):
             # print(f"{os.path.basename(__file__)}: global lock failed")
             return data_pb2.Response(json_str=json.dumps(res_dic))
         timestamp.append(time.perf_counter())   # 1
+
+        # contraction test
+        if config.adr_mode:
+            contraction_lineages = adrutils.get_contraction_lineages(deletion_set & insertion_set, params["parent_peer"])
+            adrutils.contraction_old(contraction_lineages)
+            if contraction_lineages:
+                res_dic["contraction_data"] = {"peer": config.peer_name, "lineages": contraction_lineages}
 
         try:
             # execute stmt
@@ -111,8 +114,8 @@ class Propagation(data_pb2_grpc.PropagationServicer):
         # propagate to other peers
         timestamp.append(time.perf_counter())   # 3
         if prop_dict != {}:
-            result = requester.prop_request(prop_dict, global_xid, params["start_time"], params["method"], params['global_params'])
-            tx.extend_childs(params["global_params"]["peer_names"])
+            result = requester.prop_request(prop_dict, global_xid, params["start_time"], params["method"], global_params)
+            tx.extend_childs(global_params["peer_names"])
         else:
             result = "Ack"
         timestamp.append(time.perf_counter())   # 4
@@ -128,11 +131,11 @@ class Propagation(data_pb2_grpc.PropagationServicer):
         if not is_first_time:
             res_dic["peer_name"] = None
         # max_hop
-        if "max_hop" in params["global_params"]:
-            res_dic["max_hop"] = params["global_params"]["max_hop"]
+        if "max_hop" in global_params:
+            res_dic["max_hop"] = global_params["max_hop"]
         # timestamp
-        if "timestamps" in params["global_params"] and result == "Ack":
-            res_dic["timestamps"] = params["global_params"]["timestamps"]
+        if "timestamps" in global_params and result == "Ack":
+            res_dic["timestamps"] = global_params["timestamps"]
             res_dic["timestamps"].append(timestamp)
         # contraction_data
         if contraction_lineages:

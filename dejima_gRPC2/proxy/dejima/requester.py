@@ -50,15 +50,16 @@ def release_lock_request(global_xid):
 def check_latest_request(lineages, global_xid, start_time, global_params={}):
     thread_list = []
     params = {"results": []}
-    params["peer_name"] = [None]
+    params["peer_name"] = []
     params["latest_timestamps"] = []
+    params["expansion_data"] = []
 
     parent_peer = global_params.get("parent_peer")
     global_params["parent_peer"] = config.peer_name
 
     look_peers = [peer for lineage in lineages for peer in adrutils.get_r_direction(lineage)]
 
-    for peer in look_peers:
+    for peer in set(look_peers):
         if peer == parent_peer: continue
         data = {
             "lineages": lineages,
@@ -70,10 +71,15 @@ def check_latest_request(lineages, global_xid, start_time, global_params={}):
         thread_list.append(threading.Thread(target=base_request, args=args))
     dejimautils.execute_threads(thread_list)
 
-    global_params["peer_names"] = [peer for peer in params["peer_name"] if peer]
+    # peer_names
+    global_params["peer_names"] = params["peer_name"]
+    # latest_timestamps
     latest_timestamps = {}
     latest_timestamps.update(*params["latest_timestamps"])
     global_params["latest_timestamps"] = latest_timestamps
+    # expansion
+    for expansion_data in params["expansion_data"]:
+        adrutils.expansion_new(expansion_data["lineages"], expansion_data["peer"])
 
     if all(params["results"]) and not latest_timestamps:
         print(f"latest_timestamps not found {params["results"]} {latest_timestamps} {config.peer_name} {look_peers} {len(thread_list)}")
@@ -85,7 +91,6 @@ def check_latest_request(lineages, global_xid, start_time, global_params={}):
 def fetch_request(lineages, global_xid, start_time, global_params={}):
     thread_list = []
     params = {"results": []}
-    params["peer_name"] = [None]
     params["latest_data_dict"] = []
     params["expansion_data"] = []
 
@@ -105,8 +110,10 @@ def fetch_request(lineages, global_xid, start_time, global_params={}):
         thread_list.append(threading.Thread(target=base_request, args=args))
     dejimautils.execute_threads(thread_list)
 
-    global_params["peer_names"] = [peer for peer in params["peer_name"] if peer]
-    if params["latest_data_dict"]:
+    if all(params["results"]):
+        if not params["latest_data_dict"]:
+            is_r_peers = [adrutils.get_is_r_peer(lineage) for lineage in lineages]
+            print(f"latest_data_dict is empty: {params["results"]} {params["latest_data_dict"]} {parent_peer} {lineages} {is_r_peers}")
         global_params["latest_data_dict"] = params["latest_data_dict"][0]
     for expansion_data in params["expansion_data"]:
         adrutils.expansion_new(expansion_data["lineages"], expansion_data["peer"])
