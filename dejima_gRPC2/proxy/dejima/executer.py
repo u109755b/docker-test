@@ -21,6 +21,7 @@ class Executer:
     def _init(self):
         self.locking_method = "2pl"
         self.status = self.status_clean
+        self.prop_num = 0
 
     # _restore
     def _restore(self):
@@ -67,13 +68,14 @@ class Executer:
 
         # check latest timestamps
         global_params = {}
+        global_params["prop_num"] = self.prop_num
         global_params["timestamps"] = {lineage: dejimautils.get_timestamp(self.tx, lineage, to_isoformat=True)
                                        for lineage in lineages}
         result = requester.check_latest_request(lineages, self.global_xid, self.tx.start_time, global_params)
         if result != "Ack":
             self._restore()
             raise errors.GlobalLockNotAvailable("abort during global fetch")
-        self.tx.extend_childs(global_params["peer_names"])
+        self.tx.extend_childs(global_params["peer_names"], self.prop_num)
 
         lineages = global_params["fetch_lineages"]
         if not lineages: return "Ack"
@@ -87,6 +89,7 @@ class Executer:
         # propagate latest data from other peers
         global_params = {}
         result = requester.fetch_request(lineages, self.global_xid, self.tx.start_time, global_params)
+        self.prop_num += 1
         if result != "Ack":
             return "Nak"
 
@@ -156,8 +159,10 @@ class Executer:
     def propagate_other_peer(self, prop_dict, DEBUG=False):
         result = "Ack"
         if prop_dict != {}:
+            self.global_params["prop_num"] = self.prop_num
             result = requester.prop_request(prop_dict, self.global_xid, self.tx.start_time, self.locking_method, self.global_params)
-            self.tx.extend_childs(self.global_params["peer_names"])
+            self.tx.extend_childs(self.global_params["peer_names"], self.prop_num)
+            self.prop_num += 1
 
         if result == "Ack" and self.status != self.status_error:
             self.status = self.status_proped

@@ -92,7 +92,7 @@ def fetch_request(lineages, global_xid, start_time, global_params={}):
     parent_peer = global_params.get("parent_peer")
     global_params["parent_peer"] = config.peer_name
 
-    for peer in config.tx_dict[global_xid].child_peers:
+    for peer in config.tx_dict[global_xid].child_peers[global_params["prop_num"]]:
         if peer == parent_peer: continue
         data = {
             "lineages": lineages,
@@ -173,7 +173,7 @@ def termination_request(result, current_xid, method):
     thread_list = []
     params = {"results": []}
 
-    for peer in config.tx_dict[current_xid].child_peers:
+    for peer in set().union(*config.tx_dict[current_xid].child_peers.values()):
         data = {
             "xid": current_xid,
             "method": method,

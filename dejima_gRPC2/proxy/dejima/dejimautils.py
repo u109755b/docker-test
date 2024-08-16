@@ -12,6 +12,14 @@ from dejima.transaction import Tx
 def get_unique_id():
     return config.peer_name + '-' + str(uuid.uuid4())
 
+def get_tx(global_xid, start_time=None):
+    if global_xid not in config.tx_dict:
+        if start_time: tx = Tx(global_xid, start_time)
+        else: raise TypeError("start_time is None")
+    else:
+        tx = config.tx_dict[global_xid]
+    return tx
+
 def execute_threads(thread_list):
     for thread in thread_list:
         thread.start()

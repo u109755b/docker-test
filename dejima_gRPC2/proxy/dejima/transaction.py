@@ -1,5 +1,6 @@
 import time
 import re
+from collections import defaultdict
 from psycopg2.extras import DictCursor
 from psycopg2.extensions import ISOLATION_LEVEL_READ_COMMITTED
 from dejima import errors
@@ -11,7 +12,7 @@ class Tx:
         self.global_xid = global_xid
         self.db_conn = pool.getconn(key=global_xid)
         self.db_conn.set_session(isolation_level=ISOLATION_LEVEL_READ_COMMITTED)   # default setting though
-        self.child_peers = set()
+        self.child_peers = defaultdict(set)
         self.cur = self.db_conn.cursor(cursor_factory=DictCursor)   # return DictRow instead of TupleRow
         self.start_time = start_time if start_time else time.perf_counter()
         self.propagation_cnt = 0
@@ -105,8 +106,8 @@ class Tx:
             result = self.cur.fetchall()
         return result
 
-    def extend_childs(self, target_peers):
-        self.child_peers |= set(target_peers)
+    def extend_childs(self, target_peers, prop_num):
+        self.child_peers[prop_num] |= set(target_peers)
 
     def reset_childs(self):
-        self.child_peers = set()
+        self.child_peers = defaultdict(set)

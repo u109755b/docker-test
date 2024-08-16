@@ -29,7 +29,7 @@ class Lock(data_pb2_grpc.LockServicer):
         if config.include_getting_tx_time == True:
             measurement.time_measurement.start_timer("lock_process", global_xid)
         if config.getting_tx:
-            tx = Tx(global_xid, params["start_time"])
+            tx = dejimautils.get_tx(global_xid, params["start_time"])
         if config.include_getting_tx_time == False:
             measurement.time_measurement.start_timer("lock_process", global_xid)
 

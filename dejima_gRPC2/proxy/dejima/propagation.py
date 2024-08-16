@@ -27,10 +27,7 @@ class Propagation(data_pb2_grpc.PropagationServicer):
         global_xid = params['xid']
         global_params = params['global_params']
 
-        if global_xid not in config.tx_dict:
-            tx = Tx(global_xid, params["start_time"])
-        else:
-            tx = config.tx_dict[global_xid]
+        tx = dejimautils.get_tx(global_xid, params["start_time"])
 
         if global_xid not in config.prop_visited:
             is_first_time = True
@@ -115,7 +112,7 @@ class Propagation(data_pb2_grpc.PropagationServicer):
         timestamp.append(time.perf_counter())   # 3
         if prop_dict != {}:
             result = requester.prop_request(prop_dict, global_xid, params["start_time"], params["method"], global_params)
-            tx.extend_childs(global_params["peer_names"])
+            tx.extend_childs(global_params["peer_names"], global_params["prop_num"])
         else:
             result = "Ack"
         timestamp.append(time.perf_counter())   # 4

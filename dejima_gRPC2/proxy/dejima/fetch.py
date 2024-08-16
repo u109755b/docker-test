@@ -27,10 +27,7 @@ class Fetch(data_pb2_grpc.LockServicer):
 
         global_xid = params['xid']
         global_params = params["global_params"]
-        if global_xid not in config.tx_dict:
-            tx = Tx(global_xid, params["start_time"])
-        else:
-            tx = config.tx_dict[global_xid]
+        tx = dejimautils.get_tx(global_xid, params["start_time"])
 
 
         # at an adr peer
