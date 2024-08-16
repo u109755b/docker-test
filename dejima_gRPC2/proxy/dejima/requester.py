@@ -51,7 +51,7 @@ def check_latest_request(lineages, global_xid, start_time, global_params={}):
     thread_list = []
     params = {"results": []}
     params["peer_name"] = []
-    params["latest_timestamps"] = []
+    params["fetch_lineages"] = []
     params["expansion_data"] = []
 
     parent_peer = global_params.get("parent_peer")
@@ -73,16 +73,11 @@ def check_latest_request(lineages, global_xid, start_time, global_params={}):
 
     # peer_names
     global_params["peer_names"] = params["peer_name"]
-    # latest_timestamps
-    latest_timestamps = {}
-    latest_timestamps.update(*params["latest_timestamps"])
-    global_params["latest_timestamps"] = latest_timestamps
+    # fetch_lineages
+    global_params["fetch_lineages"] = list(set().union(*params["fetch_lineages"]))
     # expansion
     for expansion_data in params["expansion_data"]:
         adrutils.expansion_new(expansion_data["lineages"], expansion_data["peer"])
-
-    if all(params["results"]) and not latest_timestamps:
-        print(f"latest_timestamps not found {params["results"]} {latest_timestamps} {config.peer_name} {look_peers} {len(thread_list)}")
 
     return "Ack" if all(params["results"]) else "Nak"
 
@@ -212,9 +207,8 @@ def base_request(peer, service_stub, data, params={}):
             params["timestamps"].append(res_dic["timestamps"])
 
         append_list = [
-            "peer_name", "max_hop",
-            "latest_data_dict", "latest_timestamps",
-            "expansion_data", "contraction_data"
+            "peer_name", "max_hop", "fetch_lineages"
+            "latest_data_dict", "expansion_data", "contraction_data"
         ]
         for append_name in append_list:
             if append_name in res_dic:

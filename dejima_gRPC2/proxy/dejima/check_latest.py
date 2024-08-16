@@ -35,13 +35,14 @@ class CheckLatest(data_pb2_grpc.LockServicer):
             if result == "Ack":
                 tx = Tx(global_xid, params["start_time"])
                 tx.extend_childs(global_params["peer_names"])
-                res_dic["latest_timestamps"] = global_params["latest_timestamps"]
+                res_dic["fetch_lineages"] = global_params["fetch_lineages"]
                 res_dic["peer_name"] = config.peer_name
             return data_pb2.Response(json_str=json.dumps(res_dic, default=dejimautils.datetime_converter))
 
 
         # at an adr peer
         tx = Tx(global_xid, params["start_time"])
+        adrutils.countup_request(params["lineages"], "read", global_params["parent_peer"])
 
         # lock with lineages
         res_dic = {"result": "Nak"}
@@ -55,15 +56,26 @@ class CheckLatest(data_pb2_grpc.LockServicer):
             return data_pb2.Response(json_str=json.dumps(res_dic))
 
 
+        # get timestamps and compare with requester ones
         res_dic = {"result": "Ack"}
         res_dic["peer_name"] = config.peer_name
 
-        latest_timestamps = {}
+        fetch_lineages = []
+        expansion_lineages = []
         for lineage in params["lineages"]:
+            requester_timestamp = global_params["timestamps"][lineage]
             latest_timestamp = dejimautils.get_timestamp(tx, lineage, to_isoformat=True)
-            latest_timestamps[lineage] = latest_timestamp
+            if requester_timestamp != latest_timestamp:
+                fetch_lineages.append(lineage)
+            else:
+                expansion_lineages.append(lineage)
 
-        if not latest_timestamps:
-            print("latest_timestamps is empty")
-        res_dic["latest_timestamps"] = latest_timestamps
+        # fetch_lineages
+        res_dic["fetch_lineages"] = fetch_lineages
+        # expansion
+        expansion_lineages = adrutils.get_expansion_lineages(expansion_lineages, global_params["parent_peer"])
+        adrutils.expansion_old(expansion_lineages, global_params["parent_peer"])
+        if expansion_lineages:
+            res_dic["expansion_data"] = {"peer": config.peer_name, "lineages": expansion_lineages}
+
         return data_pb2.Response(json_str=json.dumps(res_dic, default=dejimautils.datetime_converter))

@@ -67,21 +67,15 @@ class Executer:
 
         # check latest timestamps
         global_params = {}
-        global_params["latest_timestamps"] = {lineage: dejimautils.get_timestamp(self.tx, lineage, to_isoformat=True)
-                                              for lineage in lineages}
+        global_params["timestamps"] = {lineage: dejimautils.get_timestamp(self.tx, lineage, to_isoformat=True)
+                                       for lineage in lineages}
         result = requester.check_latest_request(lineages, self.global_xid, self.tx.start_time, global_params)
         if result != "Ack":
             self._restore()
             raise errors.GlobalLockNotAvailable("abort during global fetch")
         self.tx.extend_childs(global_params["peer_names"])
 
-        # check which is old data
-        lineages = []
-        for lineage, latest_timestamp in global_params["latest_timestamps"].items():
-            local_timestamp = dejimautils.get_timestamp(self.tx, lineage, to_isoformat=True)
-            if local_timestamp != latest_timestamp:
-                lineages.append(lineage)
-
+        lineages = global_params["fetch_lineages"]
         if not lineages: return "Ack"
 
         # lock for update
@@ -95,11 +89,11 @@ class Executer:
         result = requester.fetch_request(lineages, self.global_xid, self.tx.start_time, global_params)
         if result != "Ack":
             return "Nak"
-        if "latest_data_dict" not in global_params: return result
 
         # fetch to local
         local_xid = self.tx.get_local_xid()
-        dejimautils.execute_fetch(self.execute_stmt, local_xid, global_params["latest_data_dict"])
+        latest_data_dict = global_params["latest_data_dict"]
+        dejimautils.execute_fetch(self.execute_stmt, local_xid, latest_data_dict)
 
         # propagate to dejima table
         for dt in config.dt_list:
