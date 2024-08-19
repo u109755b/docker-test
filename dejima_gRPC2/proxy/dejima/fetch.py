@@ -83,4 +83,4 @@ class Fetch(data_pb2_grpc.LockServicer):
         res_dic["latest_data_dict"] = latest_data_dict
         if expansion_lineages:
             res_dic["expansion_data"] = {"peer": config.peer_name, "lineages": expansion_lineages}
-        return data_pb2.Response(json_str=json.dumps(res_dic, default=dejimautils.datetime_converter))
+        return data_pb2.Response(json_str=json.dumps(res_dic, default=dejimautils.json_converter))

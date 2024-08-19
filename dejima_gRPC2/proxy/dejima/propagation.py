@@ -23,10 +23,8 @@ class Propagation(data_pb2_grpc.PropagationServicer):
 
         params = json.loads(req.json_str)
 
-
         global_xid = params['xid']
         global_params = params['global_params']
-
         tx = dejimautils.get_tx(global_xid, params["start_time"])
 
         if global_xid not in config.prop_visited:
@@ -35,9 +33,12 @@ class Propagation(data_pb2_grpc.PropagationServicer):
         else:
             is_first_time = False
 
-        res_dic = {"result": "Nak", "peer_name": config.peer_name}
-        if not is_first_time:
-            res_dic["peer_name"] = None
+        res_dic = {"result": "Nak"}
+        if is_first_time:
+            res_dic["peer_name"] = config.peer_name
+        res_dic["all_peers"] = set([config.peer_name])
+        if "max_hop" in global_params:
+            res_dic["max_hop"] = global_params["max_hop"]
 
 
         # count up update request
@@ -61,11 +62,8 @@ class Propagation(data_pb2_grpc.PropagationServicer):
                 dejimautils.lock_records(tx, lock_stmts, max_retry_cnt=3, min_miss_cnt=1, wait_die=True)
             else:
                 dejimautils.lock_records(tx, lock_stmts, max_retry_cnt=3, min_miss_cnt=1)
-        except errors.RecordsNotFound as e:
-            return data_pb2.Response(json_str=json.dumps(res_dic))
-        except errors.LockNotAvailable as e:
-            # print(f"{os.path.basename(__file__)}: global lock failed")
-            return data_pb2.Response(json_str=json.dumps(res_dic))
+        except (errors.RecordsNotFound, errors.LockNotAvailable) as e:
+            return data_pb2.Response(json_str=json.dumps(res_dic, default=dejimautils.json_converter))
         timestamp.append(time.perf_counter())   # 1
 
         # contraction test
@@ -81,10 +79,8 @@ class Propagation(data_pb2_grpc.PropagationServicer):
                 stmt = dejimautils.get_execute_stmt(params['delta'][dt], local_xid)
                 tx.execute(stmt)
         except Exception as e:
-            if "stmt" in locals():
-                print(stmt)
             errors.out_err(e, "dejima table update error", out_trace=True)
-            return data_pb2.Response(json_str=json.dumps(res_dic))
+            return data_pb2.Response(json_str=json.dumps(res_dic, default=dejimautils.json_converter))
         timestamp.append(time.perf_counter())   # 2
 
 
@@ -102,10 +98,8 @@ class Propagation(data_pb2_grpc.PropagationServicer):
                     prop_dict[dt] = {"peers": target_peers, "delta": delta}
 
         except Exception as e:
-            if str(e).startswith("the JSON object must be str, bytes or bytearray"):
-                print("delta:", delta)
             errors.out_err(e, "BIRDS execution error", out_trace=True)
-            return data_pb2.Response(json_str=json.dumps(res_dic))
+            return data_pb2.Response(json_str=json.dumps(res_dic, default=dejimautils.json_converter))
 
 
         # propagate to other peers
@@ -113,28 +107,15 @@ class Propagation(data_pb2_grpc.PropagationServicer):
         if prop_dict != {}:
             result = requester.prop_request(prop_dict, global_xid, params["start_time"], params["method"], global_params)
             tx.extend_childs(global_params["peer_names"], global_params["prop_num"])
+            res_dic["all_peers"] |= global_params["all_peers"]
         else:
             result = "Ack"
         timestamp.append(time.perf_counter())   # 4
 
 
-        if result != "Ack":
-            res_dic = {"result": "Nak"}
-        else:
-            res_dic = {"result": "Ack"}
-
-        # peer_name
-        res_dic["peer_name"] = config.peer_name
-        if not is_first_time:
-            res_dic["peer_name"] = None
-        # max_hop
-        if "max_hop" in global_params:
-            res_dic["max_hop"] = global_params["max_hop"]
-        # timestamp
+        # return
+        res_dic["result"] = result
         if "timestamps" in global_params and result == "Ack":
             res_dic["timestamps"] = global_params["timestamps"]
             res_dic["timestamps"].append(timestamp)
-        # contraction_data
-        if contraction_lineages:
-            res_dic["contraction_data"] = {"peer": config.peer_name, "lineages": contraction_lineages}
-        return data_pb2.Response(json_str=json.dumps(res_dic))
+        return data_pb2.Response(json_str=json.dumps(res_dic, default=dejimautils.json_converter))

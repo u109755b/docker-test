@@ -15,22 +15,17 @@ class Termination(data_pb2_grpc.TerminationServicer):
 
         params = json.loads(req.json_str)
 
-        if params['result'] == "commit":
-            commit = True
-        else:
-            commit = False
-
+        result = params["result"]
         global_xid = params['xid']
         tx = config.tx_dict[global_xid]
 
-        # termination 
-        if commit:
-            tx.commit()
-            requester.termination_request("commit", global_xid, params["method"]) 
-        else:
-            tx.abort()
-            requester.termination_request("abort", global_xid, params["method"]) 
+
+        if result == "commit": tx.commit()
+        else: tx.abort()
+        if config.termination_method == "neighbor":
+            requester.termination_request(result, global_xid)
         tx.close()
+
 
         res_dic = {"result": "Ack"}
         return data_pb2.Response(json_str=json.dumps(res_dic))

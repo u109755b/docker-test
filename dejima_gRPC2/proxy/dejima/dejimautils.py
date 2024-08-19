@@ -27,7 +27,9 @@ def execute_threads(thread_list):
     for thread in thread_list:
         thread.join()
 
-def datetime_converter(o):
+def json_converter(o):
+    if isinstance(o, set):
+        return list(o)
     if isinstance(o, datetime):
         return o.isoformat()
     raise TypeError(f'Object of type {o.__class__.__name__} is not JSON serializable')

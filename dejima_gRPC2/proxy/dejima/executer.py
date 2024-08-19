@@ -76,6 +76,7 @@ class Executer:
             self._restore()
             raise errors.GlobalLockNotAvailable("abort during global fetch")
         self.tx.extend_childs(global_params["peer_names"], self.prop_num)
+        self.tx.extend_childs_all(global_params["all_peers"])
 
         lineages = global_params["fetch_lineages"]
         if not lineages: return "Ack"
@@ -162,6 +163,7 @@ class Executer:
             self.global_params["prop_num"] = self.prop_num
             result = requester.prop_request(prop_dict, self.global_xid, self.tx.start_time, self.locking_method, self.global_params)
             self.tx.extend_childs(self.global_params["peer_names"], self.prop_num)
+            self.tx.extend_childs_all(self.global_params["all_peers"])
             self.prop_num += 1
 
         if result == "Ack" and self.status != self.status_error:
@@ -190,12 +192,12 @@ class Executer:
 
         if self.status in commit_status_list:
             self.tx.commit()
-            requester.termination_request("commit", self.global_xid, self.locking_method)
+            requester.termination_request("commit", self.global_xid)
             result = dejima.status.COMMITTED
             msg = "committed"
         else:
             self.tx.abort()
-            requester.termination_request("abort", self.global_xid, self.locking_method)
+            requester.termination_request("abort", self.global_xid)
             result = dejima.status.ABORTED
             msg = "aborted"
         self.tx.close()

@@ -51,6 +51,7 @@ def check_latest_request(lineages, global_xid, start_time, global_params={}):
     thread_list = []
     params = {"results": []}
     params["peer_name"] = []
+    params["all_peers"] = []
     params["fetch_lineages"] = []
     params["expansion_data"] = []
 
@@ -71,11 +72,9 @@ def check_latest_request(lineages, global_xid, start_time, global_params={}):
         thread_list.append(threading.Thread(target=base_request, args=args))
     dejimautils.execute_threads(thread_list)
 
-    # peer_names
     global_params["peer_names"] = params["peer_name"]
-    # fetch_lineages
+    global_params["all_peers"] = set().union(*params["all_peers"])
     global_params["fetch_lineages"] = list(set().union(*params["fetch_lineages"]))
-    # expansion
     for expansion_data in params["expansion_data"]:
         adrutils.expansion_new(expansion_data["lineages"], expansion_data["peer"])
 
@@ -122,7 +121,8 @@ def fetch_request(lineages, global_xid, start_time, global_params={}):
 def prop_request(arg_dict, global_xid, start_time, method, global_params={}):
     thread_list = []
     params = {"results": []}
-    params["peer_name"] = [None]
+    params["peer_name"] = []
+    params["all_peers"] = []
     params["contraction_data"] = []
     if "max_hop" in global_params: params["max_hop"] = [0]
     if "timestamps" in global_params: params["timestamps"] = [[]]
@@ -160,7 +160,8 @@ def prop_request(arg_dict, global_xid, start_time, method, global_params={}):
     for contraction_data in params["contraction_data"]:
         adrutils.contraction_new(contraction_data["lineages"], contraction_data["peer"])
 
-    global_params["peer_names"] = [peer for peer in params["peer_name"] if peer]
+    global_params["peer_names"] = params["peer_name"]
+    global_params["all_peers"] = set().union(*params["all_peers"])
     if "max_hop" in global_params:
         if config.hop_mode: global_params["max_hop"] = max(params["max_hop"]) + 1
         else: global_params["max_hop"] = sum(params["max_hop"]) + 1
@@ -171,15 +172,18 @@ def prop_request(arg_dict, global_xid, start_time, method, global_params={}):
 
 
 # termination request
-def termination_request(result, current_xid, method):
+def termination_request(result, current_xid):
     thread_list = []
     params = {"results": []}
 
-    for peer in set().union(*config.tx_dict[current_xid].child_peers.values()):
+    tx = config.tx_dict[current_xid]
+    if config.termination_method == "all": peers = tx.child_peers_all
+    else: peers = set().union(*tx.child_peers.values())
+
+    for peer in peers:
         data = {
+            "result": result,
             "xid": current_xid,
-            "method": method,
-            "result": result
         }
         args = ([peer, data_pb2_grpc.TerminationStub, data, params])
         thread_list.append(threading.Thread(target=base_request, args=args))
@@ -209,7 +213,7 @@ def base_request(peer, service_stub, data, params={}):
             params["timestamps"].append(res_dic["timestamps"])
 
         append_list = [
-            "peer_name", "max_hop", "fetch_lineages"
+            "peer_name", "all_peers", "max_hop", "fetch_lineages"
             "latest_data_dict", "expansion_data", "contraction_data"
         ]
         for append_name in append_list:

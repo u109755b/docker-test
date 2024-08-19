@@ -72,7 +72,7 @@ class BenchExecuter(Executer):
             self.time_measurement.stop_timer("local_commit", self.global_xid)
 
             self.time_measurement.start_timer("global_commit", self.global_xid)
-            requester.termination_request("commit", self.global_xid, self.locking_method)
+            requester.termination_request("commit", self.global_xid)
             self.time_measurement.stop_timer("global_commit", self.global_xid)
 
             self.result_measurement.commit_tx('update', hop=self.global_params["max_hop"])
@@ -84,7 +84,7 @@ class BenchExecuter(Executer):
             self.time_measurement.stop_timer("local_abort", self.global_xid)
 
             self.time_measurement.start_timer("global_abort", self.global_xid)
-            requester.termination_request("abort", self.global_xid, self.locking_method)
+            requester.termination_request("abort", self.global_xid)
             self.time_measurement.stop_timer("global_abort", self.global_xid)
 
             self.result_measurement.abort_tx('global', hop=self.global_params["max_hop"])

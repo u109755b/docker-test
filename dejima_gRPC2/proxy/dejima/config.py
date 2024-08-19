@@ -25,6 +25,7 @@ hop_mode = False
 include_getting_tx_time = True
 getting_tx = True
 adr_mode = True
+termination_method = "all"   # "neighbor" or "all"
 
 # # straight 5
 # adr_peers = ["Peer3"]
