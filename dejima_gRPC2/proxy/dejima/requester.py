@@ -106,12 +106,14 @@ def fetch_request(lineages, global_xid, start_time, global_params={}):
     dejimautils.execute_threads(thread_list)
 
     if all(params["results"]):
-        if not params["latest_data_dict"]:
-            is_r_peers = [adrutils.get_is_r_peer(lineage) for lineage in lineages]
-            print(f"latest_data_dict is empty: {params["results"]} {params["latest_data_dict"]} {parent_peer} {lineages} {is_r_peers}")
-        global_params["latest_data_dict"] = params["latest_data_dict"][0]
-    for expansion_data in params["expansion_data"]:
-        adrutils.expansion_new(expansion_data["lineages"], expansion_data["peer"])
+        global_params["latest_data_dict"] = defaultdict(defaultdict(list))
+        for latest_data_dict in params["latest_data_dict"]:
+            for dt, delta in latest_data_dict.items():
+                for key in delta:
+                    if key == "view": global_params["latest_data_dict"][dt][key] = delta[key]
+                    else: global_params["latest_data_dict"][dt][key] += delta[key]
+        for expansion_data in params["expansion_data"]:
+            adrutils.expansion_new(expansion_data["lineages"], expansion_data["peer"])
 
     return "Ack" if all(params["results"]) else "Nak"
 

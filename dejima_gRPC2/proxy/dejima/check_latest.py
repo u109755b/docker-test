@@ -26,17 +26,22 @@ class CheckLatest(data_pb2_grpc.LockServicer):
         global_xid = params['xid']
         global_params = params["global_params"]
 
+        r_lineages = [lineage for lineage in params["lineages"] if adrutils.get_is_r_peer(lineage)]
+        non_r_lineages = [lineage for lineage in params["lineages"] if not adrutils.get_is_r_peer(lineage)]
+
+        fetch_lineages = []
+        expansion_lineages = []
+        res_dic = {"result": "Nak"}
+
 
         # at an adr peer
-        is_r_peers = adrutils.get_is_r_peers(params["lineages"])
-        if is_r_peers:
+        if r_lineages:
             tx = dejimautils.get_tx(global_xid, params["start_time"])
-            adrutils.countup_request(params["lineages"], "read", global_params["parent_peer"])
+            adrutils.countup_request(r_lineages, "read", global_params["parent_peer"])
 
             # lock with lineages
-            res_dic = {"result": "Nak"}
             try:
-                dejimautils.lock_with_lineages(tx, params["lineages"], for_what="SHARE")
+                dejimautils.lock_with_lineages(tx, r_lineages, for_what="SHARE")
 
             except (errors.RecordsNotFound, errors.LockNotAvailable) as e:
                 print(f"{os.path.basename(__file__)}: global lock failed")
@@ -44,14 +49,8 @@ class CheckLatest(data_pb2_grpc.LockServicer):
                 tx.close()
                 return data_pb2.Response(json_str=json.dumps(res_dic))
 
-
             # get timestamps and compare with requester ones
-            res_dic = {"result": "Ack"}
-            res_dic["peer_name"] = config.peer_name
-
-            fetch_lineages = []
-            expansion_lineages = []
-            for lineage in params["lineages"]:
+            for lineage in r_lineages:
                 requester_timestamp = global_params["timestamps"][lineage]
                 latest_timestamp = dejimautils.get_timestamp(tx, lineage, to_isoformat=True)
                 if requester_timestamp != latest_timestamp:
@@ -59,25 +58,26 @@ class CheckLatest(data_pb2_grpc.LockServicer):
                 else:
                     expansion_lineages.append(lineage)
 
-            # fetch_lineages
-            res_dic["fetch_lineages"] = fetch_lineages
-            # expansion
+            # expansion test
             expansion_lineages = adrutils.get_expansion_lineages(expansion_lineages, global_params["parent_peer"])
             adrutils.expansion_old(expansion_lineages, global_params["parent_peer"])
-            if expansion_lineages:
-                res_dic["expansion_data"] = {"peer": config.peer_name, "lineages": expansion_lineages}
-
-            return data_pb2.Response(json_str=json.dumps(res_dic, default=dejimautils.datetime_converter))
 
 
         # at a non-adr peer
-        result = requester.check_latest_request(params["lineages"], params["xid"], params["start_time"], global_params)
-        res_dic = {"result": result}
-        if result == "Ack":
+        if non_r_lineages:
+            result = requester.check_latest_request(non_r_lineages, params["xid"], params["start_time"], global_params)
+            if result != "Ack":
+                return data_pb2.Response(json_str=json.dumps(res_dic, default=dejimautils.datetime_converter))
+
             tx = dejimautils.get_tx(global_xid, params["start_time"])
             tx.extend_childs(global_params["peer_names"], global_params["prop_num"])
-            res_dic["fetch_lineages"] = global_params["fetch_lineages"]
-            res_dic["peer_name"] = config.peer_name
+            fetch_lineages += global_params["fetch_lineages"]
+
+
+        # return
+        res_dic = {"result": "Ack"}
+        res_dic["peer_name"] = config.peer_name
+        res_dic["fetch_lineages"] = fetch_lineages
+        if expansion_lineages:
+            res_dic["expansion_data"] = {"peer": config.peer_name, "lineages": expansion_lineages}
         return data_pb2.Response(json_str=json.dumps(res_dic, default=dejimautils.datetime_converter))
-
-

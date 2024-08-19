@@ -66,7 +66,7 @@ class Executer:
         lineages = [lineage for lineage in lineages if not adrutils.get_is_r_peer(lineage)]
         if not lineages: return "Ack"
 
-        # check latest timestamps
+        # check local timestamps
         global_params = {}
         global_params["prop_num"] = self.prop_num
         global_params["timestamps"] = {lineage: dejimautils.get_timestamp(self.tx, lineage, to_isoformat=True)

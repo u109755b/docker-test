@@ -261,18 +261,18 @@ def get_timestamp(tx, lineage, to_isoformat=False):
 
 # execute fetch
 def execute_fetch(execute, local_xid, latest_data_dict):
-    for dt, latest_data_list in latest_data_dict.items():
+    for dt, delta in latest_data_dict.items():
         if dt not in config.dt_list: continue
-        if type(latest_data_list) is list:
-            for latest_data in latest_data_list:
+        if "update" in delta:
+            for latest_data in delta["update"]:
                 lineage = latest_data[-3]
                 lineage_col_name, condition =  get_where_condition(dt, lineage)
                 execute(f"DELETE FROM {dt} WHERE {condition}")
                 values = ", ".join(repr(value) for value in latest_data)
                 execute(f"INSERT INTO {dt} VALUES ({values})")
             execute(f"SELECT {dt}_propagate({local_xid})")
-        else:
-            stmt = get_execute_stmt(latest_data_list, local_xid)
+        if "deletions" in delta or "insertions" in delta:
+            stmt = get_execute_stmt(delta, local_xid)
             execute(stmt)
 
 

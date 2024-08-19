@@ -52,14 +52,6 @@ def get_is_r_peer(lineage):
     init_adr_setting_if_not(lineage)
     return is_r_peer[lineage]
 
-def get_is_r_peers(lineages):
-    is_r_peers = get_is_r_peer(list(lineages)[0])
-    for lineage in lineages:
-        if get_is_r_peer(lineage) != is_r_peers:
-            print(f"{os.path.basename(__file__)}: error lineage set")
-            raise Exception
-    return is_r_peers
-
 def get_is_edge_r_peer(lineage):
     init_adr_setting_if_not(lineage)
     return is_edge_r_peer[lineage]

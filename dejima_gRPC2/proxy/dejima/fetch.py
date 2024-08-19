@@ -1,7 +1,7 @@
 import json
 import time
 import os
-from collections import deque
+from collections import deque, defaultdict
 from opentelemetry import trace
 from grpcdata import data_pb2
 from grpcdata import data_pb2_grpc
@@ -29,59 +29,58 @@ class Fetch(data_pb2_grpc.LockServicer):
         global_params = params["global_params"]
         tx = dejimautils.get_tx(global_xid, params["start_time"])
 
+        r_lineages = [lineage for lineage in params["lineages"] if adrutils.get_is_r_peer(lineage)]
+        non_r_lineages = [lineage for lineage in params["lineages"] if not adrutils.get_is_r_peer(lineage)]
+
+        latest_data_dict = defaultdict(dict)
+        expansion_lineages = []
+        res_dic = {"result": "Nak"}
+
 
         # at an adr peer
-        res_dic = {"result": "Ack"}
-
-        is_r_peers = adrutils.get_is_r_peers(params["lineages"])
-        if is_r_peers:
+        if r_lineages:
             # expansion test & expansion
-            expansion_lineages = adrutils.get_expansion_lineages(params["lineages"], params["parent_peer"])
+            expansion_lineages = adrutils.get_expansion_lineages(r_lineages, params["parent_peer"])
             adrutils.expansion_old(expansion_lineages, params["parent_peer"])
-            if expansion_lineages:
-                res_dic["expansion_data"] = {"peer": config.peer_name, "lineages": expansion_lineages}
+
             # get latest_data_dict
-            latest_data_dict = {}
             for dt in config.dt_list:
-                lineage_col_name, condition =  dejimautils.get_where_condition(dt, params["lineages"])
+                lineage_col_name, condition =  dejimautils.get_where_condition(dt, r_lineages)
                 tx.execute(f"SELECT * FROM {dt} WHERE {condition}")
                 latest_data = tx.fetchall()
-                latest_data_dict[dt] = latest_data
-            res_dic["latest_data_dict"] = latest_data_dict
-            return data_pb2.Response(json_str=json.dumps(res_dic, default=dejimautils.datetime_converter))
+                latest_data_dict[dt] = {"update": latest_data}
 
 
         # at a non-adr peer
-        # lock with lineages
-        res_dic = {"result": "Nak"}
-        try:
-            dejimautils.lock_with_lineages(tx, params["lineages"], for_what="UPDATE")
+        if non_r_lineages:
+            # lock with lineages
+            try:
+                dejimautils.lock_with_lineages(tx, non_r_lineages, for_what="UPDATE")
 
-        except errors.RecordsNotFound as e:
-            print(f"{os.path.basename(__file__)}: global lock failed (Not Found)")
-            return data_pb2.Response(json_str=json.dumps(res_dic))
-        except errors.LockNotAvailable as e:
-            print(f"{os.path.basename(__file__)}: global lock failed")
-            return data_pb2.Response(json_str=json.dumps(res_dic))
+            except (errors.RecordsNotFound, errors.LockNotAvailable) as e:
+                print(f"{os.path.basename(__file__)}: global lock failed")
+                return data_pb2.Response(json_str=json.dumps(res_dic))
+
+            # propagate latest data from other peers
+            result = requester.fetch_request(non_r_lineages, params["xid"], params["start_time"], global_params)
+            if result != "Ack":
+                return data_pb2.Response(json_str=json.dumps(res_dic))
+
+            # fetch to local
+            local_xid = tx.get_local_xid()
+            ret_latest_data_dict = global_params["latest_data_dict"]
+            dejimautils.execute_fetch(tx.execute, local_xid, ret_latest_data_dict)
+
+            # propagate to dejima table
+            for dt in config.dt_list:
+                delta = dejimautils.propagate_to_dt(tx, dt, local_xid)
+                if delta:
+                    latest_data_dict[dt].update(delta)
 
 
-        # propagate latest data from other peers
-        result = requester.fetch_request(params["lineages"], params["xid"], params["start_time"], global_params)
-        if result != "Ack":
-            return data_pb2.Response(json_str=json.dumps(res_dic))
-
-        local_xid = tx.get_local_xid()
-        latest_data_dict = global_params["latest_data_dict"]
-        dejimautils.execute_fetch(tx.execute, local_xid, latest_data_dict)
-
-
-        # propagate to dejima table
+        # return
         res_dic = {"result": "Ack"}
-        prop_dict = {}
-        for dt in config.dt_list:
-            delta = dejimautils.propagate_to_dt(tx, dt, local_xid)
-            if delta:
-                prop_dict[dt] = delta
-        res_dic["latest_data_dict"] = prop_dict
-
+        res_dic["latest_data_dict"] = latest_data_dict
+        if expansion_lineages:
+            res_dic["expansion_data"] = {"peer": config.peer_name, "lineages": expansion_lineages}
         return data_pb2.Response(json_str=json.dumps(res_dic, default=dejimautils.datetime_converter))
