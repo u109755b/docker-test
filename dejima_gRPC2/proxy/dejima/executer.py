@@ -89,6 +89,7 @@ class Executer:
 
         # propagate latest data from other peers
         global_params = {}
+        global_params["prop_num"] = self.prop_num
         result = requester.fetch_request(lineages, self.global_xid, self.tx.start_time, global_params)
         self.prop_num += 1
         if result != "Ack":

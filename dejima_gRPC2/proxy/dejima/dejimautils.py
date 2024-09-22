@@ -142,6 +142,7 @@ def lock_records(tx, lock_stmts, max_retry_cnt=0, min_miss_cnt=1, wait_die=False
     - dejima.errors.LockNotAvailable
     - dejima.errors.RecordsNotFound
     """
+    # wait_die = False
     if wait_die:
         lock_with_wait_die(tx, lock_stmts, max_retry_cnt, min_miss_cnt)
     else:

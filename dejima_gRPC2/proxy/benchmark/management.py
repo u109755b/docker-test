@@ -1,4 +1,5 @@
 import random
+from dejima import config
 from benchmark.tenv import tenv_config
 from benchmark.tpcc import tpcc_config
 from benchmark.ycsb import ycsb_config
@@ -41,4 +42,5 @@ class BenchmarkManagement:
             self.tx_idx = i
             weight_sum += weight
             if threshold <= weight_sum:
+                config.tx_type_count[tx_classes[i].tx_type] += 1
                 return tx_classes[i]

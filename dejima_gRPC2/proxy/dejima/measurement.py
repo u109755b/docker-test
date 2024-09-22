@@ -172,7 +172,8 @@ class ResultMeasurement:
                 tx_result = ""
                 tx_result += f"{tx_type}: "
                 tx_result += f"{rounded_result["tx_commit"][tx_type]} {rounded_result["tx_abort"][tx_type]}  "
-                tx_result += f"({rounded_result["tx_commit_time"][tx_type]} {rounded_result["tx_abort_time"][tx_type]})[s]"
+                tx_result += f"({rounded_result["tx_commit_time"][tx_type]} {rounded_result["tx_abort_time"][tx_type]})[s]   "
+                tx_result += f"{utils.round2(rounded_result["tx_commit_time"][tx_type] / rounded_result["tx_commit"][tx_type] * 1000)}[ms]"
                 print(tx_result)
             # global lock
             print("global lock: {}[s]".format(*rounded_result["global_lock"]))

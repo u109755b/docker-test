@@ -62,8 +62,17 @@ class ValChange(data_pb2_grpc.ValChangeServicer):
             update_log_look_range = adrutils.ec_manager.get_log_look_range("update")
             ec_count = f"ec_count: ({log_count} {expansion_count} {contraction_count} {entropy} {read_log_look_range} {update_log_look_range})"
 
+            # prop time
+            lock_time, base_update_time, prop_view_time, total_prop_time = adrutils.get_update_prop_time()
+            update_prop_time = f"{round(total_prop_time*1000, 2)} ({round(lock_time*1000, 2)}, {round(base_update_time*1000, 2)}, {round(prop_view_time*1000, 2)})"
+            read_prop_time = round(adrutils.get_read_prop_time()*1000, 2)
+            prop_time = f"{update_prop_time} {read_prop_time} [ms]"
+
+            # # tx type count
+            # tx_type_count = ' '.join([f'{key} {config.tx_type_count[key]}' for key in sorted(config.tx_type_count)])
+
             # output
-            output = ",  ".join([r_nonr_records, ec_count])
+            output = ",  ".join([r_nonr_records, ec_count, prop_time])
             print(output)
 
 

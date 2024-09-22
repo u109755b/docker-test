@@ -4,11 +4,13 @@ from dejima import config
 from dejima import GlobalBencher
 
 class ReadRecord(GlobalBencher):
+    tx_type = "read_tx"
+
     def _execute(self):
         # create executer
         executer = dejima.get_executer("bench")
         executer.create_tx()
-        self.params["tx_type"] = "read_tx"
+        self.params["tx_type"] = ReadRecord.tx_type
         executer.set_params(self.params)
 
 

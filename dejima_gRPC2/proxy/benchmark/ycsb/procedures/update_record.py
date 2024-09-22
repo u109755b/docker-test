@@ -6,11 +6,13 @@ from benchmark.ycsb import ycsbutils
 from dejima import GlobalBencher
 
 class UpdateRecord(GlobalBencher):
+    tx_type = "update_tx"
+
     def _execute(self):
         # create executer
         executer = dejima.get_executer("bench")
         executer.create_tx()
-        self.params["tx_type"] = "update_tx"
+        self.params["tx_type"] = UpdateRecord.tx_type
         executer.set_params(self.params)
 
 

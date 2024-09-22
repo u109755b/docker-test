@@ -105,7 +105,7 @@ def fetch_request(lineages, global_xid, start_time, global_params={}):
     dejimautils.execute_threads(thread_list)
 
     if all(params["results"]):
-        global_params["latest_data_dict"] = defaultdict(defaultdict(list))
+        global_params["latest_data_dict"] = defaultdict(lambda: defaultdict(list))
         for latest_data_dict in params["latest_data_dict"]:
             for dt, delta in latest_data_dict.items():
                 for key in delta:
@@ -213,7 +213,7 @@ def base_request(peer, service_stub, data, params={}):
             params["timestamps"].append(res_dic["timestamps"])
 
         append_list = [
-            "peer_name", "all_peers", "max_hop", "fetch_lineages"
+            "peer_name", "all_peers", "max_hop", "fetch_lineages",
             "latest_data_dict", "expansion_data", "contraction_data"
         ]
         for append_name in append_list:

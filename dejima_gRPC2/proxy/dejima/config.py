@@ -14,6 +14,7 @@ pid_to_tx = {}
 prop_visited = {}
 
 channels = {}
+tx_type_count = defaultdict(int)
 
 trace_enabled = False
 host_name = 'host.docker.internal'   # ローカル環境のとき
@@ -21,7 +22,7 @@ host_name = 'host.docker.internal'   # ローカル環境のとき
 
 prelock_request_invalid = False
 prelock_invalid = False
-hop_mode = False
+hop_mode = True
 include_getting_tx_time = True
 getting_tx = True
 adr_mode = True

@@ -5,6 +5,40 @@ from collections import defaultdict
 from dejima import config
 
 
+lock_time = 0
+base_update_time = 0
+prop_view_time = 0
+total_update_prop_time = 0
+update_cnt = 0
+
+def add_update_prop_time(_lock_time, _base_update_time, _prop_view_time, _total):
+    global lock_time, base_update_time, prop_view_time
+    global total_update_prop_time, update_cnt
+    lock_time += _lock_time
+    base_update_time += _base_update_time
+    prop_view_time += _prop_view_time
+    total_update_prop_time += _total
+    update_cnt += 1
+
+def get_update_prop_time():
+    if update_cnt == 0: return 0, 0, 0, 0
+    return lock_time / update_cnt, base_update_time / update_cnt, prop_view_time / update_cnt, total_update_prop_time / update_cnt
+
+
+total_read_prop_time = 0
+read_cnt = 0
+
+def add_read_prop_time(prop_time):
+    global total_read_prop_time, read_cnt
+    total_read_prop_time += prop_time
+    read_cnt += 1
+
+def get_read_prop_time():
+    if read_cnt == 0: return 0
+    return total_read_prop_time / read_cnt
+
+
+
 original_r_direction = {}
 visit_queue = deque(config.adr_peers)
 visited = set(config.adr_peers)

@@ -111,6 +111,7 @@ class Propagation(data_pb2_grpc.PropagationServicer):
         else:
             result = "Ack"
         timestamp.append(time.perf_counter())   # 4
+        adrutils.add_update_prop_time(timestamp[1]-timestamp[0], timestamp[2]-timestamp[1], timestamp[3]-timestamp[2], timestamp[3]-timestamp[0])
 
 
         # return
@@ -118,4 +119,6 @@ class Propagation(data_pb2_grpc.PropagationServicer):
         if "timestamps" in global_params and result == "Ack":
             res_dic["timestamps"] = global_params["timestamps"]
             res_dic["timestamps"].append(timestamp)
+        if "max_hop" in global_params:
+            res_dic["max_hop"] = global_params["max_hop"]
         return data_pb2.Response(json_str=json.dumps(res_dic, default=dejimautils.json_converter))

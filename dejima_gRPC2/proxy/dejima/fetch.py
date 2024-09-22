@@ -53,6 +53,9 @@ class Fetch(data_pb2_grpc.LockServicer):
 
         # at a non-adr peer
         if non_r_lineages:
+            timestamp = []
+            timestamp.append(time.perf_counter())   # 0
+
             # lock with lineages
             try:
                 dejimautils.lock_with_lineages(tx, non_r_lineages, for_what="UPDATE")
@@ -62,11 +65,13 @@ class Fetch(data_pb2_grpc.LockServicer):
                 return data_pb2.Response(json_str=json.dumps(res_dic))
 
             # propagate latest data from other peers
+            timestamp.append(time.perf_counter())   # 1
             result = requester.fetch_request(non_r_lineages, params["xid"], params["start_time"], global_params)
             if result != "Ack":
                 return data_pb2.Response(json_str=json.dumps(res_dic))
 
             # fetch to local
+            timestamp.append(time.perf_counter())   # 2
             local_xid = tx.get_local_xid()
             ret_latest_data_dict = global_params["latest_data_dict"]
             dejimautils.execute_fetch(tx.execute, local_xid, ret_latest_data_dict)
@@ -76,6 +81,9 @@ class Fetch(data_pb2_grpc.LockServicer):
                 delta = dejimautils.propagate_to_dt(tx, dt, local_xid)
                 if delta:
                     latest_data_dict[dt].update(delta)
+
+            timestamp.append(time.perf_counter())   # 3
+            adrutils.add_read_prop_time(timestamp[1]-timestamp[0] + timestamp[3]-timestamp[2])
 
 
         # return
