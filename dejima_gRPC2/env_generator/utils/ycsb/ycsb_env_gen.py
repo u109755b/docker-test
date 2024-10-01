@@ -1,3 +1,4 @@
+import random
 from utils.env_generator_template import EnvGenerator
 from utils.ycsb import ycsb_env_data
 
@@ -58,3 +59,20 @@ class YCSBEnvGenerator(EnvGenerator):
             datalog_dt = datalog_dt.replace("dt_name", dt_name)
             self._add_datalog(datalog_dt, node_name1, f"01_{dt_name}.dl")
             self._add_datalog(datalog_dt, node_name2, f"01_{dt_name}.dl")
+
+        # # random topology
+        # for i in range(2, self.N+1):
+        #     # dt
+        #     node_i = random.randint(1, i-1)
+        #     dt_name = f"dt{node_i}_{i}"
+        #     self._add_dejima_table(dt_name)
+        #     # edges
+        #     node_name1 = f"Peer{node_i}"
+        #     node_name2 = f"Peer{i}"
+        #     self._add_edge(dt_name, node_name1, ["bt"])
+        #     self._add_edge(dt_name, node_name2, ["bt"])
+        #     # datalog
+        #     datalog_dt = ycsb_env_data.datalog_dt
+        #     datalog_dt = datalog_dt.replace("dt_name", dt_name)
+        #     self._add_datalog(datalog_dt, node_name1, f"01_{dt_name}.dl")
+        #     self._add_datalog(datalog_dt, node_name2, f"01_{dt_name}.dl")

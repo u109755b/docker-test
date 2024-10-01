@@ -29,17 +29,17 @@ colors = ['#332288', '#88CCEE', '#44AA99', '#117733', '#999933', '#DDCC77', '#CC
 cond_n = len(colors)
 #cond_n = 5
 
-# legend
-legend = Graph()
-for i in range(1,cond_n+1):
-    g = Graph()
-    g.attr(rankdir='LR', rank='same')
-    g.node('cond{}'.format(i), label='COND{}'.format(i), shape='plaintext')
-    g.node('ph_cond{}'.format(i), label='', shape='plaintext')
-    g.edge('cond{}'.format(i), 'ph_cond{}'.format(i), color=colors[i-1], style='bold')
-    legend.subgraph(g)
-for i in range(1, cond_n):
-    legend.edge('cond{}'.format(i), 'cond{}'.format(i+1), style='invis')
+# # legend
+# legend = Graph()
+# for i in range(1,cond_n+1):
+#     g = Graph()
+#     g.attr(rankdir='LR', rank='same')
+#     g.node('cond{}'.format(i), label='COND{}'.format(i), shape='plaintext')
+#     g.node('ph_cond{}'.format(i), label='', shape='plaintext')
+#     g.edge('cond{}'.format(i), 'ph_cond{}'.format(i), color=colors[i-1], style='bold')
+#     legend.subgraph(g)
+# for i in range(1, cond_n):
+#     legend.edge('cond{}'.format(i), 'cond{}'.format(i+1), style='invis')
 
 # main
 output_dir_path = '{}_N{}_B{}'.format(benchmark, N, B)
@@ -69,7 +69,7 @@ for i in range(1,N+1):
         with open("{}/db/setup_files/Peer{}/00_init.sql".format(output_dir_path, i), mode="w") as new_f:
         # with open(output_dir_path + "/Peer{}".format(i) + "/00_init.sql", mode="w") as new_f:
             new_f.write(f.read())
-    G.node(str(i))
+    G.node(f"P{i}")
     if benchmark == "YCSB":
         config['base_table']['Peer{}'.format(i)] = ['bt']
     elif benchmark == "TPCC":
@@ -78,7 +78,7 @@ for i in range(1,N+1):
     if not i == 1:
         cond = random.randint(0, cond_n - 1)
         target_node = str(random.randint(1,i-1))
-        G.edge(str(i),target_node, color=colors[cond], style='bold')
+        G.edge(f"P{i}", f"P{target_node}", label=f"cond{cond}", style='bold')
         dt_name = 'd{}_{}'.format(target_node,i)
         config['dejima_table'][dt_name] = ['Peer{}'.format(i), 'Peer{}'.format(target_node)]
         with open("{}/db/setup_files/Peer{}/01_{}.sql".format(output_dir_path, i, dt_name), mode="w") as f:
@@ -92,7 +92,7 @@ with open(output_dir_path + '/proxy/dejima_config.json', mode='w', encoding='utf
 with open(output_dir_path + '/src.dot', mode='w', encoding='utf-8') as file:
     file.write(G.source)
 
-G.subgraph(legend)
+# G.subgraph(legend)
 G.render(output_dir_path + '/graph', cleanup=True)
 
 # generate docker-compose.yml 
