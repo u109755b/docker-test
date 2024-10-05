@@ -5,37 +5,69 @@ from collections import defaultdict
 from dejima import config
 
 
-lock_time = 0
-base_update_time = 0
-prop_view_time = 0
-total_update_prop_time = 0
-update_cnt = 0
+prop_log_limit = 20
+
+def get_stable_average(original_list, remove_num):
+    if not original_list: return 0
+    if len(original_list) <= 2*remove_num: return sum(original_list) / len(original_list)
+    if remove_num:
+        filterd_list = sorted(original_list)[remove_num:-remove_num]
+    else:
+        filterd_list = original_list
+    return sum(filterd_list) / len(filterd_list)
+
+# lock_time = 0
+# base_update_time = 0
+# prop_view_time = 0
+# total_update_prop_time = 0
+lock_time = deque(maxlen=prop_log_limit)
+base_update_time = deque(maxlen=prop_log_limit)
+prop_view_time = deque(maxlen=prop_log_limit)
+total_update_prop_time = deque(maxlen=prop_log_limit)
+update_cnt_all = 0
 
 def add_update_prop_time(_lock_time, _base_update_time, _prop_view_time, _total):
-    global lock_time, base_update_time, prop_view_time
-    global total_update_prop_time, update_cnt
-    lock_time += _lock_time
-    base_update_time += _base_update_time
-    prop_view_time += _prop_view_time
-    total_update_prop_time += _total
-    update_cnt += 1
+    global lock_time, base_update_time, prop_view_time, total_update_prop_time
+    global update_cnt_all
+    # lock_time += _lock_time
+    # base_update_time += _base_update_time
+    # prop_view_time += _prop_view_time
+    # total_update_prop_time += _total
+    lock_time.append(_lock_time)
+    base_update_time.append(_base_update_time)
+    prop_view_time.append(_prop_view_time)
+    total_update_prop_time.append(_total)
+    update_cnt_all += 1
 
 def get_update_prop_time():
-    if update_cnt == 0: return 0, 0, 0, 0
-    return lock_time / update_cnt, base_update_time / update_cnt, prop_view_time / update_cnt, total_update_prop_time / update_cnt
+    # if update_cnt_all == 0: return 0, 0, 0, 0
+    # update_cnt_recent = len(total_update_prop_time)
+    # return sum(lock_time) / update_cnt_recent,\
+    #         sum(base_update_time) / update_cnt_recent,\
+    #         sum(prop_view_time) / update_cnt_recent,\
+    #         sum(total_update_prop_time) / update_cnt_recent
+    return get_stable_average(lock_time, 2),\
+           get_stable_average(base_update_time, 2),\
+           get_stable_average(prop_view_time, 2),\
+           get_stable_average(total_update_prop_time, 2)
 
 
-total_read_prop_time = 0
-read_cnt = 0
+# total_read_prop_time = 0
+total_read_prop_time = deque(maxlen=prop_log_limit)
+read_cnt_all = 0
 
 def add_read_prop_time(prop_time):
-    global total_read_prop_time, read_cnt
-    total_read_prop_time += prop_time
-    read_cnt += 1
+    global total_read_prop_time
+    global read_cnt_all
+    # total_read_prop_time += prop_time
+    total_read_prop_time.append(prop_time)
+    read_cnt_all += 1
 
 def get_read_prop_time():
-    if read_cnt == 0: return 0
-    return total_read_prop_time / read_cnt
+    # if read_cnt_all == 0: return 0
+    # read_cnt_recent = len(total_read_prop_time)
+    # return sum(total_read_prop_time) / read_cnt_recent
+    return get_stable_average(total_read_prop_time, 2)
 
 
 
@@ -99,7 +131,7 @@ def get_r_direction(lineage):
 # expansion contraction manager
 class ECManager:
     def __init__(self):
-        self.default_log_look_range = 3
+        self.default_log_look_range = 5
         self.log = []
 
     def add_log(self, test_type):
@@ -163,15 +195,23 @@ def ec_test(lineages, request_type, parent_peer):
             for _, req in zip(range(log_look_range), request_count[lineage]):
                 if req[0] == "update" and req[1] != parent_peer: update_count += 1
                 if req[0] == "read" and req[1] == parent_peer: read_count += 1
-            if read_count > update_count:
-                res_lineages.append(lineage)
+            if config.use_prop_weights and update_cnt_all > 10 and read_cnt_all > 10:
+                if update_count * get_update_prop_time()[3] - read_count * get_read_prop_time() < 0:
+                    res_lineages.append(lineage)
+            else:
+                if update_count - read_count < 0:
+                    res_lineages.append(lineage)
         # contraction test
         if request_type == "update" and parent_peer in get_r_direction(lineage):
             for _, req in zip(range(log_look_range), request_count[lineage]):
                 if req[0] == "update" and req[1] == parent_peer: update_count += 1
                 if req[0] == "read" and req[1] != parent_peer: read_count += 1
-            if read_count < update_count:
-                res_lineages.append(lineage)
+            if config.use_prop_weights and update_cnt_all > 10 and read_cnt_all > 10:
+                if read_count * get_read_prop_time() - update_count * get_update_prop_time()[3] < 0:
+                    res_lineages.append(lineage)
+            else:
+                if read_count - update_count < 0:
+                    res_lineages.append(lineage)
     # return []
     return res_lineages
 
@@ -185,9 +225,9 @@ def get_contraction_lineages(lineages, parent_peer):
 
 def expansion_old(lineages, parent_peer):
     for lineage in lineages:
-        is_edge_r_peer[lineage] = False
         r_direction[lineage].add(parent_peer)
         request_count[lineage] = deque()
+        is_edge_r_peer[lineage] = (len(r_direction[lineage]) <= 1)
         ec_manager.add_log("expansion")
 
 def expansion_new(lineages, r_direction_peer):
@@ -207,6 +247,5 @@ def contraction_old(lineages):
 def contraction_new(lineages, non_r_peer):
     for lineage in lineages:
         r_direction[lineage].remove(non_r_peer)
-        if len(r_direction[lineage]) <= 1:
-            is_edge_r_peer[lineage] = True
+        is_edge_r_peer[lineage] = (len(r_direction[lineage]) <= 1)
         request_count[lineage] = deque()

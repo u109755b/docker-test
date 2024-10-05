@@ -61,7 +61,7 @@ class Fetch(data_pb2_grpc.LockServicer):
                 dejimautils.lock_with_lineages(tx, non_r_lineages, for_what="UPDATE")
 
             except (errors.RecordsNotFound, errors.LockNotAvailable) as e:
-                print(f"{os.path.basename(__file__)}: global lock failed")
+                # print(f"{os.path.basename(__file__)}: global lock failed")
                 return data_pb2.Response(json_str=json.dumps(res_dic))
 
             # propagate latest data from other peers

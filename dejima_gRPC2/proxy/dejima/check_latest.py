@@ -45,7 +45,7 @@ class CheckLatest(data_pb2_grpc.LockServicer):
                 dejimautils.lock_with_lineages(tx, r_lineages, for_what="SHARE")
 
             except (errors.RecordsNotFound, errors.LockNotAvailable) as e:
-                print(f"{os.path.basename(__file__)}: global lock failed")
+                # print(f"{os.path.basename(__file__)}: global lock failed")
                 tx.abort()
                 tx.close()
                 return data_pb2.Response(json_str=json.dumps(res_dic))
