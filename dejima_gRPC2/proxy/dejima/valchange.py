@@ -51,7 +51,8 @@ class ValChange(data_pb2_grpc.ValChangeServicer):
             edge_r_count = sum(is_edge == True for is_edge in adrutils.is_edge_r_peer.values())
             non_r_count = len(adrutils.is_r_peer) - r_count
             non_edge_r_count = r_count - edge_r_count
-            r_nonr_records = f"r_non-r_record: ({entry_count} {non_edge_r_count} {edge_r_count} {non_r_count})"
+            singleton_count = sum(len(r_dir) == 0 for r_dir in adrutils.r_direction.values())
+            r_nonr_records = f"r_non-r_record: ({entry_count} {non_edge_r_count} {edge_r_count} {non_r_count} {singleton_count})"
 
             # ec count
             log_count = len(adrutils.ec_manager.log)
@@ -66,7 +67,8 @@ class ValChange(data_pb2_grpc.ValChangeServicer):
             lock_time, base_update_time, prop_view_time, total_prop_time = adrutils.get_update_prop_time()
             update_prop_time = f"{round(total_prop_time*1000, 2)} ({round(lock_time*1000, 2)}, {round(base_update_time*1000, 2)}, {round(prop_view_time*1000, 2)})"
             read_prop_time = round(adrutils.get_read_prop_time()*1000, 2)
-            prop_time = f"{update_prop_time} {read_prop_time} [ms]"
+            commit_prop_time = round(adrutils.get_commit_prop_time()*1000, 2)
+            prop_time = f"{update_prop_time}  {read_prop_time}  {commit_prop_time} [ms]"
 
             # # tx type count
             # tx_type_count = ' '.join([f'{key} {config.tx_type_count[key]}' for key in sorted(config.tx_type_count)])

@@ -5,7 +5,7 @@ from collections import defaultdict
 from dejima import config
 
 
-prop_log_limit = 20
+prop_log_limit = 30
 
 def get_stable_average(original_list, remove_num):
     if not original_list: return 0
@@ -68,6 +68,24 @@ def get_read_prop_time():
     # read_cnt_recent = len(total_read_prop_time)
     # return sum(total_read_prop_time) / read_cnt_recent
     return get_stable_average(total_read_prop_time, 2)
+
+
+# total_commit_prop_time = 0
+total_commit_prop_time = deque(maxlen=prop_log_limit)
+commit_cnt_all = 0
+
+def add_commit_prop_time(prop_time):
+    global total_commit_prop_time
+    global commit_cnt_all
+    # total_commit_prop_time += prop_time
+    total_commit_prop_time.append(prop_time)
+    commit_cnt_all += 1
+
+def get_commit_prop_time():
+    # if commit_cnt_all == 0: return 0
+    # commit_cnt_recent = len(total_commit_prop_time)
+    # return sum(total_commit_prop_time) / commit_cnt_recent
+    return get_stable_average(total_commit_prop_time, 2)
 
 
 
@@ -163,8 +181,8 @@ class ECManager:
         if self.get_probability(test_type) < 0.5:
             entropy = 1.0
         log_look_range = round(self.default_log_look_range * entropy)
-        if log_look_range == 0:
-            log_look_range = 1
+        if log_look_range <= 5:
+            log_look_range = 5
         return log_look_range
 
 ec_manager = ECManager()
@@ -190,6 +208,7 @@ def ec_test(lineages, request_type, parent_peer):
         update_count = 0
         read_count = 0
         log_look_range = ec_manager.get_log_look_range(request_type)
+        if len(request_count[lineage]) < log_look_range: continue
         # expansion test
         if request_type == "read" and parent_peer not in get_r_direction(lineage):
             for _, req in zip(range(log_look_range), request_count[lineage]):
