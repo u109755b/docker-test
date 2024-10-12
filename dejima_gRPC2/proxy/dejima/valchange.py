@@ -46,12 +46,12 @@ class ValChange(data_pb2_grpc.ValChangeServicer):
             # request_count = f"request_count: {request_counter}"
 
             # r non-r records
-            entry_count = len(adrutils.is_r_peer)
-            r_count = sum(is_r == True for is_r in adrutils.is_r_peer.values())
-            edge_r_count = sum(is_edge == True for is_edge in adrutils.is_edge_r_peer.values())
-            non_r_count = len(adrutils.is_r_peer) - r_count
+            entry_count = len(adrutils.is_r_peer)-1
+            r_count = sum(is_r == True for key, is_r in adrutils.is_r_peer.items() if key != "dummy")
+            singleton_count = sum(len(r_dir) == 0 for key, r_dir in adrutils.r_direction.items() if key != "dummy")
+            edge_r_count = sum(is_edge == True for key, is_edge in adrutils.is_edge_r_peer.items() if key != "dummy") - singleton_count
+            non_r_count = entry_count - r_count
             non_edge_r_count = r_count - edge_r_count
-            singleton_count = sum(len(r_dir) == 0 for r_dir in adrutils.r_direction.values())
             r_nonr_records = f"r_non-r_record: ({entry_count} {non_edge_r_count} {edge_r_count} {non_r_count} {singleton_count})"
 
             # ec count
