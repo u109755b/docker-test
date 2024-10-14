@@ -27,6 +27,7 @@ class Fetch(data_pb2_grpc.LockServicer):
 
         global_xid = params['xid']
         global_params = params["global_params"]
+        gp = global_params
         tx = dejimautils.get_tx(global_xid, params["start_time"])
 
         r_lineages = [lineage for lineage in params["lineages"] if adrutils.get_is_r_peer(lineage)]
@@ -40,7 +41,7 @@ class Fetch(data_pb2_grpc.LockServicer):
         # at an adr peer
         if r_lineages:
             # expansion test & expansion
-            expansion_lineages = adrutils.get_expansion_lineages(r_lineages, params["parent_peer"], global_params["contraction_num"])
+            expansion_lineages = adrutils.get_expansion_lineages(r_lineages, params["parent_peer"], gp["contraction_num"], gp["update_prop_time"], gp["read_prop_time"])
             adrutils.expansion_old(expansion_lineages, params["parent_peer"])
 
             # get latest_data_dict

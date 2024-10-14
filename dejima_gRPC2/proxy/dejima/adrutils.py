@@ -227,7 +227,7 @@ def countup_request(lineages, request_type, parent_peer):
 
 
 
-def ec_test(lineages, request_type, parent_peer, ec_num):
+def ec_test(lineages, request_type, parent_peer, ec_num, update_prop_time=None, read_prop_time=None):
     if parent_peer == config.peer_name: return []
     lineages = init_adr_setting_if_not(lineages)
     res_lineages = []
@@ -246,7 +246,7 @@ def ec_test(lineages, request_type, parent_peer, ec_num):
                 if update_count + read_count >= log_look_range: break
             if update_count + read_count < log_look_range: continue
             if config.use_prop_weights and update_cnt_all > 10 and read_cnt_all > 10:
-                if update_count * get_update_prop_time()[3] - read_count * get_read_prop_time() < 0:
+                if update_count * update_prop_time - read_count * read_prop_time < 0:
                     is_ec = True
             else:
                 if update_count - read_count < 0:
@@ -268,8 +268,8 @@ def ec_test(lineages, request_type, parent_peer, ec_num):
     # return []
     return res_lineages
 
-def get_expansion_lineages(lineages, parent_peer, contraction_num):
-    return ec_test(lineages, "read", parent_peer, contraction_num)
+def get_expansion_lineages(lineages, parent_peer, contraction_num, update_prop_time, read_prop_time):
+    return ec_test(lineages, "read", parent_peer, contraction_num, update_prop_time, read_prop_time)
 
 def get_contraction_lineages(lineages, parent_peer, expansion_num):
     return ec_test(lineages, "update", parent_peer, expansion_num)

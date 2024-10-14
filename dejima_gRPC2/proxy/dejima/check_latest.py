@@ -25,6 +25,7 @@ class CheckLatest(data_pb2_grpc.LockServicer):
         params = json.loads(req.json_str)
         global_xid = params['xid']
         global_params = params["global_params"]
+        gp = global_params
 
         r_lineages = [lineage for lineage in params["lineages"] if adrutils.get_is_r_peer(lineage)]
         non_r_lineages = [lineage for lineage in params["lineages"] if not adrutils.get_is_r_peer(lineage)]
@@ -60,7 +61,7 @@ class CheckLatest(data_pb2_grpc.LockServicer):
                     expansion_lineages.append(lineage)
 
             # expansion test
-            expansion_lineages = adrutils.get_expansion_lineages(expansion_lineages, global_params["parent_peer"], global_params["contraction_num"])
+            expansion_lineages = adrutils.get_expansion_lineages(expansion_lineages, gp["parent_peer"], gp["contraction_num"], gp["update_prop_time"], gp["read_prop_time"])
             adrutils.expansion_old(expansion_lineages, global_params["parent_peer"])
 
 
