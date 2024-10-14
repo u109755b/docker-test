@@ -1,4 +1,5 @@
 import math
+import random
 import os
 from collections import deque
 from collections import defaultdict
@@ -149,26 +150,43 @@ def get_r_direction(lineage):
 # expansion contraction manager
 class ECManager:
     def __init__(self):
-        self.default_log_look_range = 5
+        self.default_log_look_range = 7
         self.log = []
 
-    def add_log(self, test_type):
+    def add_log(self, test_type, parent_peer):
         if test_type != "expansion" and test_type != "contraction":
             raise TypeError("test_type must be 'expansion' or 'contraction'")
-        self.log.append(test_type)
+        self.log.append((test_type, parent_peer))
 
     def get_test_type(self, request_type):
         if request_type == "read": return "expansion"
         elif request_type == "update": return "contraction"
         else: raise TypeError("request_type must be 'read' or 'update'")
 
+    def get_ec_num(self, test_type, peer):
+        return sum(log == (test_type, peer) for log in self.log)
+
     def get_probability(self, test_type):
         if len(self.log) <= 10: return 0.5
-        p = sum(log == test_type for log in self.log) / len(self.log)
+        p = sum(log[0] == test_type for log in self.log) / len(self.log)
         return p
 
     def get_entropy(self):
         p = self.get_probability("expansion")
+        q = 1-p
+        if math.isclose(p, 0) or math.isclose(p, 1.0):
+            return 0
+        entropy = -p*math.log2(p) - q*math.log2(q)
+        return entropy
+
+    def get_probability_2peer(self, test_type, peer, ec_num):
+        log_num = sum(log == (test_type, peer) for log in self.log)
+        if log_num + ec_num <= 10: return 0.5
+        p = log_num / (log_num + ec_num)
+        return p
+
+    def get_entropy_2peer(self, test_type, peer, ec_num):
+        p = self.get_probability_2peer(test_type, peer, ec_num)
         q = 1-p
         if math.isclose(p, 0) or math.isclose(p, 1.0):
             return 0
@@ -185,6 +203,16 @@ class ECManager:
             log_look_range = 5
         return log_look_range
 
+    def get_log_look_range_2peer(self, request_type, peer, ec_num):
+        test_type = self.get_test_type(request_type)
+        entropy = self.get_entropy_2peer(test_type, peer, ec_num)
+        if self.get_probability_2peer(test_type, peer, ec_num) < 0.5:
+            entropy = 1.0
+        log_look_range = round(self.default_log_look_range * entropy)
+        if log_look_range <= 5:
+            log_look_range = 5
+        return log_look_range
+
 ec_manager = ECManager()
 
 
@@ -194,12 +222,12 @@ def countup_request(lineages, request_type, parent_peer):
     for lineage in set(lineages):
         if not get_is_edge_r_peer(lineage): continue
         request_count[lineage].appendleft((request_type, parent_peer))
-        if len(request_count[lineage]) > ec_manager.default_log_look_range + 5:
+        if len(request_count[lineage]) > ec_manager.default_log_look_range + 1000:
             request_count[lineage].pop()
 
 
 
-def ec_test(lineages, request_type, parent_peer):
+def ec_test(lineages, request_type, parent_peer, ec_num):
     if parent_peer == config.peer_name: return []
     lineages = init_adr_setting_if_not(lineages)
     res_lineages = []
@@ -207,38 +235,44 @@ def ec_test(lineages, request_type, parent_peer):
         if not get_is_edge_r_peer(lineage): continue
         update_count = 0
         read_count = 0
-        log_look_range = ec_manager.get_log_look_range(request_type)
+        log_look_range = ec_manager.get_log_look_range_2peer(request_type, parent_peer, ec_num)
         if len(request_count[lineage]) < log_look_range: continue
+        is_ec = False
         # expansion test
         if request_type == "read" and parent_peer not in get_r_direction(lineage):
-            for _, req in zip(range(log_look_range), request_count[lineage]):
+            for req in request_count[lineage]:
                 if req[0] == "update" and req[1] != parent_peer: update_count += 1
                 if req[0] == "read" and req[1] == parent_peer: read_count += 1
+                if update_count + read_count >= log_look_range: break
+            if update_count + read_count < log_look_range: continue
             if config.use_prop_weights and update_cnt_all > 10 and read_cnt_all > 10:
                 if update_count * get_update_prop_time()[3] - read_count * get_read_prop_time() < 0:
-                    res_lineages.append(lineage)
+                    is_ec = True
             else:
                 if update_count - read_count < 0:
-                    res_lineages.append(lineage)
+                    is_ec = True
         # contraction test
         if request_type == "update" and parent_peer in get_r_direction(lineage):
-            for _, req in zip(range(log_look_range), request_count[lineage]):
+            for req in request_count[lineage]:
                 if req[0] == "update" and req[1] == parent_peer: update_count += 1
                 if req[0] == "read" and req[1] != parent_peer: read_count += 1
+                if update_count + read_count >= log_look_range: break
+            if update_count + read_count < log_look_range: continue
             if config.use_prop_weights and update_cnt_all > 10 and read_cnt_all > 10:
                 if read_count * get_read_prop_time() - update_count * get_update_prop_time()[3] < 0:
-                    res_lineages.append(lineage)
+                    is_ec = True
             else:
                 if read_count - update_count < 0:
-                    res_lineages.append(lineage)
+                    is_ec = True
+        if is_ec: res_lineages.append(lineage)
     # return []
     return res_lineages
 
-def get_expansion_lineages(lineages, parent_peer):
-    return ec_test(lineages, "read", parent_peer)
+def get_expansion_lineages(lineages, parent_peer, contraction_num):
+    return ec_test(lineages, "read", parent_peer, contraction_num)
 
-def get_contraction_lineages(lineages, parent_peer):
-    return ec_test(lineages, "update", parent_peer)
+def get_contraction_lineages(lineages, parent_peer, expansion_num):
+    return ec_test(lineages, "update", parent_peer, expansion_num)
 
 
 
@@ -247,7 +281,7 @@ def expansion_old(lineages, parent_peer):
         r_direction[lineage].add(parent_peer)
         request_count[lineage] = deque()
         is_edge_r_peer[lineage] = (len(r_direction[lineage]) <= 1)
-        ec_manager.add_log("expansion")
+        ec_manager.add_log("expansion", parent_peer)
 
 def expansion_new(lineages, r_direction_peer):
     for lineage in lineages:
@@ -256,12 +290,12 @@ def expansion_new(lineages, r_direction_peer):
         r_direction[lineage] = set([r_direction_peer])
         request_count[lineage] = deque()
 
-def contraction_old(lineages):
+def contraction_old(lineages, parent_peer):
     for lineage in lineages:
         is_r_peer[lineage] = False
         is_edge_r_peer[lineage] = False
         request_count[lineage] = deque()
-        ec_manager.add_log("contraction")
+        ec_manager.add_log("contraction", parent_peer)
 
 def contraction_new(lineages, non_r_peer):
     for lineage in lineages:

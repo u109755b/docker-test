@@ -62,6 +62,7 @@ def check_latest_request(lineages, global_xid, start_time, global_params={}):
 
     for peer in set(look_peers):
         if peer == parent_peer: continue
+        global_params["contraction_num"] = adrutils.ec_manager.get_ec_num("contraction", peer)
         data = {
             "lineages": lineages,
             "xid": global_xid,
@@ -93,6 +94,7 @@ def fetch_request(lineages, global_xid, start_time, global_params={}):
 
     for peer in config.tx_dict[global_xid].child_peers[global_params["prop_num"]]:
         if peer == parent_peer: continue
+        global_params["contraction_num"] = adrutils.ec_manager.get_ec_num("contraction", peer)
         data = {
             "lineages": lineages,
             "xid": global_xid,
@@ -145,6 +147,7 @@ def prop_request(arg_dict, global_xid, start_time, method, global_params={}):
             dts_delta[peer][dt] = delta
 
     for peer in peers:
+        global_params["expansion_num"] = adrutils.ec_manager.get_ec_num("expansion", peer)
         data = {
             "xid": global_xid,
             "start_time": start_time,

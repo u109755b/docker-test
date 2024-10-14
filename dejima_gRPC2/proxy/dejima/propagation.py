@@ -68,8 +68,8 @@ class Propagation(data_pb2_grpc.PropagationServicer):
 
         # contraction test
         if config.adr_mode:
-            contraction_lineages = adrutils.get_contraction_lineages(deletion_set & insertion_set, params["parent_peer"])
-            adrutils.contraction_old(contraction_lineages)
+            contraction_lineages = adrutils.get_contraction_lineages(deletion_set & insertion_set, params["parent_peer"], global_params["expansion_num"])
+            adrutils.contraction_old(contraction_lineages, params["parent_peer"])
             if contraction_lineages:
                 res_dic["contraction_data"] = {"peer": config.peer_name, "lineages": contraction_lineages}
 

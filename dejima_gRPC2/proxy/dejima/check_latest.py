@@ -60,7 +60,7 @@ class CheckLatest(data_pb2_grpc.LockServicer):
                     expansion_lineages.append(lineage)
 
             # expansion test
-            expansion_lineages = adrutils.get_expansion_lineages(expansion_lineages, global_params["parent_peer"])
+            expansion_lineages = adrutils.get_expansion_lineages(expansion_lineages, global_params["parent_peer"], global_params["contraction_num"])
             adrutils.expansion_old(expansion_lineages, global_params["parent_peer"])
 
 

@@ -51,13 +51,13 @@ class ValChange(data_pb2_grpc.ValChangeServicer):
             singleton_count = sum(len(r_dir) == 0 for key, r_dir in adrutils.r_direction.items() if key != "dummy")
             edge_r_count = sum(is_edge == True for key, is_edge in adrutils.is_edge_r_peer.items() if key != "dummy") - singleton_count
             non_r_count = entry_count - r_count
-            non_edge_r_count = r_count - edge_r_count
+            non_edge_r_count = r_count - edge_r_count - singleton_count
             r_nonr_records = f"r_non-r_record: ({entry_count} {non_edge_r_count} {edge_r_count} {non_r_count} {singleton_count})"
 
             # ec count
             log_count = len(adrutils.ec_manager.log)
-            expansion_count = sum(log == "expansion" for log in adrutils.ec_manager.log)
-            contraction_count = sum(log == "contraction" for log in adrutils.ec_manager.log)
+            expansion_count = sum(log[0] == "expansion" for log in adrutils.ec_manager.log)
+            contraction_count = sum(log[0] == "contraction" for log in adrutils.ec_manager.log)
             entropy = round(adrutils.ec_manager.get_entropy(), 2)
             read_log_look_range = adrutils.ec_manager.get_log_look_range("read")
             update_log_look_range = adrutils.ec_manager.get_log_look_range("update")

@@ -40,9 +40,17 @@ termination_method = "all"   # "neighbor" or "all"
 # adr_peers = ["Peer5"]
 # adr_peers = ["Peer5", "Peer6"]
 # adr_peers = ["Peer4", "Peer5", "Peer6", "Peer7"]
-adr_peers = ["Peer3", "Peer4", "Peer5", "Peer6", "Peer7", "Peer8"]
+# adr_peers = ["Peer3", "Peer4", "Peer5", "Peer6", "Peer7", "Peer8"]
 # adr_peers = ["Peer2", "Peer3", "Peer4", "Peer5", "Peer6", "Peer7", "Peer8", "Peer9"]
 # adr_peers = ["Peer1", "Peer2", "Peer3", "Peer4", "Peer5", "Peer6", "Peer7", "Peer8", "Peer9", "Peer10"]
+
+# # straight 11
+# adr_peers = ["Peer6"]
+# adr_peers = ["Peer5", "Peer6", "Peer7"]
+adr_peers = ["Peer4", "Peer5", "Peer6", "Peer7", "Peer8"]
+# adr_peers = ["Peer3", "Peer4", "Peer5", "Peer6", "Peer7", "Peer8", "Peer9"]
+# adr_peers = ["Peer2", "Peer3", "Peer4", "Peer5", "Peer6", "Peer7", "Peer8", "Peer9", "Peer10"]
+# adr_peers = ["Peer1", "Peer2", "Peer3", "Peer4", "Peer5", "Peer6", "Peer7", "Peer8", "Peer9", "Peer10", "Peer11"]
 
 # # star2 10
 # adr_peers = ["Peer1"]

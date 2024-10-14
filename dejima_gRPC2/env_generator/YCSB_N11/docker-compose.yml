@@ -1,0 +1,326 @@
+networks:
+  dejima_net:
+    driver: bridge
+    ipam:
+      driver: default
+services:
+  peer1-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: Peer1-db
+    environment:
+    - PEER_NAME=Peer1
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  peer1-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: python3 /code/server.py
+    container_name: Peer1-proxy
+    depends_on:
+    - peer1-db
+    environment:
+    - PEER_NAME=Peer1
+    image: ouyoshida/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8001:8000
+    volumes:
+    - ./proxy:/code
+  peer10-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: Peer10-db
+    environment:
+    - PEER_NAME=Peer10
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  peer10-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: python3 /code/server.py
+    container_name: Peer10-proxy
+    depends_on:
+    - peer10-db
+    environment:
+    - PEER_NAME=Peer10
+    image: ouyoshida/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8010:8000
+    volumes:
+    - ./proxy:/code
+  peer11-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: Peer11-db
+    environment:
+    - PEER_NAME=Peer11
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  peer11-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: python3 /code/server.py
+    container_name: Peer11-proxy
+    depends_on:
+    - peer11-db
+    environment:
+    - PEER_NAME=Peer11
+    image: ouyoshida/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8011:8000
+    volumes:
+    - ./proxy:/code
+  peer2-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: Peer2-db
+    environment:
+    - PEER_NAME=Peer2
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  peer2-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: python3 /code/server.py
+    container_name: Peer2-proxy
+    depends_on:
+    - peer2-db
+    environment:
+    - PEER_NAME=Peer2
+    image: ouyoshida/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8002:8000
+    volumes:
+    - ./proxy:/code
+  peer3-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: Peer3-db
+    environment:
+    - PEER_NAME=Peer3
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  peer3-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: python3 /code/server.py
+    container_name: Peer3-proxy
+    depends_on:
+    - peer3-db
+    environment:
+    - PEER_NAME=Peer3
+    image: ouyoshida/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8003:8000
+    volumes:
+    - ./proxy:/code
+  peer4-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: Peer4-db
+    environment:
+    - PEER_NAME=Peer4
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  peer4-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: python3 /code/server.py
+    container_name: Peer4-proxy
+    depends_on:
+    - peer4-db
+    environment:
+    - PEER_NAME=Peer4
+    image: ouyoshida/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8004:8000
+    volumes:
+    - ./proxy:/code
+  peer5-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: Peer5-db
+    environment:
+    - PEER_NAME=Peer5
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  peer5-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: python3 /code/server.py
+    container_name: Peer5-proxy
+    depends_on:
+    - peer5-db
+    environment:
+    - PEER_NAME=Peer5
+    image: ouyoshida/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8005:8000
+    volumes:
+    - ./proxy:/code
+  peer6-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: Peer6-db
+    environment:
+    - PEER_NAME=Peer6
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  peer6-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: python3 /code/server.py
+    container_name: Peer6-proxy
+    depends_on:
+    - peer6-db
+    environment:
+    - PEER_NAME=Peer6
+    image: ouyoshida/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8006:8000
+    volumes:
+    - ./proxy:/code
+  peer7-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: Peer7-db
+    environment:
+    - PEER_NAME=Peer7
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  peer7-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: python3 /code/server.py
+    container_name: Peer7-proxy
+    depends_on:
+    - peer7-db
+    environment:
+    - PEER_NAME=Peer7
+    image: ouyoshida/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8007:8000
+    volumes:
+    - ./proxy:/code
+  peer8-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: Peer8-db
+    environment:
+    - PEER_NAME=Peer8
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  peer8-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: python3 /code/server.py
+    container_name: Peer8-proxy
+    depends_on:
+    - peer8-db
+    environment:
+    - PEER_NAME=Peer8
+    image: ouyoshida/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8008:8000
+    volumes:
+    - ./proxy:/code
+  peer9-db:
+    cap_add:
+    - NET_ADMIN
+    container_name: Peer9-db
+    environment:
+    - PEER_NAME=Peer9
+    image: ekayim/dejima-pg
+    networks:
+      dejima_net: null
+    volumes:
+    - ./db/postgresql.conf:/etc/postgresql.conf
+    - ./db/initialize.sh:/docker-entrypoint-initdb.d/initialize.sh
+    - ./db/setup_files:/etc/setup_files
+  peer9-proxy:
+    cap_add:
+    - NET_ADMIN
+    command: python3 /code/server.py
+    container_name: Peer9-proxy
+    depends_on:
+    - peer9-db
+    environment:
+    - PEER_NAME=Peer9
+    image: ouyoshida/dejima-proxy:latest
+    networks:
+      dejima_net: null
+    ports:
+    - 8009:8000
+    volumes:
+    - ./proxy:/code
+version: '3'
