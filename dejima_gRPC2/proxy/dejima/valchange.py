@@ -46,7 +46,7 @@ class ValChange(data_pb2_grpc.ValChangeServicer):
             # request_count = f"request_count: {request_counter}"
 
             # r non-r records
-            entry_count = len(adrutils.is_r_peer)-1
+            entry_count = len(adrutils.is_r_peer)
             r_count = sum(is_r == True for key, is_r in adrutils.is_r_peer.items() if key != "dummy")
             singleton_count = sum(len(r_dir) == 0 for key, r_dir in adrutils.r_direction.items() if key != "dummy")
             edge_r_count = sum(is_edge == True for key, is_edge in adrutils.is_edge_r_peer.items() if key != "dummy") - singleton_count
@@ -72,6 +72,9 @@ class ValChange(data_pb2_grpc.ValChangeServicer):
 
             # # tx type count
             # tx_type_count = ' '.join([f'{key} {config.tx_type_count[key]}' for key in sorted(config.tx_type_count)])
+
+            # # request count from others
+            # req_cnt_from_others = json.dumps(config.req_cnt)
 
             # output
             output = ",  ".join([r_nonr_records, ec_count, prop_time])

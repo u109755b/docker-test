@@ -50,8 +50,6 @@ class Executer:
             print("warn: lineages is empty, canceled global lock")
             return "Ack"
         self.locking_method = "frs"
-        if config.adr_mode:
-            adrutils.countup_request(lineages, "update", config.peer_name)
         result = requester.lock_request(lineages, self.global_xid, self.tx.start_time)
         if result != "Ack":
             self._restore()
@@ -134,6 +132,8 @@ class Executer:
     # propagate to dejima table
     def propagate_dejima_table(self):
         prop_dict = {}
+        insertion_lineages = set()
+        deletion_lineages = set()
         # refresh dejima table
         try:
             local_xid = self.tx.get_local_xid()
@@ -147,8 +147,10 @@ class Executer:
 
                 prop_dict[dt] = {"peers": target_peers, "delta": delta}
 
-                lineages = [insertion["lineage"] for insertion in delta["insertions"]]
-                adrutils.init_adr_setting_if_not(lineages)
+                insertion_lineages |= set([insertion["lineage"] for insertion in delta.get("insertions", [])])
+                deletion_lineages |= set([deletions["lineage"] for deletions in delta.get("deletions", [])])
+            adrutils.init_adr_setting_if_not(insertion_lineages)
+            adrutils.countup_request(insertion_lineages & deletion_lineages, "update", config.peer_name)
 
         except Exception as e:
             self._restore()

@@ -29,6 +29,8 @@ adr_mode = True
 use_prop_weights = True
 termination_method = "all"   # "neighbor" or "all"
 
+req_cnt = defaultdict(int)
+
 # # straight 5
 # adr_peers = ["Peer3"]
 # adr_peers = ["Peer2", "Peer3"]

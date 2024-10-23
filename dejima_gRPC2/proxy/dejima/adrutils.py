@@ -47,6 +47,8 @@ def get_update_prop_time():
     #         sum(base_update_time) / update_cnt_recent,\
     #         sum(prop_view_time) / update_cnt_recent,\
     #         sum(total_update_prop_time) / update_cnt_recent
+    if update_cnt_all <= 10:
+        return -1, -1, -1, -1
     return get_stable_average(lock_time, 2),\
            get_stable_average(base_update_time, 2),\
            get_stable_average(prop_view_time, 2),\
@@ -68,6 +70,8 @@ def get_read_prop_time():
     # if read_cnt_all == 0: return 0
     # read_cnt_recent = len(total_read_prop_time)
     # return sum(total_read_prop_time) / read_cnt_recent
+    if read_cnt_all <= 10:
+        return -1
     return get_stable_average(total_read_prop_time, 2)
 
 
@@ -150,7 +154,7 @@ def get_r_direction(lineage):
 # expansion contraction manager
 class ECManager:
     def __init__(self):
-        self.default_log_look_range = 7
+        self.default_log_look_range = 15
         self.log = []
 
     def add_log(self, test_type, parent_peer):
@@ -219,6 +223,7 @@ ec_manager = ECManager()
 
 def countup_request(lineages, request_type, parent_peer):
     lineages = init_adr_setting_if_not(lineages)
+    config.req_cnt[f"{request_type}_{parent_peer}"] += 1
     for lineage in set(lineages):
         if not get_is_edge_r_peer(lineage): continue
         request_count[lineage].appendleft((request_type, parent_peer))
@@ -245,7 +250,7 @@ def ec_test(lineages, request_type, parent_peer, ec_num, update_prop_time=None, 
                 if req[0] == "read" and req[1] == parent_peer: read_count += 1
                 if update_count + read_count >= log_look_range: break
             if update_count + read_count < log_look_range: continue
-            if config.use_prop_weights and update_cnt_all > 10 and read_cnt_all > 10:
+            if config.use_prop_weights and 0 <= update_prop_time and 0 <= read_prop_time:
                 if update_count * update_prop_time - read_count * read_prop_time < 0:
                     is_ec = True
             else:
@@ -258,8 +263,10 @@ def ec_test(lineages, request_type, parent_peer, ec_num, update_prop_time=None, 
                 if req[0] == "read" and req[1] != parent_peer: read_count += 1
                 if update_count + read_count >= log_look_range: break
             if update_count + read_count < log_look_range: continue
-            if config.use_prop_weights and update_cnt_all > 10 and read_cnt_all > 10:
-                if read_count * get_read_prop_time() - update_count * get_update_prop_time()[3] < 0:
+            update_prop_time = get_update_prop_time()[3]
+            read_prop_time = get_read_prop_time()
+            if config.use_prop_weights and 0 <= read_prop_time and 0 <= update_prop_time:
+                if read_count * read_prop_time - update_count * update_prop_time < 0:
                     is_ec = True
             else:
                 if read_count - update_count < 0:
