@@ -41,6 +41,7 @@ class Fetch(data_pb2_grpc.LockServicer):
         # at an adr peer
         if r_lineages:
             # expansion test & expansion
+            adrutils.countup_request(r_lineages, "read", global_params["parent_peer"])
             expansion_lineages = adrutils.get_expansion_lineages(r_lineages, params["parent_peer"], gp["contraction_num"], gp["update_prop_time"], gp["read_prop_time"])
             adrutils.expansion_old(expansion_lineages, params["parent_peer"])
 

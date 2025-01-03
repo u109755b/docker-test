@@ -2,6 +2,7 @@ import time
 import threading
 from collections import defaultdict
 from dejima import utils
+from dejima import config
 
 # TimestampManagement
 # measure each time taking process
@@ -149,6 +150,12 @@ class ResultMeasurement:
             "tx_abort_time": self.tx_abort_time,
             "global_lock": [self.total_global_lock_time],
         }
+        config.commit_num["all"] = commit_num
+        commit_num_list = []
+        for tx_type in sorted(self.tx_commit_num):
+            config.commit_num[tx_type] = self.tx_commit_num[tx_type]
+            commit_num_list.append(f"{tx_type}: {self.tx_commit_num[tx_type]}")
+        config.commit_num["str"] = f"{commit_num} ({" ".join(commit_num_list)})"
 
         if display:
             rounded_result = utils.general_1obj_func(result, utils.round2)

@@ -34,6 +34,8 @@ class ValChange(data_pb2_grpc.ValChangeServicer):
             lock_list = list(config.tx_dict)
             remaining_lock = f"remaining lock: {lock_list}"
 
+            commit_num = f"commit_num: {config.commit_num["str"]}"
+
             # # r_directions
             # r_direction_counter = Counter(frozenset(r_directions) for r_directions in adrutils.r_direction.values())
             # if frozenset() in r_direction_counter: del r_direction_counter[frozenset()]
@@ -68,7 +70,7 @@ class ValChange(data_pb2_grpc.ValChangeServicer):
             update_prop_time = f"{round(total_prop_time*1000, 2)} ({round(lock_time*1000, 2)}, {round(base_update_time*1000, 2)}, {round(prop_view_time*1000, 2)})"
             read_prop_time = round(adrutils.get_read_prop_time()*1000, 2)
             commit_prop_time = round(adrutils.get_commit_prop_time()*1000, 2)
-            prop_time = f"{update_prop_time}  {read_prop_time}  {commit_prop_time} [ms]"
+            prop_time = f"prop_time: {update_prop_time}  {read_prop_time}  {commit_prop_time} [ms]"
 
             # # tx type count
             # tx_type_count = ' '.join([f'{key} {config.tx_type_count[key]}' for key in sorted(config.tx_type_count)])
@@ -77,7 +79,7 @@ class ValChange(data_pb2_grpc.ValChangeServicer):
             # req_cnt_from_others = json.dumps(config.req_cnt)
 
             # output
-            output = ",  ".join([r_nonr_records, ec_count, prop_time])
+            output = ",   ".join([commit_num, r_nonr_records, ec_count, prop_time])
             print(output)
 
 

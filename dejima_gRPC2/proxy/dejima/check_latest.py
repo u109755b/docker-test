@@ -39,7 +39,7 @@ class CheckLatest(data_pb2_grpc.LockServicer):
         # at an adr peer
         if r_lineages:
             tx = dejimautils.get_tx(global_xid, params["start_time"])
-            adrutils.countup_request(r_lineages, "read", global_params["parent_peer"])
+            # adrutils.countup_request(r_lineages, "read", global_params["parent_peer"])
 
             # lock with lineages
             try:

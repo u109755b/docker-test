@@ -154,7 +154,7 @@ def get_r_direction(lineage):
 # expansion contraction manager
 class ECManager:
     def __init__(self):
-        self.default_log_look_range = 15
+        self.default_log_look_range = 7
         self.log = []
 
     def add_log(self, test_type, parent_peer):
@@ -176,6 +176,7 @@ class ECManager:
         return p
 
     def get_entropy(self):
+        if not config.use_entropy: return 1.0
         p = self.get_probability("expansion")
         q = 1-p
         if math.isclose(p, 0) or math.isclose(p, 1.0):
@@ -190,6 +191,7 @@ class ECManager:
         return p
 
     def get_entropy_2peer(self, test_type, peer, ec_num):
+        if not config.use_entropy: return 1.0
         p = self.get_probability_2peer(test_type, peer, ec_num)
         q = 1-p
         if math.isclose(p, 0) or math.isclose(p, 1.0):
@@ -272,7 +274,8 @@ def ec_test(lineages, request_type, parent_peer, ec_num, update_prop_time=None, 
                 if read_count - update_count < 0:
                     is_ec = True
         if is_ec: res_lineages.append(lineage)
-    # return []
+    if not config.change_r:
+        return []
     return res_lineages
 
 def get_expansion_lineages(lineages, parent_peer, contraction_num, update_prop_time, read_prop_time):

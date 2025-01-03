@@ -26,10 +26,13 @@ hop_mode = True
 include_getting_tx_time = True
 getting_tx = True
 adr_mode = True
+change_r = True
 use_prop_weights = True
+use_entropy = False
 termination_method = "all"   # "neighbor" or "all"
 
 req_cnt = defaultdict(int)
+commit_num = {}
 
 # # straight 5
 # adr_peers = ["Peer3"]
