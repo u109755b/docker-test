@@ -44,14 +44,16 @@ class YCSBEnvGenerator(EnvGenerator):
         #     self._add_datalog(datalog_dt, node_name1, f"01_{dt_name}.dl")
         #     self._add_datalog(datalog_dt, node_name2, f"01_{dt_name}.dl")
 
-        # straight topology
-        for i in range(1, self.N):
+        # star topology 3 (peer1 centered, 3 legs)
+        for i in range(2, self.N+1):
+            j = i-3
+            if j <= 1: j = 1
             # dt
-            dt_name = f"dt{i}_{i+1}"
+            dt_name = f"dt{j}_{i}"
             self._add_dejima_table(dt_name)
             # edges
-            node_name1 = f"Peer{i}"
-            node_name2 = f"Peer{i+1}"
+            node_name1 = f"Peer{j}"
+            node_name2 = f"Peer{i}"
             self._add_edge(dt_name, node_name1, ["bt"])
             self._add_edge(dt_name, node_name2, ["bt"])
             # datalog
@@ -59,6 +61,22 @@ class YCSBEnvGenerator(EnvGenerator):
             datalog_dt = datalog_dt.replace("dt_name", dt_name)
             self._add_datalog(datalog_dt, node_name1, f"01_{dt_name}.dl")
             self._add_datalog(datalog_dt, node_name2, f"01_{dt_name}.dl")
+
+        # # straight topology
+        # for i in range(1, self.N):
+        #     # dt
+        #     dt_name = f"dt{i}_{i+1}"
+        #     self._add_dejima_table(dt_name)
+        #     # edges
+        #     node_name1 = f"Peer{i}"
+        #     node_name2 = f"Peer{i+1}"
+        #     self._add_edge(dt_name, node_name1, ["bt"])
+        #     self._add_edge(dt_name, node_name2, ["bt"])
+        #     # datalog
+        #     datalog_dt = ycsb_env_data.datalog_dt
+        #     datalog_dt = datalog_dt.replace("dt_name", dt_name)
+        #     self._add_datalog(datalog_dt, node_name1, f"01_{dt_name}.dl")
+        #     self._add_datalog(datalog_dt, node_name2, f"01_{dt_name}.dl")
 
         # # random topology
         # for i in range(2, self.N+1):

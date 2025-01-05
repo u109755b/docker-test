@@ -1,0 +1,40 @@
+% schema
+source bt(
+	'ID': int, 
+	'COL1': string, 
+	'COL2': string, 
+	'COL3': string, 
+	'COL4': string, 
+	'COL5': string, 
+	'COL6': string, 
+	'COL7': string, 
+	'COL8': string, 
+	'COL9': string, 
+	'COL10': string, 
+	'LINEAGE': string, 
+	'CREATED_AT': string, 
+	'UPDATED_AT': string
+).
+view dt1_4(
+	'ID': int, 
+	'COL1': string, 
+	'COL2': string, 
+	'COL3': string, 
+	'COL4': string, 
+	'COL5': string, 
+	'COL6': string, 
+	'COL7': string, 
+	'COL8': string, 
+	'COL9': string, 
+	'COL10': string, 
+	'LINEAGE': string, 
+	'CREATED_AT': string, 
+	'UPDATED_AT': string
+).
+
+% view definition
+dt1_4(ID, COL1, COL2, COL3, COL4, COL5, COL6, COL7, COL8, COL9, COL10, LINEAGE, CREATED_AT, UPDATED_AT) :- bt(ID, COL1, COL2, COL3, COL4, COL5, COL6, COL7, COL8, COL9, COL10, LINEAGE, CREATED_AT, UPDATED_AT).
+
+% rules for update strategy
+-bt(ID, COL1, COL2, COL3, COL4, COL5, COL6, COL7, COL8, COL9, COL10, LINEAGE, CREATED_AT, UPDATED_AT) :- bt(ID, COL1, COL2, COL3, COL4, COL5, COL6, COL7, COL8, COL9, COL10, LINEAGE, CREATED_AT, UPDATED_AT), NOT dt1_4(ID, COL1, COL2, COL3, COL4, COL5, COL6, COL7, COL8, COL9, COL10, LINEAGE, CREATED_AT, UPDATED_AT).
++bt(ID, COL1, COL2, COL3, COL4, COL5, COL6, COL7, COL8, COL9, COL10, LINEAGE, CREATED_AT, UPDATED_AT) :- NOT bt(ID, COL1, COL2, COL3, COL4, COL5, COL6, COL7, COL8, COL9, COL10, LINEAGE, CREATED_AT, UPDATED_AT), dt1_4(ID, COL1, COL2, COL3, COL4, COL5, COL6, COL7, COL8, COL9, COL10, LINEAGE, CREATED_AT, UPDATED_AT).

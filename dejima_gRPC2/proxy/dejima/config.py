@@ -44,7 +44,7 @@ commit_num = {}
 # # straight 9
 # adr_peers = ["Peer5"]
 # adr_peers = ["Peer4", "Peer5", "Peer6"]
-adr_peers = ["Peer3", "Peer4", "Peer5", "Peer6", "Peer7"]
+# adr_peers = ["Peer3", "Peer4", "Peer5", "Peer6", "Peer7"]
 # adr_peers = ["Peer2", "Peer3", "Peer4", "Peer5", "Peer6", "Peer7", "Peer8"]
 # adr_peers = ["Peer1", "Peer2", "Peer3", "Peer4", "Peer5", "Peer6", "Peer7", "Peer8", "Peer9"]
 
@@ -60,6 +60,12 @@ adr_peers = ["Peer3", "Peer4", "Peer5", "Peer6", "Peer7"]
 # adr_peers = ["Peer1"]
 # adr_peers = ["Peer1", "Peer2", "Peer3", "Peer4", "Peer5"]
 # adr_peers = ["Peer1", "Peer2", "Peer3", "Peer4", "Peer5", "Peer6", "Peer7", "Peer8", "Peer9", "Peer10"]
+
+# # star3 10
+# adr_peers = ["Peer1"]
+# adr_peers = ["Peer1", "Peer2", "Peer3", "Peer4"]
+# adr_peers = ["Peer1", "Peer2", "Peer3", "Peer4", "Peer5", "Peer6", "Peer7"]
+adr_peers = ["Peer1", "Peer2", "Peer3", "Peer4", "Peer5", "Peer6", "Peer7", "Peer8", "Peer9", "Peer10"]
 
 # sleep time
 SLEEP_MS = 0
