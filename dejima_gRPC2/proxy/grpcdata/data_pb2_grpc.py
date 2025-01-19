@@ -313,6 +313,67 @@ class CancelFetch(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
 
+class ECTestStub(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.on_post = channel.unary_unary(
+                '/ECTest/on_post',
+                request_serializer=data__pb2.Request.SerializeToString,
+                response_deserializer=data__pb2.Response.FromString,
+                )
+
+
+class ECTestServicer(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def on_post(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_ECTestServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'on_post': grpc.unary_unary_rpc_method_handler(
+                    servicer.on_post,
+                    request_deserializer=data__pb2.Request.FromString,
+                    response_serializer=data__pb2.Response.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'ECTest', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+
+
+ # This class is part of an EXPERIMENTAL API.
+class ECTest(object):
+    """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def on_post(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/ECTest/on_post',
+            data__pb2.Request.SerializeToString,
+            data__pb2.Response.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+
 class PropagationStub(object):
     """Missing associated documentation comment in .proto file."""
 

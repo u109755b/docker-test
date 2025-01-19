@@ -25,21 +25,19 @@ class CheckLatest(data_pb2_grpc.LockServicer):
         params = json.loads(req.json_str)
         global_xid = params['xid']
         global_params = params["global_params"]
-        gp = global_params
+        parent_peer = global_params["parent_peer"]
 
         r_lineages = [lineage for lineage in params["lineages"] if adrutils.get_is_r_peer(lineage)]
         non_r_lineages = [lineage for lineage in params["lineages"] if not adrutils.get_is_r_peer(lineage)]
 
         all_peers = set([config.peer_name])
         fetch_lineages = []
-        expansion_lineages = []
         res_dic = {"result": "Nak"}
 
 
         # at an adr peer
         if r_lineages:
             tx = dejimautils.get_tx(global_xid, params["start_time"])
-            # adrutils.countup_request(r_lineages, "read", global_params["parent_peer"])
 
             # lock with lineages
             try:
@@ -57,12 +55,9 @@ class CheckLatest(data_pb2_grpc.LockServicer):
                 latest_timestamp = dejimautils.get_timestamp(tx, lineage, to_isoformat=True)
                 if requester_timestamp != latest_timestamp:
                     fetch_lineages.append(lineage)
-                else:
-                    expansion_lineages.append(lineage)
 
-            # expansion test
-            expansion_lineages = adrutils.get_expansion_lineages(expansion_lineages, gp["parent_peer"], gp["contraction_num"], gp["update_prop_time"], gp["read_prop_time"])
-            adrutils.expansion_old(expansion_lineages, global_params["parent_peer"])
+            for lineage in r_lineages:
+                adrutils.r_around_peers[lineage].add(parent_peer)
 
 
         # at a non-adr peer
@@ -82,6 +77,5 @@ class CheckLatest(data_pb2_grpc.LockServicer):
         res_dic["peer_name"] = config.peer_name
         res_dic["all_peers"] = all_peers
         res_dic["fetch_lineages"] = fetch_lineages
-        if expansion_lineages:
-            res_dic["expansion_data"] = {"peer": config.peer_name, "lineages": expansion_lineages}
+        res_dic["r_lineages"] = r_lineages
         return data_pb2.Response(json_str=json.dumps(res_dic, default=dejimautils.json_converter))

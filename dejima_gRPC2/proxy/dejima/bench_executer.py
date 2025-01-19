@@ -50,9 +50,9 @@ class BenchExecuter(Executer):
     def propagate(self, global_params={}, DEBUG=False):
         self.global_params = global_params
         self.timestamp.append(time.perf_counter())   # 2
-        prop_dict = self.propagate_dejima_table()
+        prop_dict, update_lineages = self.propagate_dejima_table()
         self.timestamp.append(time.perf_counter())   # 3
-        result = self.propagate_other_peer(prop_dict, DEBUG)
+        result = self.propagate_other_peer(prop_dict, update_lineages, DEBUG)
         self.timestamp.append(time.perf_counter())   # 4
         return result
 
@@ -63,6 +63,7 @@ class BenchExecuter(Executer):
         commit_status_list["2pl"] = [self.status_clean, self.status_dirty, self.status_proped]
         commit_status_list["frs"] = [self.status_clean, self.status_dirty, self.status_proped]
         commit_status_list = commit_status_list[self.locking_method]
+        global_params = {"first_r_peer": self.first_r_peer}
 
         if self.status in commit_status_list:
             self.time_measurement.start_timer("local_commit", self.global_xid)
@@ -70,7 +71,7 @@ class BenchExecuter(Executer):
             self.time_measurement.stop_timer("local_commit", self.global_xid)
 
             self.time_measurement.start_timer("global_commit", self.global_xid)
-            requester.termination_request("commit", self.global_xid)
+            requester.termination_request("commit", self.global_xid, global_params)
             self.time_measurement.stop_timer("global_commit", self.global_xid)
 
             self.result_measurement.commit_tx('update', hop=self.global_params["max_hop"])
@@ -82,7 +83,7 @@ class BenchExecuter(Executer):
             self.time_measurement.stop_timer("local_abort", self.global_xid)
 
             self.time_measurement.start_timer("global_abort", self.global_xid)
-            requester.termination_request("abort", self.global_xid)
+            requester.termination_request("abort", self.global_xid, global_params)
             self.time_measurement.stop_timer("global_abort", self.global_xid)
 
             self.result_measurement.abort_tx('global', hop=self.global_params["max_hop"])

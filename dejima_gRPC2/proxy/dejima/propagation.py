@@ -43,13 +43,13 @@ class Propagation(data_pb2_grpc.PropagationServicer):
 
         # count up update request
         if config.adr_mode:
-            deletion_set = set()
-            insertion_set = set()
-            for dt in params["delta"]:
-                deletion_set |= set([deletion["lineage"] for deletion in params["delta"][dt]["deletions"]])
-                insertion_set |= set([insertion["lineage"] for insertion in params["delta"][dt]["insertions"]])
+            # deletion_set = set()
+            # insertion_set = set()
+            # for dt in params["delta"]:
+            #     deletion_set |= set([deletion["lineage"] for deletion in params["delta"][dt]["deletions"]])
+            #     insertion_set |= set([insertion["lineage"] for insertion in params["delta"][dt]["insertions"]])
+            deletion_set, insertion_set = adrutils.get_deletion_insertion_set(params["delta"])
             adrutils.init_adr_setting_if_not(insertion_set)
-            adrutils.countup_request(deletion_set & insertion_set, "update", params["parent_peer"])
 
         # update base tables according to updates to dt
         local_xid = tx.get_local_xid()
@@ -66,12 +66,6 @@ class Propagation(data_pb2_grpc.PropagationServicer):
             return data_pb2.Response(json_str=json.dumps(res_dic, default=dejimautils.json_converter))
         timestamp.append(time.perf_counter())   # 1
 
-        # contraction test
-        if config.adr_mode:
-            contraction_lineages = adrutils.get_contraction_lineages(deletion_set & insertion_set, params["parent_peer"], global_params["expansion_num"])
-            adrutils.contraction_old(contraction_lineages, params["parent_peer"])
-            if contraction_lineages:
-                res_dic["contraction_data"] = {"peer": config.peer_name, "lineages": contraction_lineages}
 
         try:
             # execute stmt
@@ -104,18 +98,21 @@ class Propagation(data_pb2_grpc.PropagationServicer):
 
         # propagate to other peers
         timestamp.append(time.perf_counter())   # 3
-        if prop_dict != {}:
-            result = requester.prop_request(prop_dict, global_xid, params["start_time"], params["method"], global_params)
-            tx.extend_childs(global_params["peer_names"], global_params["prop_num"])
-            res_dic["all_peers"] |= global_params["all_peers"]
-        else:
-            result = "Ack"
+
+        result = requester.prop_request(prop_dict, global_xid, params["start_time"], params["method"], global_params)
+        tx.extend_childs(global_params["peer_names"], global_params["prop_num"])
+        res_dic["all_peers"] |= global_params["all_peers"]
+
         timestamp.append(time.perf_counter())   # 4
         adrutils.add_update_prop_time(timestamp[1]-timestamp[0], timestamp[2]-timestamp[1], timestamp[3]-timestamp[2], timestamp[3]-timestamp[0])
 
 
         # return
         res_dic["result"] = result
+        if "update_req_num_total" in global_params:
+            res_dic["update_req_num_total"] = global_params["update_req_num_total"]
+        if "first_r_peer" in global_params:
+            res_dic["first_r_peer"] = global_params["first_r_peer"]
         if "timestamps" in global_params and result == "Ack":
             res_dic["timestamps"] = global_params["timestamps"]
             res_dic["timestamps"].append(timestamp)

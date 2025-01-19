@@ -44,6 +44,9 @@ data_pb2_grpc.add_FetchServicer_to_server(Fetch(), server)
 from dejima.unlock import Unlock
 data_pb2_grpc.add_UnlockServicer_to_server(Unlock(), server)
 
+from dejima.ectest import ECTest
+data_pb2_grpc.add_ECTestServicer_to_server(ECTest(), server)
+
 from dejima.propagation import Propagation
 data_pb2_grpc.add_PropagationServicer_to_server(Propagation(), server)
 

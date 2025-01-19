@@ -27,24 +27,17 @@ class Fetch(data_pb2_grpc.LockServicer):
 
         global_xid = params['xid']
         global_params = params["global_params"]
-        gp = global_params
         tx = dejimautils.get_tx(global_xid, params["start_time"])
 
         r_lineages = [lineage for lineage in params["lineages"] if adrutils.get_is_r_peer(lineage)]
         non_r_lineages = [lineage for lineage in params["lineages"] if not adrutils.get_is_r_peer(lineage)]
 
         latest_data_dict = defaultdict(dict)
-        expansion_lineages = []
         res_dic = {"result": "Nak"}
 
 
         # at an adr peer
         if r_lineages:
-            # expansion test & expansion
-            adrutils.countup_request(r_lineages, "read", global_params["parent_peer"])
-            expansion_lineages = adrutils.get_expansion_lineages(r_lineages, params["parent_peer"], gp["contraction_num"], gp["update_prop_time"], gp["read_prop_time"])
-            adrutils.expansion_old(expansion_lineages, params["parent_peer"])
-
             # get latest_data_dict
             for dt in config.dt_list:
                 lineage_col_name, condition =  dejimautils.get_where_condition(dt, r_lineages)
@@ -91,6 +84,4 @@ class Fetch(data_pb2_grpc.LockServicer):
         # return
         res_dic = {"result": "Ack"}
         res_dic["latest_data_dict"] = latest_data_dict
-        if expansion_lineages:
-            res_dic["expansion_data"] = {"peer": config.peer_name, "lineages": expansion_lineages}
         return data_pb2.Response(json_str=json.dumps(res_dic, default=dejimautils.json_converter))

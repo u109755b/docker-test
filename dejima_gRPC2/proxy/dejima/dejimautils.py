@@ -6,6 +6,7 @@ from datetime import datetime
 from dejima import status
 from dejima import errors
 from dejima import config
+from dejima import adrutils
 from dejima.transaction import Tx
 
 
@@ -269,6 +270,7 @@ def execute_fetch(execute, local_xid, latest_data_dict):
         if "update" in delta:
             for latest_data in delta["update"]:
                 lineage = latest_data[-3]
+                adrutils.fetch_num[lineage] += 1
                 lineage_col_name, condition =  get_where_condition(dt, lineage)
                 execute(f"DELETE FROM {dt} WHERE {condition}")
                 values = ", ".join(repr(value) for value in latest_data)

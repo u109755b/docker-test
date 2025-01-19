@@ -27,8 +27,9 @@ include_getting_tx_time = True
 getting_tx = True
 adr_mode = True
 change_r = True
-use_prop_weights = True
-use_entropy = False
+# use_prop_weights = True
+# use_entropy = False
+update_num_per_test = 2
 termination_method = "all"   # "neighbor" or "all"
 
 req_cnt = defaultdict(int)
@@ -63,9 +64,9 @@ commit_num = {}
 
 # # star3 10
 # adr_peers = ["Peer1"]
-# adr_peers = ["Peer1", "Peer2", "Peer3", "Peer4"]
+adr_peers = ["Peer1", "Peer2", "Peer3", "Peer4"]
 # adr_peers = ["Peer1", "Peer2", "Peer3", "Peer4", "Peer5", "Peer6", "Peer7"]
-adr_peers = ["Peer1", "Peer2", "Peer3", "Peer4", "Peer5", "Peer6", "Peer7", "Peer8", "Peer9", "Peer10"]
+# adr_peers = ["Peer1", "Peer2", "Peer3", "Peer4", "Peer5", "Peer6", "Peer7", "Peer8", "Peer9", "Peer10"]
 
 # sleep time
 SLEEP_MS = 0

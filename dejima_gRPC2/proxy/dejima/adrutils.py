@@ -1,6 +1,8 @@
 import math
 import random
 import os
+import heapq
+import copy
 from collections import deque
 from collections import defaultdict
 from dejima import config
@@ -8,6 +10,7 @@ from dejima import config
 
 prop_log_limit = 30
 
+# get_stable_average
 def get_stable_average(original_list, remove_num):
     if not original_list: return 0
     if len(original_list) <= 2*remove_num: return sum(original_list) / len(original_list)
@@ -17,37 +20,22 @@ def get_stable_average(original_list, remove_num):
         filterd_list = original_list
     return sum(filterd_list) / len(filterd_list)
 
-# lock_time = 0
-# base_update_time = 0
-# prop_view_time = 0
-# total_update_prop_time = 0
+
+# update_prop_time
 lock_time = deque(maxlen=prop_log_limit)
 base_update_time = deque(maxlen=prop_log_limit)
 prop_view_time = deque(maxlen=prop_log_limit)
 total_update_prop_time = deque(maxlen=prop_log_limit)
-update_cnt_all = 0
 
 def add_update_prop_time(_lock_time, _base_update_time, _prop_view_time, _total):
-    global lock_time, base_update_time, prop_view_time, total_update_prop_time
-    global update_cnt_all
-    # lock_time += _lock_time
-    # base_update_time += _base_update_time
-    # prop_view_time += _prop_view_time
-    # total_update_prop_time += _total
     lock_time.append(_lock_time)
     base_update_time.append(_base_update_time)
     prop_view_time.append(_prop_view_time)
     total_update_prop_time.append(_total)
-    update_cnt_all += 1
 
 def get_update_prop_time():
-    # if update_cnt_all == 0: return 0, 0, 0, 0
-    # update_cnt_recent = len(total_update_prop_time)
-    # return sum(lock_time) / update_cnt_recent,\
-    #         sum(base_update_time) / update_cnt_recent,\
-    #         sum(prop_view_time) / update_cnt_recent,\
-    #         sum(total_update_prop_time) / update_cnt_recent
-    if update_cnt_all <= 10:
+    if len(lock_time) <= 10:
+        if len(total_read_prop_time) > 10: return -1, -1, -1, get_read_prop_time()
         return -1, -1, -1, -1
     return get_stable_average(lock_time, 2),\
            get_stable_average(base_update_time, 2),\
@@ -55,44 +43,35 @@ def get_update_prop_time():
            get_stable_average(total_update_prop_time, 2)
 
 
-# total_read_prop_time = 0
+# read_prop_time
 total_read_prop_time = deque(maxlen=prop_log_limit)
-read_cnt_all = 0
 
 def add_read_prop_time(prop_time):
-    global total_read_prop_time
-    global read_cnt_all
-    # total_read_prop_time += prop_time
     total_read_prop_time.append(prop_time)
-    read_cnt_all += 1
 
 def get_read_prop_time():
-    # if read_cnt_all == 0: return 0
-    # read_cnt_recent = len(total_read_prop_time)
-    # return sum(total_read_prop_time) / read_cnt_recent
-    if read_cnt_all <= 10:
+    if len(total_read_prop_time) <= 10:
+        if len(lock_time) > 10: return get_update_prop_time()[3]
         return -1
     return get_stable_average(total_read_prop_time, 2)
 
 
-# total_commit_prop_time = 0
+# commit_prop_time
 total_commit_prop_time = deque(maxlen=prop_log_limit)
-commit_cnt_all = 0
 
 def add_commit_prop_time(prop_time):
-    global total_commit_prop_time
-    global commit_cnt_all
-    # total_commit_prop_time += prop_time
     total_commit_prop_time.append(prop_time)
-    commit_cnt_all += 1
 
 def get_commit_prop_time():
-    # if commit_cnt_all == 0: return 0
-    # commit_cnt_recent = len(total_commit_prop_time)
-    # return sum(total_commit_prop_time) / commit_cnt_recent
+    if len(total_commit_prop_time) == 0:
+        return -1
     return get_stable_average(total_commit_prop_time, 2)
 
 
+
+is_r_peer = {}
+is_edge_r_peer = {}
+r_direction = {}
 
 original_r_direction = {}
 visit_queue = deque(config.adr_peers)
@@ -104,13 +83,6 @@ while visit_queue:
         visit_queue.append(next_peer)
         visited.add(next_peer)
         original_r_direction[next_peer] = cur_peer
-
-
-
-is_r_peer = {}
-is_edge_r_peer = {}
-r_direction = {}
-request_count = defaultdict(deque)
 
 def init_adr_setting(lineage):
     # is_r_peer
@@ -151,164 +123,367 @@ def get_r_direction(lineage):
 
 
 
-# expansion contraction manager
-class ECManager:
-    def __init__(self):
-        self.default_log_look_range = 7
-        self.log = []
+leaf_distance = defaultdict(dict)           # leaf_distance[lineage][dir_peer_name] = leaf distance
+update_req_num = defaultdict(int)           # update_req_num[lineage] = # update request        @ config.peer_name
+read_req_num = defaultdict(int)             # read_req_num[lineage] = # read request            @ config.peer_name
+fetch_num = defaultdict(int)                # fetch_num[lineage] = # fetch                      @ config.peer_name
+r_around_peers = defaultdict(set)           # r_around_peers[lineage] = R-around peers          @ config.peer_name
 
-    def add_log(self, test_type, parent_peer):
-        if test_type != "expansion" and test_type != "contraction":
-            raise TypeError("test_type must be 'expansion' or 'contraction'")
-        self.log.append((test_type, parent_peer))
+def init_ec_setting(lineage):
+    leaf_distance[lineage] = {}
+    update_req_num[lineage] = 0
+    read_req_num[lineage] = 0
+    fetch_num[lineage] = 0
+    r_around_peers[lineage] = set()
 
-    def get_test_type(self, request_type):
-        if request_type == "read": return "expansion"
-        elif request_type == "update": return "contraction"
-        else: raise TypeError("request_type must be 'read' or 'update'")
+def get_max_leaf_distance(lineage, target_peer):
+    if not get_is_r_peer(lineage) or target_peer not in get_r_direction(lineage): return None
+    update_prop_time = get_update_prop_time()[3]
+    if update_prop_time == -1: return None
+    max_leaf_distance = 0
+    for dir_peer in get_r_direction(lineage):
+        if dir_peer == target_peer: continue
+        if lineage not in leaf_distance or dir_peer not in leaf_distance[lineage]: return None
+        if not leaf_distance[lineage][dir_peer]: return None
+        max_leaf_distance = max(max_leaf_distance, leaf_distance[lineage][dir_peer])
+    return max_leaf_distance + update_prop_time
 
-    def get_ec_num(self, test_type, peer):
-        return sum(log == (test_type, peer) for log in self.log)
-
-    def get_probability(self, test_type):
-        if len(self.log) <= 10: return 0.5
-        p = sum(log[0] == test_type for log in self.log) / len(self.log)
-        return p
-
-    def get_entropy(self):
-        if not config.use_entropy: return 1.0
-        p = self.get_probability("expansion")
-        q = 1-p
-        if math.isclose(p, 0) or math.isclose(p, 1.0):
-            return 0
-        entropy = -p*math.log2(p) - q*math.log2(q)
-        return entropy
-
-    def get_probability_2peer(self, test_type, peer, ec_num):
-        log_num = sum(log == (test_type, peer) for log in self.log)
-        if log_num + ec_num <= 10: return 0.5
-        p = log_num / (log_num + ec_num)
-        return p
-
-    def get_entropy_2peer(self, test_type, peer, ec_num):
-        if not config.use_entropy: return 1.0
-        p = self.get_probability_2peer(test_type, peer, ec_num)
-        q = 1-p
-        if math.isclose(p, 0) or math.isclose(p, 1.0):
-            return 0
-        entropy = -p*math.log2(p) - q*math.log2(q)
-        return entropy
-
-    def get_log_look_range(self, request_type):
-        test_type = self.get_test_type(request_type)
-        entropy = self.get_entropy()
-        if self.get_probability(test_type) < 0.5:
-            entropy = 1.0
-        log_look_range = round(self.default_log_look_range * entropy)
-        if log_look_range <= 5:
-            log_look_range = 5
-        return log_look_range
-
-    def get_log_look_range_2peer(self, request_type, peer, ec_num):
-        test_type = self.get_test_type(request_type)
-        entropy = self.get_entropy_2peer(test_type, peer, ec_num)
-        if self.get_probability_2peer(test_type, peer, ec_num) < 0.5:
-            entropy = 1.0
-        log_look_range = round(self.default_log_look_range * entropy)
-        if log_look_range <= 5:
-            log_look_range = 5
-        return log_look_range
-
-ec_manager = ECManager()
+def get_radius(lineage):
+    if not get_is_r_peer(lineage): return float("inf")
+    if get_update_prop_time()[3] == -1: return float("inf")
+    radius = 0
+    for dir_peer in get_r_direction(lineage):
+        if lineage not in leaf_distance or dir_peer not in leaf_distance[lineage]: return float("inf")
+        if not leaf_distance[lineage][dir_peer]: return float("inf")
+        radius = max(radius, leaf_distance[lineage][dir_peer])
+    return radius
 
 
 
-def countup_request(lineages, request_type, parent_peer):
-    lineages = init_adr_setting_if_not(lineages)
-    config.req_cnt[f"{request_type}_{parent_peer}"] += 1
-    for lineage in set(lineages):
-        if not get_is_edge_r_peer(lineage): continue
-        request_count[lineage].appendleft((request_type, parent_peer))
-        if len(request_count[lineage]) > ec_manager.default_log_look_range + 1000:
-            request_count[lineage].pop()
+# CostReductionSimulator
+class CostReductionSimulator:
+    # heap function
+    def heap_push(self, heap, value):
+        heapq.heappush(heap, (-value[0], value[1], value[2], value[3]))
+    def heap_top(self, heap):
+        leaf_distance, dir_peer, leaf_peer, used = heap[0]
+        return (-leaf_distance, dir_peer, leaf_peer, used)
+    def heap_pop(self, heap):
+        leaf_distance, dir_peer, leaf_peer, used = heapq.heappop(heap)
+        return (-leaf_distance, dir_peer, leaf_peer, used)
+
+    def dfs_from_center(self, current_peer_name, parent_peer_name, dir_peer_name, distance):
+        current_peer = self.peers[current_peer_name]
+        self.distance[current_peer_name] = distance   # distance
+        if current_peer["is_leaf"]:
+            self.dir_max_leaf_distance[dir_peer_name] = max(self.dir_max_leaf_distance[dir_peer_name], distance)   # dir_max_leaf_distance
+            self.dir_leaf_peers[dir_peer_name].append(current_peer_name)   # dir_leaf_peers
+        if current_peer["is_r_neighbor"]:
+            self.dir_r_neighbor_peers[dir_peer_name].append(current_peer_name)   # dir_r_neighbor_peers
+        self.dir_update_req_num[dir_peer_name] += current_peer["update_req_num"]   # dir_update_req_num
+
+        for next_peer_name in self.edges[current_peer_name]:
+            if next_peer_name == parent_peer_name: continue
+            next_peer = self.peers[next_peer_name]
+            if current_peer_name == self.center_peer_name:
+                dir_peer_name = next_peer_name
+            self.dfs_from_center(next_peer_name, current_peer_name, dir_peer_name, distance + next_peer["update_prop_time"])
+
+    def init(self):
+        center_peer_name = self.center_peer_name
+
+        for peer_name in self.edges[center_peer_name]:
+            if self.peers[peer_name]["is_r"]:
+                self.dir_peers.append(peer_name)
+
+        for peer_name in self.peers:
+            peer = self.peers[peer_name]
+            self.update_req_num_total += peer["update_req_num"]
+            self.read_req_num[peer_name] = peer["read_req_num"]
+            self.fetch_num[peer_name] = peer["fetch_num"]
+            for r_around_peer_name in peer["r_around_peers"]:
+                self.read_req_num[peer_name] += self.peers[r_around_peer_name]["read_req_num"]
+                self.fetch_num[peer_name] += self.peers[r_around_peer_name]["fetch_num"]
+
+        self.dfs_from_center(center_peer_name, center_peer_name, center_peer_name, 0)
+
+    def __init__(self, peers, edges, center_peer_name):
+        # self.lineage = lineage
+        self.peers = peers
+        self.edges = edges
+        self.center_peer_name = center_peer_name
+
+        self.dir_peers = []
+        self.update_req_num_total = 0
+        self.distance = {}   # distance[peer_name] = distance from center
+        self.dir_max_leaf_distance = defaultdict(int)   # dir_max_leaf_distance[dir_peer_name] = max leaf distance
+        self.dir_leaf_peers = defaultdict(list)
+        self.dir_r_neighbor_peers = defaultdict(list)
+        self.dir_update_req_num = defaultdict(int)
+        self.read_req_num = defaultdict(int)   # read_req_num[r_neighbor_peer_name] = # read requests
+        self.fetch_num = defaultdict(int)   # fetch_num[r_neighbor_peer_name] = # fetch
+
+        self.init()
 
 
+    def get_update_req_num(self, dir_peers):
+        update_req_num = 0
+        for dir_peer_name in dir_peers:
+            update_req_num += self.dir_update_req_num[dir_peer_name]
+        return update_req_num
 
-def ec_test(lineages, request_type, parent_peer, ec_num, update_prop_time=None, read_prop_time=None):
-    if parent_peer == config.peer_name: return []
-    lineages = init_adr_setting_if_not(lineages)
-    res_lineages = []
-    for lineage in set(lineages):
-        if not get_is_edge_r_peer(lineage): continue
-        update_count = 0
-        read_count = 0
-        log_look_range = ec_manager.get_log_look_range_2peer(request_type, parent_peer, ec_num)
-        if len(request_count[lineage]) < log_look_range: continue
-        is_ec = False
-        # expansion test
-        if request_type == "read" and parent_peer not in get_r_direction(lineage):
-            for req in request_count[lineage]:
-                if req[0] == "update" and req[1] != parent_peer: update_count += 1
-                if req[0] == "read" and req[1] == parent_peer: read_count += 1
-                if update_count + read_count >= log_look_range: break
-            if update_count + read_count < log_look_range: continue
-            if config.use_prop_weights and 0 <= update_prop_time and 0 <= read_prop_time:
-                if update_count * update_prop_time - read_count * read_prop_time < 0:
-                    is_ec = True
+    def get_max_leaf_distance(self, dir_peers):
+        max_leaf_distance = 0
+        for dir_peer_name in dir_peers:
+            max_leaf_distance = max(max_leaf_distance, self.dir_max_leaf_distance[dir_peer_name])
+        return max_leaf_distance
+
+    def get_max_leaf_distance_from(self, target_dir_peer_name):
+        max_leaf_distance = 0
+        for dir_peer_name in self.dir_peers:
+            if dir_peer_name == target_dir_peer_name: continue
+            max_leaf_distance = max(max_leaf_distance, self.dir_max_leaf_distance[dir_peer_name])
+        return max_leaf_distance
+
+    def get_fetch_num(self, peer_name):
+        peer = self.peers[peer_name]
+        if not peer["is_leaf"]: return self.fetch_num[peer_name]
+        update_req_num = self.update_req_num_total - peer["update_req_num"]
+        local_read_req_num = peer["read_req_num"]
+        local_update_req_num = peer["update_req_num"]
+        N = update_req_num + local_update_req_num + self.read_req_num[peer_name]
+        local_fetch_num = local_read_req_num * (update_req_num + 1) / N
+        return local_fetch_num + self.fetch_num[peer_name]
+
+
+    # get_target_profit_list
+    def get_target_profit_list(self, target_dir_peers, initial_revenue):
+        # create heap
+        heap_for_target = []
+        for dir_peer_name in self.dir_peers:
+            if dir_peer_name in target_dir_peers: continue
+            for leaf_peer_name in self.dir_leaf_peers[dir_peer_name]:
+                value = (-self.distance[leaf_peer_name], dir_peer_name, leaf_peer_name, False)
+                heap_for_target.append(value)
+        heapq.heapify(heap_for_target)
+
+        # contraction
+        used_leaf_peers = []
+        update_req_num = self.get_update_req_num(target_dir_peers)
+        if heap_for_target:
+            target_profit = [initial_revenue, self.heap_top(heap_for_target)[0], set(), set()]   # profit, max distance, contraction peers, expansion peers
+        else:
+            target_profit = [0, 0, set(), set()]
+        while heap_for_target:
+            leaf_distance, dir_peer_name, leaf_peer_name, used = self.heap_pop(heap_for_target)
+            if used: break
+            used_leaf_peers.append(leaf_peer_name)
+            leaf_peer = self.peers[leaf_peer_name]
+            self.heap_push(heap_for_target, (leaf_distance-leaf_peer["update_prop_time"], dir_peer_name, leaf_peer_name, True))
+
+            next_leaf = self.heap_top(heap_for_target)
+            revenue = update_req_num * (leaf_distance - next_leaf[0])
+            expense = self.get_fetch_num(leaf_peer_name) * leaf_peer["read_prop_time"]
+            profit = revenue - expense
+
+            target_profit[0] += profit
+            target_profit[1] = next_leaf[0]
+            target_profit[2].add(leaf_peer_name)
+
+        # create heap
+        heap_for_target = []
+        for dir_peer_name in set(self.dir_peers) | set([self.center_peer_name]):
+            if dir_peer_name in target_dir_peers: continue
+            # original
+            for leaf_peer_name in self.dir_leaf_peers[dir_peer_name]:
+                if leaf_peer_name in used_leaf_peers:
+                    value = (self.distance[leaf_peer_name], dir_peer_name, leaf_peer_name, "original")
+                    heap_for_target.append(value)
+            # expanded
+            for r_neighbor_peer_name in self.dir_r_neighbor_peers[dir_peer_name]:
+                if r_neighbor_peer_name in used_leaf_peers: continue
+                for r_around_peer_name in self.peers[r_neighbor_peer_name]["r_around_peers"]:
+                    value = (self.distance[r_around_peer_name], dir_peer_name, r_around_peer_name, "expanded")
+                    heap_for_target.append(value)
+        heapq.heapify(heap_for_target)
+
+        # expansion
+        max_peer_distance = target_profit[1]
+        target_profit_list = [copy.deepcopy(target_profit)]
+        while heap_for_target:
+            # if not heap_for_target: break
+            new_distance, dir_peer_name, peer_name, state = heapq.heappop(heap_for_target)
+            peer = self.peers[peer_name]
+            if state == "original" and peer["is_r_neighbor"]:
+                for r_around_peer_name in peer["r_around_peers"]:
+                    info = (self.distance[r_around_peer_name], dir_peer_name, r_around_peer_name, "expanded")
+                    heapq.heappush(heap_for_target, info)
+
+            revenue = self.get_fetch_num(peer_name) * peer["read_prop_time"]
+            expense = 0
+            if max_peer_distance < new_distance:
+                expense = update_req_num * (new_distance - max_peer_distance)
+                max_peer_distance = new_distance
+            profit = revenue - expense
+
+            target_profit[0] += profit
+            target_profit[1] = new_distance
+            if state == "original":
+                target_profit[2].remove(peer_name)
             else:
-                if update_count - read_count < 0:
-                    is_ec = True
-        # contraction test
-        if request_type == "update" and parent_peer in get_r_direction(lineage):
-            for req in request_count[lineage]:
-                if req[0] == "update" and req[1] == parent_peer: update_count += 1
-                if req[0] == "read" and req[1] != parent_peer: read_count += 1
-                if update_count + read_count >= log_look_range: break
-            if update_count + read_count < log_look_range: continue
-            update_prop_time = get_update_prop_time()[3]
-            read_prop_time = get_read_prop_time()
-            if config.use_prop_weights and 0 <= read_prop_time and 0 <= update_prop_time:
-                if read_count * read_prop_time - update_count * update_prop_time < 0:
-                    is_ec = True
+                target_profit[3].add(peer_name)
+            target_profit_list.append(copy.deepcopy(target_profit))
+
+        return target_profit_list
+
+
+    # calculate_optimal_solution
+    def calculate_optimal_solution(self, target_dir_peer_name):
+        # target_profit_list
+        target_dir_peers = set([target_dir_peer_name])
+        initial_revenue = 0
+        target_profit_list = self.get_target_profit_list(target_dir_peers, initial_revenue)
+
+        # non_target_profit_list
+        non_target_dir_peers = set(self.dir_peers) - set([target_dir_peer_name]) | set([self.center_peer_name])
+        for dir_peer in non_target_dir_peers:
+            diff_distance = self.get_max_leaf_distance_from(dir_peer) - self.dir_max_leaf_distance[target_dir_peer_name]
+            initial_revenue += self.dir_update_req_num[dir_peer] * diff_distance
+        non_target_profit_list = self.get_target_profit_list(non_target_dir_peers, initial_revenue)
+
+        # max_overall_profit
+        max_overall_profit = [0, set(), set()]
+        target_i = 0
+        non_target_i = 0
+        while True:
+            target_info = target_profit_list[target_i]
+            non_target_info = non_target_profit_list[non_target_i]
+            if math.isclose(target_info[1], non_target_info[1]) or target_info[1] < non_target_info[1]:
+                overall_profit = target_info[0] + non_target_info[0]
+                overall_contracted_peers = target_info[2] | non_target_info[2]
+                overall_expanded_peers = target_info[3] | non_target_info[3]
+                if max_overall_profit[0] < overall_profit:
+                    max_overall_profit = [overall_profit, overall_contracted_peers, overall_expanded_peers]
+            if target_i < len(target_profit_list)-1 and \
+               (math.isclose(target_profit_list[target_i+1][1], non_target_info[1]) or \
+                             target_profit_list[target_i+1][1] < non_target_info[1]):
+                target_i += 1
             else:
-                if read_count - update_count < 0:
-                    is_ec = True
-        if is_ec: res_lineages.append(lineage)
-    if not config.change_r:
-        return []
-    return res_lineages
+                if non_target_i == len(non_target_profit_list)-1: break
+                non_target_i += 1
 
-def get_expansion_lineages(lineages, parent_peer, contraction_num, update_prop_time, read_prop_time):
-    return ec_test(lineages, "read", parent_peer, contraction_num, update_prop_time, read_prop_time)
+        # print(target_dir_peer_name)
+        # print(target_profit_list)
+        # print(non_target_profit_list)
+        # print(max_overall_profit)
 
-def get_contraction_lineages(lineages, parent_peer, expansion_num):
-    return ec_test(lineages, "update", parent_peer, expansion_num)
+        # ec_info
+        ec_info = defaultdict(list)
+        for old_peer_name in max_overall_profit[1]:
+            new_peer_name = self.peers[old_peer_name]["r_direction"][0]
+            ec_info[old_peer_name].append(("contraction_old", new_peer_name))
+            ec_info[new_peer_name].append(("contraction_new", old_peer_name))
+        for new_peer_name in max_overall_profit[2]:
+            old_peer_name = self.peers[new_peer_name]["r_direction"][0]
+            ec_info[new_peer_name].append(("expansion_new", old_peer_name))
+            ec_info[old_peer_name].append(("expansion_old", new_peer_name))
+        solution = (max_overall_profit[0], ec_info)
+
+        return solution
+
+
+    # calculate_optimal_solution
+    def calculate_optimal_solution_for_singleton(self):
+        # create heap
+        heap_for_target = []
+        for r_around_peer_name in self.peers[self.center_peer_name]["r_around_peers"]:
+            value = (self.distance[r_around_peer_name], self.center_peer_name, r_around_peer_name, "expanded")
+            heap_for_target.append(value)
+        heapq.heapify(heap_for_target)
+
+        # expansion
+        update_req_num = self.peers[self.center_peer_name]["update_req_num"]
+        max_peer_distance = 0
+        overall_profit = [0, set(), set()]
+        max_overall_profit = [0, set(), set()]
+        while True:
+            if not heap_for_target: break
+            new_distance, dir_peer_name, peer_name, state = heapq.heappop(heap_for_target)
+            peer = self.peers[peer_name]
+
+            revenue = self.read_req_num[peer_name] * peer["read_prop_time"]
+            expense = update_req_num * (new_distance - max_peer_distance)
+            max_peer_distance = new_distance
+            profit = revenue - expense
+
+            overall_profit[0] += profit
+            overall_profit[2].add(peer_name)
+            if max_overall_profit[0] < overall_profit[0]:
+                max_overall_profit = overall_profit
+
+        # ec_info
+        ec_info = defaultdict(list)
+        for new_peer_name in max_overall_profit[2]:
+            old_peer_name = self.peers[new_peer_name]["r_direction"][0]
+            ec_info[new_peer_name].append(("expansion_new", old_peer_name))
+            ec_info[old_peer_name].append(("expansion_old", new_peer_name))
+
+        return ec_info
 
 
 
-def expansion_old(lineages, parent_peer):
-    for lineage in lineages:
-        r_direction[lineage].add(parent_peer)
-        request_count[lineage] = deque()
-        is_edge_r_peer[lineage] = (len(r_direction[lineage]) <= 1)
-        ec_manager.add_log("expansion", parent_peer)
+# ec_test
+def ec_test(peers, edges, center_peer_name):
+    cost_reduction_simulator = CostReductionSimulator(peers, edges, center_peer_name)
 
-def expansion_new(lineages, r_direction_peer):
-    for lineage in lineages:
-        is_r_peer[lineage] = True
-        is_edge_r_peer[lineage] = True
-        r_direction[lineage] = set([r_direction_peer])
-        request_count[lineage] = deque()
+    optimal_solution = [0, {}]
+    for dir_peer_name in cost_reduction_simulator.dir_peers:
+        solution = cost_reduction_simulator.calculate_optimal_solution(dir_peer_name)
+        if optimal_solution[0] < solution[0]: optimal_solution = solution
+    ec_info = optimal_solution[1]
 
-def contraction_old(lineages, parent_peer):
-    for lineage in lineages:
-        is_r_peer[lineage] = False
-        is_edge_r_peer[lineage] = False
-        request_count[lineage] = deque()
-        ec_manager.add_log("contraction", parent_peer)
+    if not cost_reduction_simulator.dir_peers:
+        ec_info = cost_reduction_simulator.calculate_optimal_solution_for_singleton()
+    # print(f"center: {center_peer_name},   ec_info = {ec_info}")
 
-def contraction_new(lineages, non_r_peer):
-    for lineage in lineages:
-        r_direction[lineage].remove(non_r_peer)
-        is_edge_r_peer[lineage] = (len(r_direction[lineage]) <= 1)
-        request_count[lineage] = deque()
+    return ec_info
+
+
+
+
+# r_direction
+# is_r_peer
+# is_edge_r_peer
+def execute_ec(lineage, ec_info_list):
+    for ec_info in ec_info_list:
+        partner_peer_name = ec_info[1]
+        if ec_info[0] == "expansion_old":
+            r_direction[lineage].add(partner_peer_name)
+            is_edge_r_peer[lineage] = (len(r_direction[lineage]) <= 1)
+
+        elif ec_info[0] == "expansion_new":
+            r_direction[lineage] = set([partner_peer_name])
+            is_r_peer[lineage] = True
+            is_edge_r_peer[lineage] = True
+
+        elif ec_info[0] == "contraction_old":
+            r_direction[lineage] = set([partner_peer_name])
+            is_r_peer[lineage] = False
+            is_edge_r_peer[lineage] = False
+
+        elif ec_info[0] == "contraction_new":
+            r_direction[lineage].remove(partner_peer_name)
+            is_edge_r_peer[lineage] = (len(r_direction[lineage]) <= 1)
+
+        else:
+            raise Exception
+
+
+def get_deletion_insertion_set(delta):
+    deletion_set = set()
+    insertion_set = set()
+    for dt in delta:
+        deletion_set |= set([deletion["lineage"] for deletion in delta[dt]["deletions"]])
+        insertion_set |= set([insertion["lineage"] for insertion in delta[dt]["insertions"]])
+    init_adr_setting_if_not(insertion_set)
+    return deletion_set, insertion_set

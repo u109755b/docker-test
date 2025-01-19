@@ -42,11 +42,6 @@ class ValChange(data_pb2_grpc.ValChangeServicer):
             # r_direction_counter = ', '.join(f'{set(key)}: {count}' for key, count in r_direction_counter.items())
             # r_directions = f"r_directions: {r_direction_counter}"
 
-            # # request count
-            # request_counter = Counter(len(request_count) for request_count in adrutils.request_count.values())
-            # request_counter = sorted(dict(request_counter).items())
-            # request_count = f"request_count: {request_counter}"
-
             # r non-r records
             entry_count = len(adrutils.is_r_peer)
             r_count = sum(is_r == True for key, is_r in adrutils.is_r_peer.items() if key != "dummy")
@@ -55,15 +50,6 @@ class ValChange(data_pb2_grpc.ValChangeServicer):
             non_r_count = entry_count - r_count
             non_edge_r_count = r_count - edge_r_count - singleton_count
             r_nonr_records = f"r_non-r_record: ({entry_count} {non_edge_r_count} {edge_r_count} {non_r_count} {singleton_count})"
-
-            # ec count
-            log_count = len(adrutils.ec_manager.log)
-            expansion_count = sum(log[0] == "expansion" for log in adrutils.ec_manager.log)
-            contraction_count = sum(log[0] == "contraction" for log in adrutils.ec_manager.log)
-            entropy = round(adrutils.ec_manager.get_entropy(), 2)
-            read_log_look_range = adrutils.ec_manager.get_log_look_range("read")
-            update_log_look_range = adrutils.ec_manager.get_log_look_range("update")
-            ec_count = f"ec_count: ({log_count} {expansion_count} {contraction_count} {entropy} {read_log_look_range} {update_log_look_range})"
 
             # prop time
             lock_time, base_update_time, prop_view_time, total_prop_time = adrutils.get_update_prop_time()
@@ -79,7 +65,7 @@ class ValChange(data_pb2_grpc.ValChangeServicer):
             # req_cnt_from_others = json.dumps(config.req_cnt)
 
             # output
-            output = ",   ".join([commit_num, r_nonr_records, ec_count, prop_time])
+            output = ",   ".join([commit_num, r_nonr_records, prop_time])
             print(output)
 
 
