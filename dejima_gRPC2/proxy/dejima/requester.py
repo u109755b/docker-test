@@ -257,6 +257,7 @@ def prop_request(arg_dict, global_xid, start_time, method, global_params={}):
         global_params["update_req_num_total"] = {}
         for lineage in global_params["update_lineages"]:
             global_params["update_req_num_total"][lineage] = adrutils.update_req_num[lineage]
+            global_params["update_req_num_total"][lineage] += adrutils.fetch_req_num[lineage]
         for update_req_num_total_dict in params["update_req_num_total"]:
             for lineage, update_req_num_total in update_req_num_total_dict.items():
                 global_params["update_req_num_total"][lineage] += update_req_num_total

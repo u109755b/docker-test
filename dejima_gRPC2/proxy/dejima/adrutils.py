@@ -126,6 +126,7 @@ def get_r_direction(lineage):
 leaf_distance = defaultdict(dict)           # leaf_distance[lineage][dir_peer_name] = leaf distance
 update_req_num = defaultdict(int)           # update_req_num[lineage] = # update request        @ config.peer_name
 read_req_num = defaultdict(int)             # read_req_num[lineage] = # read request            @ config.peer_name
+fetch_req_num = defaultdict(int)            # fetch_req_num[lineage] = # fetch request          @ config.peer_name
 fetch_num = defaultdict(int)                # fetch_num[lineage] = # fetch                      @ config.peer_name
 r_around_peers = defaultdict(set)           # r_around_peers[lineage] = R-around peers          @ config.peer_name
 
@@ -133,6 +134,7 @@ def init_ec_setting(lineage):
     leaf_distance[lineage] = {}
     update_req_num[lineage] = 0
     read_req_num[lineage] = 0
+    fetch_req_num[lineage] = 0
     fetch_num[lineage] = 0
     r_around_peers[lineage] = set()
 
@@ -353,15 +355,18 @@ class CostReductionSimulator:
 
         # max_overall_profit
         max_overall_profit = [0, set(), set()]
+        max_target_profit = [-float("inf"), set(), set()]
         target_i = 0
         non_target_i = 0
         while True:
             target_info = target_profit_list[target_i]
             non_target_info = non_target_profit_list[non_target_i]
             if math.isclose(target_info[1], non_target_info[1]) or target_info[1] < non_target_info[1]:
-                overall_profit = target_info[0] + non_target_info[0]
-                overall_contracted_peers = target_info[2] | non_target_info[2]
-                overall_expanded_peers = target_info[3] | non_target_info[3]
+                if max_target_profit[0] < target_info[0]:
+                    max_target_profit = target_info
+                overall_profit = max_target_profit[0] + non_target_info[0]
+                overall_contracted_peers = max_target_profit[2] | non_target_info[2]
+                overall_expanded_peers = max_target_profit[3] | non_target_info[3]
                 if max_overall_profit[0] < overall_profit:
                     max_overall_profit = [overall_profit, overall_contracted_peers, overall_expanded_peers]
             if target_i < len(target_profit_list)-1 and \

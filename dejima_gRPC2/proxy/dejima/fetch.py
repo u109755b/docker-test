@@ -38,6 +38,8 @@ class Fetch(data_pb2_grpc.LockServicer):
 
         # at an adr peer
         if r_lineages:
+            for lineage in r_lineages:
+                adrutils.fetch_req_num[lineage] += 1
             # get latest_data_dict
             for dt in config.dt_list:
                 lineage_col_name, condition =  dejimautils.get_where_condition(dt, r_lineages)
