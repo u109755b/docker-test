@@ -1,0 +1,258 @@
+{
+  "dejima_table": {
+    "dt1_2": [
+      "Peer1",
+      "Peer2"
+    ],
+    "dt2_3": [
+      "Peer2",
+      "Peer3"
+    ],
+    "dt1_4": [
+      "Peer1",
+      "Peer4"
+    ],
+    "dt3_5": [
+      "Peer3",
+      "Peer5"
+    ],
+    "dt1_6": [
+      "Peer1",
+      "Peer6"
+    ],
+    "dt3_7": [
+      "Peer3",
+      "Peer7"
+    ],
+    "dt4_8": [
+      "Peer4",
+      "Peer8"
+    ],
+    "dt5_9": [
+      "Peer5",
+      "Peer9"
+    ],
+    "dt2_10": [
+      "Peer2",
+      "Peer10"
+    ],
+    "dt1_11": [
+      "Peer1",
+      "Peer11"
+    ],
+    "dt2_12": [
+      "Peer2",
+      "Peer12"
+    ],
+    "dt6_13": [
+      "Peer6",
+      "Peer13"
+    ],
+    "dt1_14": [
+      "Peer1",
+      "Peer14"
+    ],
+    "dt2_15": [
+      "Peer2",
+      "Peer15"
+    ],
+    "dt9_16": [
+      "Peer9",
+      "Peer16"
+    ],
+    "dt3_17": [
+      "Peer3",
+      "Peer17"
+    ],
+    "dt8_18": [
+      "Peer8",
+      "Peer18"
+    ],
+    "dt18_19": [
+      "Peer18",
+      "Peer19"
+    ],
+    "dt12_20": [
+      "Peer12",
+      "Peer20"
+    ]
+  },
+  "base_table": {
+    "Peer1": {
+      "dt1_2": [
+        "bt"
+      ],
+      "dt1_4": [
+        "bt"
+      ],
+      "dt1_6": [
+        "bt"
+      ],
+      "dt1_11": [
+        "bt"
+      ],
+      "dt1_14": [
+        "bt"
+      ]
+    },
+    "Peer2": {
+      "dt1_2": [
+        "bt"
+      ],
+      "dt2_3": [
+        "bt"
+      ],
+      "dt2_10": [
+        "bt"
+      ],
+      "dt2_12": [
+        "bt"
+      ],
+      "dt2_15": [
+        "bt"
+      ]
+    },
+    "Peer3": {
+      "dt2_3": [
+        "bt"
+      ],
+      "dt3_5": [
+        "bt"
+      ],
+      "dt3_7": [
+        "bt"
+      ],
+      "dt3_17": [
+        "bt"
+      ]
+    },
+    "Peer4": {
+      "dt1_4": [
+        "bt"
+      ],
+      "dt4_8": [
+        "bt"
+      ]
+    },
+    "Peer5": {
+      "dt3_5": [
+        "bt"
+      ],
+      "dt5_9": [
+        "bt"
+      ]
+    },
+    "Peer6": {
+      "dt1_6": [
+        "bt"
+      ],
+      "dt6_13": [
+        "bt"
+      ]
+    },
+    "Peer7": {
+      "dt3_7": [
+        "bt"
+      ]
+    },
+    "Peer8": {
+      "dt4_8": [
+        "bt"
+      ],
+      "dt8_18": [
+        "bt"
+      ]
+    },
+    "Peer9": {
+      "dt5_9": [
+        "bt"
+      ],
+      "dt9_16": [
+        "bt"
+      ]
+    },
+    "Peer10": {
+      "dt2_10": [
+        "bt"
+      ]
+    },
+    "Peer11": {
+      "dt1_11": [
+        "bt"
+      ]
+    },
+    "Peer12": {
+      "dt2_12": [
+        "bt"
+      ],
+      "dt12_20": [
+        "bt"
+      ]
+    },
+    "Peer13": {
+      "dt6_13": [
+        "bt"
+      ]
+    },
+    "Peer14": {
+      "dt1_14": [
+        "bt"
+      ]
+    },
+    "Peer15": {
+      "dt2_15": [
+        "bt"
+      ]
+    },
+    "Peer16": {
+      "dt9_16": [
+        "bt"
+      ]
+    },
+    "Peer17": {
+      "dt3_17": [
+        "bt"
+      ]
+    },
+    "Peer18": {
+      "dt8_18": [
+        "bt"
+      ],
+      "dt18_19": [
+        "bt"
+      ]
+    },
+    "Peer19": {
+      "dt18_19": [
+        "bt"
+      ]
+    },
+    "Peer20": {
+      "dt12_20": [
+        "bt"
+      ]
+    }
+  },
+  "peer_address": {
+    "Peer1": "Peer1-proxy:8000",
+    "Peer2": "Peer2-proxy:8000",
+    "Peer3": "Peer3-proxy:8000",
+    "Peer4": "Peer4-proxy:8000",
+    "Peer5": "Peer5-proxy:8000",
+    "Peer6": "Peer6-proxy:8000",
+    "Peer7": "Peer7-proxy:8000",
+    "Peer8": "Peer8-proxy:8000",
+    "Peer9": "Peer9-proxy:8000",
+    "Peer10": "Peer10-proxy:8000",
+    "Peer11": "Peer11-proxy:8000",
+    "Peer12": "Peer12-proxy:8000",
+    "Peer13": "Peer13-proxy:8000",
+    "Peer14": "Peer14-proxy:8000",
+    "Peer15": "Peer15-proxy:8000",
+    "Peer16": "Peer16-proxy:8000",
+    "Peer17": "Peer17-proxy:8000",
+    "Peer18": "Peer18-proxy:8000",
+    "Peer19": "Peer19-proxy:8000",
+    "Peer20": "Peer20-proxy:8000"
+  }
+}
